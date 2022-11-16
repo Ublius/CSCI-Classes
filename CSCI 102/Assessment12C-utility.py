@@ -36,6 +36,12 @@ def score_finder(players, scores, playername):
             return # Early return
     print("OUTPUT player not found") # Nothing then player not found
     
+def union(list1, list2):
+    list = list1 + list2
+    print(list)
 
 
-
+players2 = ["Melvin", "Martian", "Baka", "Xai", "Cody"] 
+players = ["Mary", "Cody", "Joe", "Jill", "Xai", "Bodo"]
+scores = [5, 8, 10, 6, 10, 4] 
+union(scores, players2)

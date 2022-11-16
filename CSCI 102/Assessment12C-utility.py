@@ -48,8 +48,17 @@ def intersect(list1, list2):
                 list.append(i)
     return list
 
+def not_in(list1, list2):
+    test = list(set(list1).difference(list2))
+    # list= []
+    # for i in list1:
+    #     for j in list2:
+    #         if j != i: # Check if list1 indexs match index 2 if so add to the list
+    #             list.append(i)
+    #             break
+    print(test)
 
 players2 = ["Melvin", "Martian", "Baka", "Xai", "Cody"] 
 players = ["Mary", "Cody", "Joe", "Jill", "Xai", "Bodo"]
 scores = [5, 8, 10, 6, 10, 4] 
-intersect(players, players2)
+not_in(players2, players)

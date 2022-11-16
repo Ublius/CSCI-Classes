@@ -4,6 +4,8 @@
 # References:
 # Time:  minutes
 
+import math
+
 def load_file(filename):
     lines = []
     with open(filename, mode="r") as file:
@@ -49,16 +51,20 @@ def intersect(list1, list2):
     return list
 
 def not_in(list1, list2):
-    test = list(set(list1).difference(list2))
-    # list= []
-    # for i in list1:
-    #     for j in list2:
-    #         if j != i: # Check if list1 indexs match index 2 if so add to the list
-    #             list.append(i)
-    #             break
-    print(test)
+    notList = list(set(list1).difference(list2)) # Find the differences between the two lists
+    return notList
 
-players2 = ["Melvin", "Martian", "Baka", "Xai", "Cody"] 
-players = ["Mary", "Cody", "Joe", "Jill", "Xai", "Bodo"]
-scores = [5, 8, 10, 6, 10, 4] 
-not_in(players2, players)
+def is_prime(num):
+    prime = 0
+    if(num > 1): # Number needs to be greater than 1
+        for i in range(2, int(math.sqrt(num)) + 1): # Go from 2 to the sqrt of num + 1
+            if (num % i == 0): # if num mod i is 0
+                prime = 1 # Then not prime and break
+                break
+        if (prime == 0): 
+            return True
+        else:
+            return False
+    else:
+        return False
+

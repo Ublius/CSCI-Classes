@@ -37,11 +37,19 @@ def score_finder(players, scores, playername):
     print("OUTPUT player not found") # Nothing then player not found
     
 def union(list1, list2):
-    list = list1 + list2
-    print(list)
+    list = list1 + list2 # Join the two list given
+    return(list)
+
+def intersect(list1, list2):
+    list= []
+    for i in list1:
+        for j in list2:
+            if i == j: # Check if list1 indexs match index 2 if so add to the list
+                list.append(i)
+    return list
 
 
 players2 = ["Melvin", "Martian", "Baka", "Xai", "Cody"] 
 players = ["Mary", "Cody", "Joe", "Jill", "Xai", "Bodo"]
 scores = [5, 8, 10, 6, 10, 4] 
-union(scores, players2)
+intersect(players, players2)

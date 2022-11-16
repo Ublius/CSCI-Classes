@@ -13,7 +13,7 @@ def load_file(filename):
 
     return lines
 
-def find_word_count(str1, str2, pos):
+def update_string(str1, str2, pos):
     word = str1[0:pos] + str2 + str1[pos+1:]
     print("OUTPUT", word)
 

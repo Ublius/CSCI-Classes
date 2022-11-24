@@ -59,18 +59,12 @@ def city_summary(filename, city, country):
     print(f"OUTPUT Average: {average:.0f} | Minimum: {min(data):.0f} | Maximum: {max(data):.0f}")
 
 # Step 3: Sunshine threshold
-def cities_in_range(filename, minimum, maximum):
+def cities_in_range(filename, minimum, maximum):        
     predata = []
     data = []
     positon = []
     csvdata = []
     locations = []
-    
-    # Convert to NoneType if nothing
-    if minimum == "":
-        minimum = None 
-    if maximum == "":
-        maximum = None
     
     with open(filename, 'r', encoding='utf-8') as file:
         csv_reader = csv.reader(file)
@@ -88,20 +82,17 @@ def cities_in_range(filename, minimum, maximum):
         data.append(sum(row)) # Add the yearly_sum to a list
         
     for i in range(len(data)):
-        if minimum is not None and data[i] >= float(minimum):
-            if maximum is not None and (data[i] <= float(maximum)):
-                positon.append(i) # Get the location index of each city in range
-                continue
-            elif maximum is None:
-                positon.append(i) 
-                continue
-        if maximum is not None and data[i] <= float(maximum):
-            if minimum is not None and (data[i] >= float(minimum)):
-                positon.append(i) # Get the location index of each city in range
-                continue
-            elif minimum is None:
-                positon.append(i) 
-                continue  
+        if maximum == None and maximum == None:
+            positon.append(i)
+        elif minimum == None and maximum != None:
+            if data[i] <= float(maximum):
+                positon.append(i)
+        elif maximum == None and minimum != None:
+            if data[i] >= float(minimum):
+                positon.append(i)
+        else:
+            if data[i] >= float(minimum) and data[i] <= float(maximum):
+                positon.append(i)
 
     with open(filename, 'r', encoding='utf-8') as file:
         csv_reader = csv.reader(file)
@@ -116,7 +107,8 @@ def cities_in_range(filename, minimum, maximum):
         test = ", ".join(word)
         test = test +  ", " + csvdata[i][0] # Join the city and the country
         locations.append(test) # Add the location to the list of locations
-        
+
+    # locations = [*set(locations)]
     print("OUTPUT", locations)
     return locations
           

@@ -5,6 +5,7 @@
 # Time: 45 minutes
 
 import math
+import string
 
 def load_file(filename):
     lines = []
@@ -21,9 +22,12 @@ def update_string(str1, str2, pos):
 def find_word_count(list, word):
     count = 0
     for row in list:
+        # row = row.lower() # Convert each line to lower
+        # row = row.replace("-", " ") # Replace each hyphon with a space
+        # row = row.translate(row.maketrans("", "", string.punctuation)) # Remove punctation
         test = row.split()
         for i in test:
-            if i == word:
+            if word in i:
                 count += 1 # Count how mnay words are in the list given
     return count
 
@@ -67,4 +71,3 @@ def is_prime(num):
             return False
     else:
         return False
-

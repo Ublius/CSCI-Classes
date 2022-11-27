@@ -1,8 +1,8 @@
-# Names
-# Sections
-# Lab 7 - Wordle Redux
-# References: 
-# Time:
+# Tristen Erpelding
+# CSCI 101 – H Sections
+# Python Lab 7 - WordleRedux
+# References:
+# Time: 45 minutes
 
 import random
 
@@ -78,6 +78,7 @@ def gen_guess_result(new_guess, secret_word, word_length):
 # Recommended function, not required
 def get_guess(guess_list, word_length, word_bank):
     guess_is_valid = False
+    new_guess = ""
     while not guess_is_valid:
         # Collects a new guess from the player
         new_guess = input("GUESS> ")
@@ -98,36 +99,7 @@ def get_guess(guess_list, word_length, word_bank):
             print(f"Please enter a word you haven't guessed yet.")
 
         else:
-            guess_is_valid = True
-    # new_guess = ""
-    # length_is_valid = False
-    # while not length_is_valid:
-    #     inBank = False
-    #     guess = str(input("GUESS> "))
-    #     if len(guess) != word_length:
-    #         print("Please enter a 5-letter word.")
-    #         continue
-        
-    #     for i in range(len(word_bank)):
-    #         if guess == word_bank[i]:
-    #             inBank = True
-    #             break
-    #         else:
-    #             inBank = False
-    #             continue
-                
-    #     if inBank == True:         
-    #         for i in range(len(guess_list)):
-    #             if guess == guess_list[i]:
-    #                 print("Please enter a word you haven't guessed before.")
-    #                 break
-    #             else:
-    #                 new_guess = guess
-    #                 length_is_valid = True
-    #                 break
-    #     else:
-    #         print("Please enter a real word.")
-                
+            guess_is_valid = True           
     return new_guess
 
 
@@ -166,6 +138,7 @@ if __name__ == '__main__':
     seed = str(input("SEED> "))
     
     print("Enter a length of word to play with.")
+    word_length = 0
     length_is_valid = False
     while not length_is_valid:
         # TODO: Ask player for the INTEGER length of word to play with
@@ -178,7 +151,6 @@ if __name__ == '__main__':
             print(f"There are no {word_length}-letter words in the game.")
             print("Please pick again.")
             
-    print(f"I've chosen a secret {word_length}-letter word. Make a guess.")
     word_bank = get_word_bank(word_length)
     # Players are allowed 6 tries to guess the secret word
     num_guesses_allowed = 6
@@ -189,19 +161,46 @@ if __name__ == '__main__':
     # Continue game str
     continue_game = "Yes"
     
-    # while continue_game == "Yes":
-    #     # Uses the entered seed value to 'kickstart' the random number generator
-    #     random.seed(seed)
-    #     # Uses the random generator to pick one word from the list to play with.
-    #     # random.choice(list) takes in a list and returns one randomly chosen value.
-    #     secret_word = random.choice(word_bank)
-    #     # Players start with 0 guesses made
-    #     num_guesses_used = 0
-    #     # Until the word is guessed, or the number of tries has run out, keep playing.
-    #     # The game is not over yet, so game_result is an empty string for now.
-    #     game_result = ""
-    #     # Creates an empty list to store the guesses
-    #     guess_list = []
-    #     while game_result == "":
-            
+    # Uses the entered seed value to 'kickstart' the random number generator
+    random.seed(seed)
     
+    while continue_game == "Yes":
+        # Uses the random generator to pick one word from the list to play with.
+        # random.choice(list) takes in a list and returns one randomly chosen value.
+        print(f"I've chosen a secret {word_length}-letter word. Make a guess.")
+        secret_word = random.choice(word_bank)
+        # Players start with 0 guesses made
+        num_guesses_used = 0
+        # Until the word is guessed, or the number of tries has run out, keep playing.
+        # The game is not over yet, so game_result is an empty string for now.
+        game_result = ""
+        # Creates an empty list to store the guesses
+        guess_list = []
+        while game_result == "":
+            guess_list.append(get_guess(guess_list, word_length, word_bank))
+            num_guesses_used += 1
+            result_list = gen_guess_result(guess_list[-1], secret_word, word_length)
+            print(f"OUTPUT {' '.join(result_list)}")
+            if guess_list[-1] == secret_word:
+                print("Game Over.")
+                print("Congratulations!")
+                print(f"You guessed the word '{secret_word}' in 3 guesses!")
+                game_result = "Won"
+                num_wins += 1
+                break
+            elif num_guesses_used == num_guesses_allowed:
+                print("Game Over.")
+                print(f"You were not able to guess the secret word '{secret_word}'.")
+                game_result = "Lost"
+                num_losses += 1
+                break
+        
+        print(f"OUTPUT {secret_word}")
+        print(f"OUTPUT {game_result}")
+        print("Would you like to play again?")
+        continue_game = str(input("CONTINUE> "))
+        continue
+    
+    print(f"You won {num_wins} times and lost {num_losses} times.")
+    print(f"OUTPUT {num_wins}")
+    print(f"OUTPUT {num_losses}")

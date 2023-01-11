@@ -1,2 +1,5 @@
-# CSCI 101-102
- Assesments and Labs for CSCI 101 and 102
+# CSCI Classes
+ Assesments and Labs for all CS@Mines Classes
+     - CSCI 101
+     - CSCI 102
+     - CSCI 200

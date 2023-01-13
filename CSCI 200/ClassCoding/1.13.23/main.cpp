@@ -1,0 +1,10 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	cout << "Do you have the time ";
+	cout << "to listen to me whine?" << endl;
+	cout << "No" << endl;
+	return 0;
+}

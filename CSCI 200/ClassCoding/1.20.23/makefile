@@ -1,6 +1,7 @@
 TARGET = Random
 SRC_FILES = main.cpp
 
+CFLAGS = -Wall
 OBJECTS = $(SRC_FILES:.cpp=.o)
 
 ifeq ($(shell echo "Windows"), "Windows")
@@ -14,7 +15,7 @@ $(TARGET): main.o
 	g++ -o $@ $^
 
 %.o: %.cpp
-	g++ $@ -c $<
+	g++ $(CFLAGS) -o $@ -c $<
 
 clean:
 	$(DEL) $(TARGET) $(OBJECTS)

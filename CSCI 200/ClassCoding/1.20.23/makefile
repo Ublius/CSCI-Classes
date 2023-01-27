@@ -1,7 +1,7 @@
 TARGET = Random
 SRC_FILES = main.cpp
 
-CFLAGS = -Wall
+CFLAGS = -Wall -g
 OBJECTS = $(SRC_FILES:.cpp=.o)
 
 ifeq ($(shell echo "Windows"), "Windows")

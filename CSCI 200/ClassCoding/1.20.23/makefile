@@ -11,9 +11,6 @@ else
 	DEL = rm
 endif
 
-debug: CFLAGS += -DDEBUG
-debug: CLEAN
-
 $(TARGET): main.o
 	g++ -o $@ $^
 

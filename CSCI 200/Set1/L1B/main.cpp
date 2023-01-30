@@ -18,6 +18,29 @@ float randomValue(float min, float max)
 	return rand() / (double)RAND_MAX * (max - min) + min;
 }
 
+/* --< Func to get the quartile >-- */
+void findQuartile(float min, float max, float randomValue)
+{
+	float median = ((max - min) / 2) + min;
+	float q1 = ((median - min) / 2) + min;
+	float q3 = ((max - median) / 2) + median;
+	// random <= q1
+	if(randomValue <= q1) {
+		cout << "This is in the first quartile" << endl;
+	}
+	else if (randomValue <= median) {
+		cout << "This is in the second quartile" << endl;
+	}
+	// random <= q3
+	else if (randomValue <= q3) {
+		cout << "This is in the third quartile" << endl;
+	}
+	// else
+	else {
+		cout << "This is in the fourth quartile" << endl;
+	}
+}
+
 int main() {
 	srand(time(0)); //rand is now seeded
 	rand(); //throw away frist value
@@ -37,9 +60,12 @@ int main() {
 	{
 		randValue = randomValue(minValue, maxValue);
 		cout << "A random value is: " << fixed << setprecision(2) << randValue << endl;
+		findQuartile(minValue, maxValue, randValue);
 		cout << "Do you want another random value? (Y/N) ";
 		cin >> userInput;
 	}
+	
+	cout << "Hace a nice day!" << endl;
 
 	return 0;
 }

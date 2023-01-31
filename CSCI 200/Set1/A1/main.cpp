@@ -40,7 +40,6 @@ int getAssocNum(char userChoice)
     return scissors;
   }
 
-
   return 0;
 }
 
@@ -84,7 +83,45 @@ char calcWinner(int userChoiceNum, int compVal)
   }
   else if(userChoiceNum == 2)
   {
-
+    if(userChoiceNum == compVal)
+    {
+      cout << "Paper ties with paper" << endl;
+      cout << "No one wins!" << endl;
+      return 't';
+    }
+    else if(compVal == 3)
+    {
+      cout << "Scissors beats paper" << endl;
+      cout << "Computer Wins!" << endl;
+      return 'l';
+    }
+    else if(compVal == 1)
+    {
+      cout << "Paper beats rock" << endl;
+      cout << "Player Wins!" << endl;
+      return 'w';
+    }
+  }
+  else if(userChoiceNum == 1)
+  {
+    if(userChoiceNum == compVal)
+    {
+      cout << "Rock ties with Rock" << endl;
+      cout << "No one wins!" << endl;
+      return 't';
+    }
+    else if(compVal == 3)
+    {
+      cout << "Rock beats scissors" << endl;
+      cout << "Player Wins!" << endl;
+      return 'w';
+    }
+    else if(compVal == 2)
+    {
+      cout << "Paper beats rock" << endl;
+      cout << "Computer Wins!" << endl;
+      return 'l';
+    }
   }
 
   return 'e';

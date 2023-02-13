@@ -1,3 +1,16 @@
+/* CSCI 200: Lab 2: L2A - The Secret Moosage
+ *
+ * Author: Tristen Erpelding
+ * Resources used (Office Hours, Tutoring, Other Students, etc & in what capacity):
+ *     Looked up the notes on how to input a file as well as output to a file.
+ * 	   Bethany showed me that you could easily convert a character to an integer add one then convert back.
+ * 
+ * 	   A program that reads the ciphered text file and then writes a deciphered version to a file called decipheredMessage.txt. For each character in the file, your program should implement the following replacement algorithm:
+    	If the character read is a newline character '\n', then you should write the newline character to the file.
+    	Otherwise, if the character read is a ~, you should write a space to the file.
+    	Otherwise, write the character read "offset" by +1.
+ */
+
 #include <fstream>
 #include <iostream>
 using namespace std;

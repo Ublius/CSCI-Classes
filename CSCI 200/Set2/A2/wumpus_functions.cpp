@@ -17,10 +17,9 @@
 
 using namespace std;
 
-/**
- * @brief Prompts the user for the filename of the Wumpus game history (.wgh) file to be processed
- * @return String of the (relative (or absolute) path to the file)
-*/
+int CAVE_WIDTH;
+int CAVE_HEIGHT;
+
 string enter_wumpus_file() 
 {
     string fileName;
@@ -29,10 +28,6 @@ string enter_wumpus_file()
     return fileName;
 }
 
-/**
- * @brief Prompts the user for the filename of the game log file to be output
- * @return String of the (relative (or absolute) path to the file)
-*/
 string enter_game_log_file() 
 {
     string fileName;
@@ -41,14 +36,6 @@ string enter_game_log_file()
     return fileName;
 }
 
-/**
- * @brief Opens the input and output files, and returns false if either could not be opened
- * @param wumpusFileIn:  Input game file to get the values from
- * @param gameLogOut: Ouput log file to store the results of the game
- * @param wumpusFileName: String name for the input file (relative (or absolute) path to the file)
- * @param gameLogFileName: String name for the output file (relative (or absolute) path to the file)
- * @return Returns true if both files successfully opened, false otherwise
-*/
 bool open_files(ifstream& wumpusFileIn, ofstream& gameLogOut, const string& wumpusFileName, const string& gameLogFileName) 
 {
     wumpusFileIn.open(wumpusFileName);
@@ -59,12 +46,6 @@ bool open_files(ifstream& wumpusFileIn, ofstream& gameLogOut, const string& wump
     return true;
 }
 
-/**
- * @brief Reads the cave width and height from the input stream
- * @param wumpusFileIn: Input game file to get the values from
- * @param caveWidth: Width of the cave
- * @param caveHeight: Height of the cave
-*/
 void read_world_header(ifstream& wumpusFileIn, int& caveWidth, int& caveHeight) 
 {
     wumpusFileIn >> caveWidth >> caveHeight;
@@ -72,16 +53,6 @@ void read_world_header(ifstream& wumpusFileIn, int& caveWidth, int& caveHeight)
     CAVE_HEIGHT = caveHeight;
 }
 
-/**
- * @brief Reads the initial placement of the hero, wumpus, and pit from the input stream
- * @param wumpusFileIn: Input game file to get the values from
- * @param wumpusX: X cord of the starting location of the wumpus
- * @param wumpusY: Y cord of the starting location of the wumpus
- * @param heroX: X cord of the starting location of the hero
- * @param heroY: Y cord of the starting location of the hero
- * @param pitX: X cord of the pit location
- * @param pitY: Y cord of the pit location
-*/
 bool read_object_header(ifstream& wumpusFileIn, int& wumpusX, int& wumpusY, int& heroX, int& heroY, int& pitX, int& pitY) 
 {
     char w,h,p;
@@ -97,20 +68,11 @@ bool read_object_header(ifstream& wumpusFileIn, int& wumpusX, int& wumpusY, int&
     return true;
 }
 
-/**
- * @brief Reads the number of moves to be played from the input stream
- * @param wumpusFileIn: Input game file to get the values from
- * @param numMoves: Reference to store the number of moves that can be played
-*/
 void read_number_moves(ifstream& wumpusFileIn, int& numMoves) 
 {
     wumpusFileIn >> numMoves;
 }
 
-/**
- * @brief Asks the user if they want to play as the hero or wumpus
- * @return Returns true if the user wants to play as the hero, false otherwise
-*/
 bool choose_player() 
 {
  
@@ -134,25 +96,8 @@ bool choose_player()
         return false;
 }
 
-/**
- * @brief Simulates the game play as laid out in the input file and writes the game log to the output file.
- * @param wumpusFileIn: Input game file to get the values from
- * @param gameLogOut: Ouput log file to store the results of the game
- * @param caveWidth: Width of the cave
- * @param caveHeight: Height of the cave
- * @param numMoves: Number of moves allowed
- * @param wumpusX: X cord of the starting location of the wumpus
- * @param wumpusY: Y cord of the starting location of the wumpus
- * @param heroX: X cord of the starting location of the hero
- * @param heroY: Y cord of the starting location of the hero
- * @param pitX: X cord of the pit location
- * @param pitY: Y cord of the pit location
- * @param playAsHero: True if player chose to play as hero, false otherwise 
-*/
 void play_game(ifstream& wumpusFileIn, ofstream& gameLogOut, int caveWidth, int caveHeight, int numMoves, int wumpusX, int wumpusY, int heroX, int heroY, int pitX, int pitY, bool playAsHero) 
 {
-
-
     /* If I had more time I would make smaller functions so that way I dont have to repeat all these 
         if statements for both the hero and wampus */
     

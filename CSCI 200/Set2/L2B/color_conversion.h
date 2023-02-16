@@ -12,9 +12,19 @@
 #ifndef COLOR_CONVERSION_H
 #define COLOR_CONVERSION_H
 
+/**
+* @brief converts RGB values to HSV
+* @param r = amount of red, g = amount of green, b = amount of blue
+* @return hue, saturation, value
+*/
 void rgb_to_hsv( const int r, const int g, const int b, 
                 double &h, double &s, double &v );
 
+/**
+* @brief converts HSV values to RGB
+* @param h = amount of hue, s = amount of saturation, v = the value
+* @return red, green, blue
+*/
 void hsv_to_rgb(const double h, const double s, const double v, 
                 int &r, int &g, int &b);
 

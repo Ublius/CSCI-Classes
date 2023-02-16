@@ -13,20 +13,19 @@
 #define WUMPUS_FUNCTIONS_H
 
 #include <fstream>
-
-using namespace std;
+#include <string>
 
 /**
  * @brief Prompts the user for the filename of the Wumpus game history (.wgh) file to be processed
  * @return String of the (relative (or absolute) path to the file)
 */
-string enter_wumpus_file();
+std::string enter_wumpus_file();
 
 /**
  * @brief Prompts the user for the filename of the game log file to be output
  * @return String of the (relative (or absolute) path to the file)
 */
-string enter_game_log_file();
+std::string enter_game_log_file();
 
 /**
  * @brief Opens the input and output files, and returns false if either could not be opened
@@ -36,7 +35,7 @@ string enter_game_log_file();
  * @param gameLogFileName: String name for the output file (relative (or absolute) path to the file)
  * @return Returns true if both files successfully opened, false otherwise
 */
-bool open_files(ifstream& wumpusFileIn, ofstream& gameLogOut, const string& wumpusFileName, const string& gameLogFileName);
+bool open_files(std::ifstream& wumpusFileIn, std::ofstream& gameLogOut, const std::string& wumpusFileName, const std::string& gameLogFileName);
 
 /**
  * @brief Reads the cave width and height from the input stream
@@ -44,7 +43,7 @@ bool open_files(ifstream& wumpusFileIn, ofstream& gameLogOut, const string& wump
  * @param caveWidth: Width of the cave
  * @param caveHeight: Height of the cave
 */
-void read_world_header(ifstream& wumpusFileIn, int& caveWidth, int& caveHeight);
+void read_world_header(std::ifstream& wumpusFileIn, int& caveWidth, int& caveHeight);
 
 /**
  * @brief Reads the initial placement of the hero, wumpus, and pit from the input stream
@@ -56,14 +55,14 @@ void read_world_header(ifstream& wumpusFileIn, int& caveWidth, int& caveHeight);
  * @param pitX: X cord of the pit location
  * @param pitY: Y cord of the pit location
 */
-bool read_object_header(ifstream& wumpusFileIn, int& wumpusX, int& wumpusY, int& heroX, int& heroY, int& pitX, int& pitY);
+bool read_object_header(std::ifstream& wumpusFileIn, int& wumpusX, int& wumpusY, int& heroX, int& heroY, int& pitX, int& pitY);
 
 /**
  * @brief Reads the number of moves to be played from the input stream
  * @param wumpusFileIn: Input game file to get the values from
  * @param numMoves: Reference to store the number of moves that can be played
 */
-void read_number_moves(ifstream& wumpusFileIn, int& numMoves);
+void read_number_moves(std::ifstream& wumpusFileIn, int& numMoves);
 
 /**
  * @brief Asks the user if they want to play as the hero or wumpus
@@ -86,9 +85,9 @@ bool choose_player();
  * @param pitY: Y cord of the pit location
  * @param playAsHero: True if player chose to play as hero, false otherwise 
 */
-void play_game(ifstream& wumpusFileIn, ofstream& gameLogOut, int caveWidth, int caveHeight, int numMoves, int wumpusX, int wumpusY, int heroX, int heroY, int pitX, int pitY, bool playAsHero);
+void play_game(std::ifstream& wumpusFileIn, std::ofstream& gameLogOut, int caveWidth, int caveHeight, int numMoves, int wumpusX, int wumpusY, int heroX, int heroY, int pitX, int pitY, bool playAsHero);
 
-static int CAVE_WIDTH;
-static int CAVE_HEIGHT;
+extern int CAVE_WIDTH;
+extern int CAVE_HEIGHT;
 
 #endif //WUMPUS_FUNCTIONS_H

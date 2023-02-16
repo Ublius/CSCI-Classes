@@ -24,6 +24,6 @@ $(TARGET): $(OBJECTS)
 clean:
 	$(DEL) $(TARGET) $(OBJECTS)
 
-# DEPENDENCIES
-main.o: main.cpp wumpus_functions.h
-wumpus_functions.o: wumpus_functions.h wumpus_functions.cpp
+# # DEPENDENCIES
+# main.o: main.cpp wumpus_functions.h
+# wumpus_functions.o: wumpus_functions.h wumpus_functions.cpp

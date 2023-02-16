@@ -1,4 +1,4 @@
-TARGET = Secret_Message
+TARGET = L2A
 SRC_FILES = main.cpp
 
 CXX = g++

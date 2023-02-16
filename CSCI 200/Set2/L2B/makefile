@@ -1,4 +1,4 @@
-TARGET = Color_Conversion
+TARGET = L2B
 SRC_FILES = main.cpp color_conversion.cpp
 
 CXX = g++

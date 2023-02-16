@@ -27,6 +27,7 @@ int main()
         int r(0),g(0),b(0);
         double hue, saturation, value;
 
+        // Get input for the Red, Green, and Blue variables
         cout << "Red: ";
         cin >> r;
         cout << "Green: ";
@@ -34,7 +35,7 @@ int main()
         cout << "Blue: ";
         cin >> b;
 
-        rgb_to_hsv(r,g,b,hue,saturation,value);
+        rgb_to_hsv(r,g,b,hue,saturation,value); // run the function with the inputs
         cout << "Hue: " << hue << " Saturation: " << saturation << " Value: " << value << endl;
     }
 
@@ -43,6 +44,7 @@ int main()
         double h(0),s(0),v(0);
         int r, g, b;
 
+        // Get input for the Hue, Saturation, and Value variables
         cout << "Hue: ";
         cin >> h;
         cout << "Saturation: ";
@@ -50,7 +52,7 @@ int main()
         cout << "Value: ";
         cin >> v;
 
-        hsv_to_rgb(h,s,v,r,g,b);
+        hsv_to_rgb(h,s,v,r,g,b); // run the function with the inputs
         cout << "Red: " << r << " Green: " << g << " Blue: " << b << endl;
     }
 

@@ -1,147 +1,388 @@
+/* CSCI 200: Assignment 2: A2 - Watch the Wumpus
+ *
+ * Author: Tristen Erpelding
+ * Resources used (Office Hours, Tutoring, Other Students, etc & in what capacity):
+ *     Looked up the proper way to store a variable in the header file to be used within the corresponding
+ *     cpp file
+ * 
+ * The cpp file for all the functions implementations to be used in the Wumpus game
+ * 
+ */
+
 #include "wumpus_functions.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 
-
 using namespace std;
 
-// Prompts the user for the filename of the Wumpus game history (.wgh) file to be processed
-string enter_wumpus_file() {
+/**
+ * @brief Prompts the user for the filename of the Wumpus game history (.wgh) file to be processed
+ * @return String of the (relative (or absolute) path to the file)
+*/
+string enter_wumpus_file() 
+{
     string fileName;
-    cout << "Enter the filename of the Wumpus game history (.wgh) file to be processed: ";
-    // cin >> fileName;
-    fileName = "input/heroEvade.wgh";
+    cout << "Enter wumpus file to read from: ";
+    cin >> fileName;
     return fileName;
 }
 
-// Prompts the user for the filename of the game log file to be output
-string enter_game_log_file() {
+/**
+ * @brief Prompts the user for the filename of the game log file to be output
+ * @return String of the (relative (or absolute) path to the file)
+*/
+string enter_game_log_file() 
+{
     string fileName;
-    cout << "Enter the filename of the game log file to be output: ";
-    // cin >> fileName;
-    fileName = "test.log";
+    cout << "Enter game log file to write to: ";
+    cin >> fileName;
     return fileName;
 }
 
-// Opens the input and output files, and returns false if either could not be opened
-bool open_files(ifstream& wumpusFileIn, ofstream& gameLogOut, const string& wumpusFileName, const string& gameLogFileName) {
+/**
+ * @brief Opens the input and output files, and returns false if either could not be opened
+ * @param wumpusFileIn:  Input game file to get the values from
+ * @param gameLogOut: Ouput log file to store the results of the game
+ * @param wumpusFileName: String name for the input file (relative (or absolute) path to the file)
+ * @param gameLogFileName: String name for the output file (relative (or absolute) path to the file)
+ * @return Returns true if both files successfully opened, false otherwise
+*/
+bool open_files(ifstream& wumpusFileIn, ofstream& gameLogOut, const string& wumpusFileName, const string& gameLogFileName) 
+{
     wumpusFileIn.open(wumpusFileName);
     gameLogOut.open(gameLogFileName);
-    if (!wumpusFileIn.is_open() || !gameLogOut.is_open()) {
+    if (!wumpusFileIn.is_open() || !gameLogOut.is_open())
         return false;
-    }
+
     return true;
 }
 
-// Reads the cave width and height from the input stream
-void read_world_header(ifstream& wumpusFileIn, int& caveWidth, int& caveHeight) {
+/**
+ * @brief Reads the cave width and height from the input stream
+ * @param wumpusFileIn: Input game file to get the values from
+ * @param caveWidth: Width of the cave
+ * @param caveHeight: Height of the cave
+*/
+void read_world_header(ifstream& wumpusFileIn, int& caveWidth, int& caveHeight) 
+{
     wumpusFileIn >> caveWidth >> caveHeight;
     CAVE_WIDTH = caveWidth;
     CAVE_HEIGHT = caveHeight;
 }
 
-// Reads the initial placement of the hero, wumpus, and pit from the input stream
-bool read_object_header(ifstream& wumpusFileIn, int& wumpusX, int& wumpusY, int& heroX, int& heroY, int& pitX, int& pitY) {
+/**
+ * @brief Reads the initial placement of the hero, wumpus, and pit from the input stream
+ * @param wumpusFileIn: Input game file to get the values from
+ * @param wumpusX: X cord of the starting location of the wumpus
+ * @param wumpusY: Y cord of the starting location of the wumpus
+ * @param heroX: X cord of the starting location of the hero
+ * @param heroY: Y cord of the starting location of the hero
+ * @param pitX: X cord of the pit location
+ * @param pitY: Y cord of the pit location
+*/
+bool read_object_header(ifstream& wumpusFileIn, int& wumpusX, int& wumpusY, int& heroX, int& heroY, int& pitX, int& pitY) 
+{
     char w,h,p;
 
     wumpusFileIn >> w >> wumpusX >> wumpusY >> h >> heroX >> heroY >> p >> pitX >> pitY;
 
     if (wumpusX < 1 || wumpusX > CAVE_WIDTH || wumpusY < 1 || wumpusY > CAVE_HEIGHT ||
         heroX < 1 || heroX > CAVE_WIDTH || heroY < 1 || heroY > CAVE_HEIGHT ||
-        pitX < 1 || pitX > CAVE_WIDTH || pitY < 1 || pitY > CAVE_HEIGHT) {
-        return false;
-    }
+        pitX < 1 || pitX > CAVE_WIDTH || pitY < 1 || pitY > CAVE_HEIGHT) 
+        return false; // Not all objects are in the cave
 
     // all objects are within the cave
     return true;
 }
 
-// Reads the number of moves to be played from the input stream
-void read_number_moves(ifstream& wumpusFileIn, int& numMoves) {
+/**
+ * @brief Reads the number of moves to be played from the input stream
+ * @param wumpusFileIn: Input game file to get the values from
+ * @param numMoves: Reference to store the number of moves that can be played
+*/
+void read_number_moves(ifstream& wumpusFileIn, int& numMoves) 
+{
     wumpusFileIn >> numMoves;
 }
 
-// Asks the user if they want to play as the hero or wumpus, and returns true if the user wants to play as the hero
-bool choose_player() {
+/**
+ * @brief Asks the user if they want to play as the hero or wumpus
+ * @return Returns true if the user wants to play as the hero, false otherwise
+*/
+bool choose_player() 
+{
+ 
     char playerChoice;
     bool validChoice = false;
 
-    while (!validChoice) {
+    while (!validChoice) // Check if the user inputs a valid choice
+    {
         cout << "Who do you wish to play as?\n  H - Hero\n  W - Wumpus" << endl;
         cout << "Character: ";
         cin >> playerChoice;
-        if (playerChoice == 'H' || playerChoice == 'W') 
+        if (playerChoice == 'H' || playerChoice == 'W') // Input correct choice set to true
             validChoice = true;
         else 
             cout << "Invalid choice, please select again." << endl;
     }
 
-    return playerChoice;
+    if(playerChoice == 'H') // Check if player is the hero or wumpus
+        return true;
+    else
+        return false;
 }
 
-// Plays the game and writes the game log to the output stream
-void play_game(ifstream& wumpusFileIn, ofstream& gameLogOut, int caveWidth, int caveHeight, int numMoves, int wumpusX, int wumpusY, int heroX, int heroY, int pitX, int pitY, bool playAsHero) {
-    int wumpus_curr_x = wumpusX, wumpus_curr_y = wumpusY;
-    int hero_curr_x = heroX, hero_curr_y = heroY;
-    string move;
+/**
+ * @brief Simulates the game play as laid out in the input file and writes the game log to the output file.
+ * @param wumpusFileIn: Input game file to get the values from
+ * @param gameLogOut: Ouput log file to store the results of the game
+ * @param caveWidth: Width of the cave
+ * @param caveHeight: Height of the cave
+ * @param numMoves: Number of moves allowed
+ * @param wumpusX: X cord of the starting location of the wumpus
+ * @param wumpusY: Y cord of the starting location of the wumpus
+ * @param heroX: X cord of the starting location of the hero
+ * @param heroY: Y cord of the starting location of the hero
+ * @param pitX: X cord of the pit location
+ * @param pitY: Y cord of the pit location
+ * @param playAsHero: True if player chose to play as hero, false otherwise 
+*/
+void play_game(ifstream& wumpusFileIn, ofstream& gameLogOut, int caveWidth, int caveHeight, int numMoves, int wumpusX, int wumpusY, int heroX, int heroY, int pitX, int pitY, bool playAsHero) 
+{
 
-    for (int i = 0; i < numMoves; i++) {
-        // read the move from the input file
-        wumpusFileIn >> move;
 
-        // update the position of the player that made the move
-        if (playAsHero) {
-            if (move[0] == 'H') {
-                if (move[1] == 'N' && hero_curr_y < caveHeight) {
-                    hero_curr_y++;
-                } else if (move[1] == 'S' && hero_curr_y > 1) {
-                    hero_curr_y--;
-                } else if (move[1] == 'E' && hero_curr_x < caveWidth) {
-                    hero_curr_x++;
-                } else if (move[1] == 'W' && hero_curr_x > 1) {
-                    hero_curr_x--;
-                }
-            } else {
-                // the wumpus made a move
-                if (move[1] == 'N' && wumpus_curr_y < caveHeight) {
-                    wumpus_curr_y++;
-                } else if (move[1] == 'S' && wumpus_curr_y > 1) {
-                    wumpus_curr_y--;
-                } else if (move[1] == 'E' && wumpus_curr_x < caveWidth) {
-                    wumpus_curr_x++;
-                } else if (move[1] == 'W' && wumpus_curr_x > 1) {
-                    wumpus_curr_x--;
-                }
+    /* If I had more time I would make smaller functions so that way I dont have to repeat all these 
+        if statements for both the hero and wampus */
+    
+    int wumpus_curr_x = wumpusX;
+    int wumpus_curr_y = wumpusY;
+    int hero_curr_x = heroX;
+    int hero_curr_y = heroY;
+    bool outOfMoves = true;
+
+    if(playAsHero) // Playing as the Hero
+    {
+        for(int i = 0; i < numMoves; i++) // Loop through the amount of moves
+        {
+            // Create variables for the who is moving and what direction
+            char player;
+            char direction;
+            // Get the values from the file
+            wumpusFileIn >> player;
+            wumpusFileIn >> direction;
+
+            // Check if the hero and the wumpus are at the same location
+            if(hero_curr_y == wumpus_curr_y && hero_curr_x == wumpus_curr_x)
+            {
+                gameLogOut << "You have killed the Wumpus.  You win!" << endl;
+                outOfMoves = false;
+                break;
             }
-        } else {
-            // the player is the wumpus
-            if (move[0] == 'W') {
-                if (move[1] == 'N' && wumpus_curr_y < caveHeight) {
-                    wumpus_curr_y++;
-                } else if (move[1] == 'S' && wumpus_curr_y > 1) {
-                    wumpus_curr_y--;
-                } else if (move[1] == 'E' && wumpus_curr_x < caveWidth) {
-                    wumpus_curr_x++;
-                } else if (move[1] == 'W' && wumpus_curr_x > 1) {
-                    wumpus_curr_x--;
+
+            // Check if the hero fell into the pit
+            if(hero_curr_y == pitY && hero_curr_x == pitX)
+            {
+                gameLogOut << "You have fallen in the pit.  You lose." << endl;
+                outOfMoves = false;
+                break;
+            }
+
+            // Check if the wumpus fell into the pit
+            if(wumpus_curr_y == pitY && wumpus_curr_x == pitX)
+            {
+                gameLogOut << "The Wumpus has fallen in the pit.  You win!" << endl;
+                outOfMoves = false;
+                break;
+            }
+
+            else if(player == 'H') // Check if its the hero's move
+            {
+                if(direction == 'N')
+                {
+                    if(hero_curr_y < caveHeight) // Check if moving in the north direction and are not at the wall
+                        hero_curr_y++;
+                    else
+                        gameLogOut << "You cannot move North." << endl;
                 }
-            } else {
-                // the hero made a move
-                if (move[1] == 'N' && hero_curr_y < caveHeight) {
-                    hero_curr_y++;
-                } else if (move[1] == 'S' && hero_curr_y > 1) {
-                    hero_curr_y--;
-                } else if (move[1] == 'E' && hero_curr_x < caveWidth) {
-                    hero_curr_x++;
-                } else if (move[1] == 'W' && hero_curr_x > 1) {
-                    hero_curr_x--;
+                else if(direction == 'S')
+                {
+                    if(hero_curr_y > 1) // Check if moving in the south direction and are not at the wall
+                        hero_curr_y--;
+                    else
+                        gameLogOut << "You cannot move South." << endl;
                 }
+                else if(direction == 'E')
+                {
+                    if(hero_curr_x < caveWidth) // Check if moving in the east direction and are not at the wall
+                        hero_curr_x++;
+                    else
+                        gameLogOut << "You cannot move East." << endl;
+                }
+                else if(direction == 'W')
+                {
+                    if(hero_curr_x > 1) // Check if moving in the west direction and are not at the wall
+                        hero_curr_x--;
+                    else
+                        gameLogOut << "You cannot move West." << endl;
+                }
+                 // Output the movements to the log file
+                gameLogOut << "You are at (" << hero_curr_x << ", " << hero_curr_y << ")." << endl;
+            }
+            
+            else
+            {
+                if(direction == 'N') // Check if moving in the north direction and are not at the wall
+                {
+                    if(wumpus_curr_y < caveHeight)
+                        wumpus_curr_y++;
+                    else
+                        gameLogOut << "The Wumpus cannot move North." << endl;
+                }
+                else if(direction == 'S')
+                {
+                    if(wumpus_curr_y > 1) // Check if moving in the south direction and are not at the wall
+                        wumpus_curr_y--;
+                    else
+                        gameLogOut << "The Wumpus cannot move South." << endl;
+                }
+                else if(direction == 'E')
+                {
+                    if(wumpus_curr_x < caveWidth) // Check if moving in the east direction and are not at the wall
+                        wumpus_curr_x++;
+                    else
+                        gameLogOut << "The Wumpus cannot move East." << endl;
+                }
+                else if(direction == 'W')
+                {
+                    if(wumpus_curr_x > 1) // Check if moving in the west direction and are not at the wall
+                        wumpus_curr_x--;
+                    else
+                        gameLogOut << "The Wumpus cannot move West." << endl;
+                }
+                
+                // Output the movements to the log file
+                gameLogOut << "The Wumpus is at (" << wumpus_curr_x << ", " << wumpus_curr_y << ")." << endl;
             }
         }
 
-        // write the move to the output file
-        gameLogOut << "The Wumpus is at (" << wumpus_curr_x << ", " << wumpus_curr_y << ")." << endl;
+        // Ran out of moves
+        if(outOfMoves == true)
+            gameLogOut << "The Wumpus has evaded you.  You lose." << endl;
     }
+    else // Playing as the Wumpus
+    {
+        for(int i = 0; i < numMoves; i++) // Loop through the amount of moves
+        {
+            // Create variables for the who is moving and what direction
+            char player;
+            char direction;
+            // Get the values from the file
+            wumpusFileIn >> player;
+            wumpusFileIn >> direction;
+
+            // Check if the hero and the wumpus are at the same location
+            if(hero_curr_y == wumpus_curr_y && hero_curr_x == wumpus_curr_x)
+            {
+                gameLogOut << "You have been killed by the Hero.  You lose." << endl;
+                outOfMoves = false;
+                break;
+            }
+
+            // Check if the wumpus fell into the pit
+            if(wumpus_curr_y == pitY && wumpus_curr_x == pitX)
+            {
+                gameLogOut << "You have fallen in the pit.  You lose." << endl;
+                outOfMoves = false;
+                break;
+            }
+
+            // Check if the hero fell into the pit
+            if(hero_curr_y == pitY && hero_curr_x == pitX)
+            {
+                gameLogOut << "The Hero has fallen in the pit.  You win!" << endl;
+                outOfMoves = false;
+                break;
+            }
+
+            else if(player == 'H') // Check if its the hero's move
+            {
+                if(direction == 'N')
+                {
+                    if(hero_curr_y < caveHeight) // Check if moving in the north direction and are not at the wall
+                        hero_curr_y++;
+                    else
+                        gameLogOut << "The Hero cannot move North." << endl;
+                }
+                else if(direction == 'S')
+                {
+                    if(hero_curr_y > 1) // Check if moving in the south direction and are not at the wall
+                        hero_curr_y--;
+                    else
+                        gameLogOut << "The Hero cannot move South." << endl;
+                }
+                else if(direction == 'E')
+                {
+                    if(hero_curr_x < caveWidth) // Check if moving in the east direction and are not at the wall
+                        hero_curr_x++;
+                    else
+                        gameLogOut << "The Hero cannot move East." << endl;
+                }
+                else if(direction == 'W')
+                {
+                    if(hero_curr_x > 1) // Check if moving in the west direction and are not at the wall
+                        hero_curr_x--;
+                    else
+                        gameLogOut << "The Hero cannot move West." << endl;
+                }
+
+                // Output the movements to the log file
+                gameLogOut << "The Hero is at (" << hero_curr_x << ", " << hero_curr_y << ")." << endl;
+            }
+            
+            else
+            {
+                if(direction == 'N')
+                {
+                    if(wumpus_curr_y < caveHeight) // Check if moving in the north direction and are not at the wall
+                        wumpus_curr_y++;
+                    else
+                        gameLogOut << "You cannot move North." << endl;
+                }
+                else if(direction == 'S') 
+                {
+                    if(wumpus_curr_y > 1) // Check if moving in the south direction and are not at the wall
+                        wumpus_curr_y--;
+                    else
+                        gameLogOut << "You cannot move South." << endl;
+                }
+                else if(direction == 'E')
+                {
+                    if(wumpus_curr_x < caveWidth) // Check if moving in the east direction and are not at the wall
+                        wumpus_curr_x++;
+                    else
+                        gameLogOut << "You cannot move East." << endl;
+                }
+                else if(direction == 'W')
+                {
+                    if(wumpus_curr_x > 1) // Check if moving in the west direction and are not at the wall
+                        wumpus_curr_x--;
+                    else
+                        gameLogOut << "You cannot move West." << endl;
+                }
+
+                // Output the movements to the log file
+                gameLogOut << "You are at (" << wumpus_curr_x << ", " << wumpus_curr_y << ")." << endl;
+            }
+        }
+
+        // Ran out of moves
+        if(outOfMoves == true)
+            gameLogOut << "You have evaded the Hero.  You win!" << endl;
+    }
+
+    // Close the files as the game is over
+    gameLogOut.close();
+    wumpusFileIn.close();
 }

@@ -20,13 +20,13 @@ int main() {
 	ifstream inFile("secretMessage.txt");
 	ofstream outFile("decipheredMessage.txt");
 
-	if(inFile.fail())
+	if(inFile.fail()) // Check to make sure the file can be opened
 	{
 		cerr << "Error opening the input file" << endl;
 		return -1;
 	}
 
-	if (outFile.fail()) 
+	if (outFile.fail()) // Check to make sure the file can be opened
 	{
 		cerr << "Error opening output file" << endl;
 		return -1;
@@ -34,22 +34,23 @@ int main() {
 
 	string word = "";
 	char chr;
-	while(!inFile.eof())
+	while(!inFile.eof()) // Make sure it is not the end of the file
 	{
-		while(inFile.get(chr))
+		while(inFile.get(chr)) // Get each character
 		{
-			if(chr == '\n')
+			if(chr == '\n') // If end of line make \n in output
 				outFile << endl;
-			else if (chr == '~')
+			else if (chr == '~') // Check if ~ and make " "
 				outFile << " ";
 			else
 			{
-				chr = (int)chr + 1;
+				chr = (int)chr + 1; // Change the letter to the next letter
 				outFile << (char)chr;
 			}
 		}
 	}
 	
+	// Close the files
 	inFile.close();
 	outFile.close();
 	return 0;

@@ -1,3 +1,12 @@
+/* CSCI 200: Assignment 3: L3A - Strings Test Suite
+ *
+ * Author: Tristen Erpelding
+ * Resources used (Office Hours, Tutoring, Other Students, etc & in what capacity):
+ *        Used a lot of the CPP reference website, https://cplusplus.com/reference/string/string/     
+ *
+ * This assignment introduces you to a simple form of "unit testing" as a mechanism for exploring the string API. 
+ * Focus on learning what unit tests are, what an "API" is, and what you can do with string objects.
+ */
 #include "string_functions.h"
 
 unsigned long string_length(const string STR)  {

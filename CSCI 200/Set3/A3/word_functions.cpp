@@ -20,9 +20,9 @@ using namespace std;
 
 bool open_file(ifstream& fileIn, const string& filename)
 {
-    fileIn.open(filename);
+    fileIn.open(filename); // Open the file
     if(!fileIn.is_open())
-        return false;
+        return false; // false if file could not be opened
     return true;
 }
 
@@ -30,27 +30,27 @@ vector<string> read_words_from_file(ifstream& fileIn)
 {
     vector<string> words;
     string word;
-    while(fileIn >> word)
-        words.push_back(word);
-    return words;
+    while(fileIn >> word) // While their is words
+        words.push_back(word); // add to the vector of words
+    return words; // return words
 }
 
 void remove_punctuation(vector<string>& allWords, const string& PUNCTUATION_TO_REMOVE)
 {
     for (int i = 0; i < allWords.size(); i++) // Iterate over each word in the vector
     { 
-        string word = allWords[i];
-        for (int j = 0; j < PUNCTUATION_TO_REMOVE.length(); j++) 
+        string word = allWords[i]; // get each individual word
+        for (int j = 0; j < PUNCTUATION_TO_REMOVE.length(); j++) // Iterate over each punc character
         {
-            char punc = PUNCTUATION_TO_REMOVE[j];
-            int pos = word.find(punc);
-            while (pos != string::npos) 
+            char punc = PUNCTUATION_TO_REMOVE[j]; // set the punc character to a character
+            int pos = word.find(punc); // find the pos of the punc in the word
+            while (pos != string::npos) // while their are still characters in the word
             {
-                word.erase(pos, 1);
-                pos = word.find(punc, pos);
+                word.erase(pos, 1); // delete the punc
+                pos = word.find(punc, pos); // check if there is more punc
             }
         }
-        allWords[i] = word;
+        allWords[i] = word; // set the word to the new word
     }
 }
 
@@ -68,19 +68,30 @@ void capitalize_words(vector<string>& words)
 vector<string> filter_unique_words(const vector<string>& words)
 {
     vector<string> unique;
-    for(int i = 0; i < words.size(); i++)
+    for(int i = 0; i < words.size(); i++) // Iterate over each word in the vector
     {
         bool bIsDup = false;
         for(int j = 0; j < i; j++)
         {
-            if(words[i] == words[j])
+            if(words[i] == words[j]) // Check if two words match
             {
                 bIsDup = true;
                 break;
             }
         }
         if(!bIsDup)
-            unique.push_back(words[i]);
+            unique.push_back(words[i]); // Only add words that dont match
+    }
+    for (int i = 0; i < unique.size() - 1; i++) // Iterate over the unique words
+    {
+        int minIndex = i;
+        for (int j = i + 1; j < unique.size(); j++) 
+        {
+            if (unique[j] < unique[minIndex]) // Check if the word is less than the other word
+                minIndex = j;
+        }
+        if (minIndex != i) 
+            swap(unique[i], unique[minIndex]); // Swap the words
     }
     return unique;
 }
@@ -88,12 +99,12 @@ vector<string> filter_unique_words(const vector<string>& words)
 vector<unsigned int> count_unique_words(vector<string>& words, vector<string>& unique)
 {
     vector<unsigned int> wordCount(unique.size(), 0);
-    for(int i = 0; i < unique.size(); i++)
+    for(int i = 0; i < unique.size(); i++) // Loop over the unique words
     {
-        for(int j = 0; j < words.size(); j++)
+        for(int j = 0; j < words.size(); j++) // Loop over all the words
         {
-            if(unique[i] == words[j])
-                wordCount[i]++;
+            if(unique[i] == words[j]) // If the words match 
+                wordCount[i]++; // add one to the unique word count
         }
     }
     return wordCount;
@@ -127,13 +138,13 @@ void print_unique_word_counts(const vector<string>& words, const vector<unsigned
 
 void count_letters(const vector<string>& words, unsigned int letterCounts[])
 {
-    for(int i = 0; i < words.size(); i++)
+    for(int i = 0; i < words.size(); i++) // Iterate over the words
     {
-        for(int j = 0; j < words[i].length(); j++)
+        for(int j = 0; j < words[i].length(); j++) // Iterate over the characters
         {
-            char letter = toupper(words[i][j]);
-            if(letter >= 'A' && letter <= 'Z')
-                letterCounts[letter - 'A']++;
+            char letter = toupper(words[i][j]); // Convert all to uppercase
+            if(letter >= 'A' && letter <= 'Z') // Make sure only checking A-Z
+                letterCounts[letter - 'A']++; // Add to the count
         }
     }
 }
@@ -144,9 +155,9 @@ void print_letter_counts(unsigned int letterCounts[])
     for(int i = 0; i < 26; i++)
     {
         if(letterCounts[i] > maxCount)
-            maxCount = letterCounts[i];
+            maxCount = letterCounts[i]; // Find the greatest count for spacing
     }
-    for (int i = 0; i < 26; i++)
+    for (int i = 0; i < 26; i++) // Loop through all the letters
         cout << char('A' + i) << ": " << right << setw(to_string(maxCount).length()) << letterCounts[i] << endl;
 }
 

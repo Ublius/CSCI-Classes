@@ -22,7 +22,7 @@ class LinkedList
          * @brief Copy Constructor that performs a deep copy of the other list
          * @param OTHER The other list to be copied
         */
-        LinkedList(const LinkedList<T>& OTHER)
+        LinkedList(const LinkedList<T>& OTHER);
         /**
          * @brief The destructor of the class object; destroys the existing list by 
          * removing all nodes that are present in the list
@@ -32,7 +32,7 @@ class LinkedList
          * @brief Copy Assignment Operator that deallocates the existent list (if any) then performs a deep copy of the other list
          * @param OTHER The other list to be copied
         */
-        LinkedList& operator=(const LinkedList<T>& OTHER)
+        LinkedList& operator=(const LinkedList<T>& OTHER);
         /**
          * @brief If position doesn't exist, throws a std::out_of_range exception
          * @param POS The position in the list
@@ -44,7 +44,7 @@ class LinkedList
          * @param TARGET The target to look for in the list
          * @return Returns the position of the first occurrence of the target
         */
-        T find(const int TARGET);
+        T find(const T TARGET);
         /**
          * @brief inserts a new node with the provided value BEFORE the provided position. 
          * That is, the newly created node will point to the current node at the provided position. 
@@ -104,7 +104,9 @@ class LinkedList
 
 };
 
-LinkedList<T>::LinkedList(){
+template <typename T>
+LinkedList<T>::LinkedList()
+{
     mpHead = nullptr;
     mpTail = nullptr;
     mSize = 0;
@@ -195,7 +197,7 @@ T LinkedList<T>::find(const T TARGET)
 template <typename T>
 Node<T>* LinkedList<T>::mMakeNodeForValue(const T VALUE)
 {
-    Node<T>* pNode = new Node;
+    Node<T>* pNode = new Node<T>;
     pNode->value = VALUE;
     pNode->pNext = nullptr;
     pNode->pPrev = nullptr;
@@ -363,7 +365,7 @@ void LinkedList<T>::remove(const int POS)
 }
 
 template <typename T>
-void LinkedList<T>::(const int POS, const T VALUE)
+void LinkedList<T>::set(const int POS, const T VALUE)
 {
     Node<T>* pCurrNode = mpHead;
     int counter = 0;

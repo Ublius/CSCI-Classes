@@ -2,14 +2,12 @@
  *
  * Author: Tristen Erpelding
  * Resources used (Office Hours, Tutoring, Other Students, etc & in what capacity):
- *        L4A
- * Creating the LinkedList class declaration. 
- * This class will represent a LinkedList data structure. 
+ *        L4A, L4B
  * Generalize the Linked List created in Lab4B. 
  * Change your Node and LinkedList classes to be templated
  */
 
-#include"Node.h"
+#include"Node.hpp"
 
 template <typename T>
 class LinkedList
@@ -21,6 +19,8 @@ class LinkedList
         */
         LinkedList();
         /** 
+         * @brief Copy Constructor that performs a deep copy of the other list
+         * @param OTHER The other list to be copied
         */
         LinkedList(const LinkedList<T>& OTHER)
         /**
@@ -28,6 +28,7 @@ class LinkedList
          * removing all nodes that are present in the list
         */
         ~LinkedList();
+        /** 
          * @brief Copy Assignment Operator that deallocates the existent list (if any) then performs a deep copy of the other list
          * @param OTHER The other list to be copied
         */
@@ -51,6 +52,7 @@ class LinkedList
          * @param POS The postion to add the value in the list
          * @param VALUE The value to add at the position
         */
+        void insert(const int POS, const T VALUE);
         /**
          * @brief If the list is empty, throws a std::out_of_range exception
          * @return Returns the max value within the list

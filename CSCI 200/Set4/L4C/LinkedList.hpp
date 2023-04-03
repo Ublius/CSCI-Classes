@@ -7,6 +7,9 @@
  * Change your Node and LinkedList classes to be templated
  */
 
+#include <exception>
+#include <iostream>
+
 #include"Node.hpp"
 
 template <typename T>

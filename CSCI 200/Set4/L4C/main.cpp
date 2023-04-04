@@ -99,8 +99,10 @@ int main()
     cout << "Second list size: " << myList2.size() << endl;
     cout << "Third list size: " << myList3.size() << endl;
 
-    // TODO
     // delete all the lists
+    myList.~LinkedList();
+    myList2.~LinkedList();
+    myList3.~LinkedList();
     
     LinkedList<string> myStringList;
 
@@ -115,8 +117,8 @@ int main()
     }
     cout << endl;
 
-    // TODO
     // Delete the list of strings
+    myStringList.~LinkedList();
 
     return 0;
 }

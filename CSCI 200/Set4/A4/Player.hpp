@@ -28,7 +28,7 @@ class Player {
     * @brief
     * @param
     */
-    void giveChipTo(Player*& target);
+    void giveChipTo(Player& target);
     /**
     * @brief
     * @param

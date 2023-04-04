@@ -111,100 +111,97 @@ bool Game::endCheck(){
 void Game::gameTurn(){
   // All of the logic for each game turn
   // Temporary vairables for each player needed possibly during the turn because I was having issues directly chaning chip values
-  Player Player1 = currPlayers.get(mCurrPlayer-1);
-  Player Player2 = currPlayers.get(mGameSize-1);
-  Player Player3 = currPlayers.get(mCurrPlayer-2);
-  Player Player4 = currPlayers.get(mCurrPlayer);
-  Player Player5 = currPlayers.get(0);
     int userDie = 0;
     int playerSkip = 0;
     Die dice;
     // Determining how many dice to roll base on chip amount
-    if(Player1.getChips() > 3)
-        userDie = 3;
-    else
-        userDie = Player1.getChips();
-    cout << "Player #" << mCurrPlayer << " has " << Player1.getChips() << " left" << endl;
-    cout << "Rolling " << userDie << " dice" << endl;
-    // Main logic for each roll
-    for(int i = 0; i < userDie; i++){
-        int x = dice.roll();
-        // Keep roll logic and output
-        if(x == 0){
-            cout << "Rolled a " << x << " - keep!" << endl;
-        } else if(x == 1){
-            cout << "Rolled a " << x << " - keep!" << endl;
-        } else if(x == 2){
-            cout << "Rolled a " << x << " - keep!" << endl;
-        } else if(x == 3){
-        // Give left logic 
-        if(mCurrPlayer == 1){
-            Player1.giveChipTo(Player2);
-            currPlayers.set(mCurrPlayer-1, Player1);
-            currPlayers.set(mGameSize-1, Player2);
-            cout << "Rolled a " << x << " - give left - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " chips - Player #"<< mGameSize << " has "<< currPlayers.get(mGameSize-1).getChips() << " chips" << endl;
-        }else{
-            Player1.giveChipTo(Player3);
-            currPlayers.set(mCurrPlayer-1, Player1);
-            currPlayers.set(mCurrPlayer-2, Player3);
-            cout << "Rolled a " << x << " - give left - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " chips - Player #"<< mCurrPlayer-1 << " has "<< currPlayers.get(mCurrPlayer-2).getChips() << " chips" << endl;
-        }
-        } else if(x == 4){
-        // Give right logic
-        if(mCurrPlayer == mGameSize){
-            Player1.giveChipTo(Player5);
-            currPlayers.set(mCurrPlayer-1, Player1);
-            currPlayers.set(0, Player5);
-            cout << "Rolled a " << x << " - give right - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " chips - Player #1" << " has "<< currPlayers.get(0).getChips() << " chips" << endl;
-        }else{
-            Player1.giveChipTo(Player4);
-            currPlayers.set(mCurrPlayer-1, Player1);
-            currPlayers.set(mCurrPlayer, Player4);
-            cout << "Rolled a " << x << " - give right - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " chips - Player #"<< mCurrPlayer+1 << " has "<< currPlayers.get(mCurrPlayer).getChips() << " chips" << endl;
-        }
-        } else if(x == 5){
-        // Give center logic
-        Player1.giveChipToCenter(mCenterChips);
-        currPlayers.set(mCurrPlayer-1, Player1);
-        cout << "Rolled a " << x << " - give center - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " - Center has " << mCenterChips << " chips" << endl;
-        } else if(x == 6){
-        // Reverse logic
-        cout << "Rolled a " << x << " - reverse!" << endl;
+    for(int i = 0; i < mGameSize; i++){
+        if(currPlayers.get(i).getChips() > 3)
+            userDie = 3;
+        else
+            userDie = currPlayers.get(i).getChips();
+        cout << "Player #" << mCurrPlayer << " has " << currPlayers.get(i).getChips() << " left" << endl;
+        cout << "Rolling " << userDie << " dice" << endl;
+        // Main logic for each roll
+        for(int i = 0; i < userDie; i++){
+            int x = dice.roll();
+            // Keep roll logic and output
+            if(x == 0){
+                cout << "Rolled a " << x << " - keep!" << endl;
+            } else if(x == 1){
+                cout << "Rolled a " << x << " - keep!" << endl;
+            } else if(x == 2){
+                cout << "Rolled a " << x << " - keep!" << endl;
+            } else if(x == 3){
+            // Give left logic 
+            if(mCurrPlayer == 1){
+                currPlayers.get(i).giveChipTo(currPlayers.get(i+1));
+                currPlayers.set(mCurrPlayer-1, currPlayers.get(i));
+                currPlayers.set(mGameSize-1, currPlayers.get(i+1));
+                cout << "Rolled a " << x << " - give left - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " chips - Player #"<< mGameSize << " has "<< currPlayers.get(mGameSize-1).getChips() << " chips" << endl;
+        //     }else{
+        //         Player1.giveChipTo(Player3);
+        //         currPlayers.set(mCurrPlayer-1, Player1);
+        //         currPlayers.set(mCurrPlayer-2, Player3);
+        //         cout << "Rolled a " << x << " - give left - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " chips - Player #"<< mCurrPlayer-1 << " has "<< currPlayers.get(mCurrPlayer-2).getChips() << " chips" << endl;
+        //     }
+        //     } else if(x == 4){
+        //     // Give right logic
+        //     if(mCurrPlayer == mGameSize){
+        //         Player1.giveChipTo(Player5);
+        //         currPlayers.set(mCurrPlayer-1, Player1);
+        //         currPlayers.set(0, Player5);
+        //         cout << "Rolled a " << x << " - give right - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " chips - Player #1" << " has "<< currPlayers.get(0).getChips() << " chips" << endl;
+        //     }else{
+        //         Player1.giveChipTo(Player4);
+        //         currPlayers.set(mCurrPlayer-1, Player1);
+        //         currPlayers.set(mCurrPlayer, Player4);
+        //         cout << "Rolled a " << x << " - give right - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " chips - Player #"<< mCurrPlayer+1 << " has "<< currPlayers.get(mCurrPlayer).getChips() << " chips" << endl;
+        //     }
+        //     } else if(x == 5){
+        //     // Give center logic
+        //     Player1.giveChipToCenter(mCenterChips);
+        //     currPlayers.set(mCurrPlayer-1, Player1);
+        //     cout << "Rolled a " << x << " - give center - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " - Center has " << mCenterChips << " chips" << endl;
+        //     } else if(x == 6){
+        //     // Reverse logic
+        //     cout << "Rolled a " << x << " - reverse!" << endl;
+        //     if(mDirection == 1){
+        //         mDirection = 0;
+        //     } else{
+        //         mDirection = 1;
+        //     }
+        //     } else{
+        //     // Skip logic
+        //         playerSkip += 1;
+        //         cout << "Rolled a " << x << " - skip! skipping " << playerSkip << " players" << endl;
+        //     }
+        // }
+        // End of turn logic to determine which player to move to next based on indice of current player
         if(mDirection == 1){
-            mDirection = 0;
+            if(playerSkip == 0 && mCurrPlayer < mGameSize){
+            mCurrPlayer += 1;
+            } else if( playerSkip != 0 && mCurrPlayer + playerSkip <= mGameSize){
+            mCurrPlayer += playerSkip;
+            } else if ( playerSkip == 0 && mCurrPlayer == mGameSize){
+            mCurrPlayer = 1;
+            } else{
+            mCurrPlayer += playerSkip;
+            mCurrPlayer -= mGameSize;
+            mCurrPlayer += 1;
+            }
         } else{
-            mDirection = 1;
-        }
-        } else{
-        // Skip logic
-            playerSkip += 1;
-            cout << "Rolled a " << x << " - skip! skipping " << playerSkip << " players" << endl;
-        }
-    }
-    // End of turn logic to determine which player to move to next based on indice of current player
-    if(mDirection == 1){
-        if(playerSkip == 0 && mCurrPlayer < mGameSize){
-        mCurrPlayer += 1;
-        } else if( playerSkip != 0 && mCurrPlayer + playerSkip <= mGameSize){
-        mCurrPlayer += playerSkip;
-        } else if ( playerSkip == 0 && mCurrPlayer == mGameSize){
-        mCurrPlayer = 1;
-        } else{
-        mCurrPlayer += playerSkip;
-        mCurrPlayer -= mGameSize;
-        mCurrPlayer += 1;
-        }
-    } else{
-        if(playerSkip == 0 && mCurrPlayer > 1 ){
-        mCurrPlayer -= 1;
-        } else if( playerSkip != 0 && mCurrPlayer - playerSkip >  0){
-        mCurrPlayer -= playerSkip;
-        } else if ( playerSkip == 0 && mCurrPlayer == 1){
-        mCurrPlayer = mGameSize;
-        } else{
-        mCurrPlayer -= playerSkip;
-        mCurrPlayer += mGameSize;
-        mCurrPlayer -= 1;
+            if(playerSkip == 0 && mCurrPlayer > 1 ){
+            mCurrPlayer -= 1;
+            } else if( playerSkip != 0 && mCurrPlayer - playerSkip >  0){
+            mCurrPlayer -= playerSkip;
+            } else if ( playerSkip == 0 && mCurrPlayer == 1){
+            mCurrPlayer = mGameSize;
+            } else{
+            mCurrPlayer -= playerSkip;
+            mCurrPlayer += mGameSize;
+            mCurrPlayer -= 1;
+            }
         }
     }
 }

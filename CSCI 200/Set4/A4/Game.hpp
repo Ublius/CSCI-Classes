@@ -64,7 +64,7 @@ class Game {
 Game::Game(int userIn)
 {
     // Constructs the game for us
-    mDirection = 1;
+    mDirection = true;
     mGameSize = userIn;
     mCenterChips = 0;
     for(int i = 1; i < userIn + 1; i++)
@@ -77,13 +77,6 @@ Game::~Game()
     currPlayers.~LinkedList();
 }
 
-
-bool Game::getDirection()
-{
-    // returns the current direction
-    return mDirection;
-}
-
 bool Game::endCheck(){
     // Checks to see if we have more then one player with chips
     int playerCheck = 0;
@@ -93,9 +86,9 @@ bool Game::endCheck(){
             playerCheck += 1;
     }
     if(playerCheck > 1)
-        return 1;
+        return true;
     else
-        return 0;
+        return false;
 }
 
 void Game::gameTurn(){
@@ -105,53 +98,50 @@ void Game::gameTurn(){
     int playerSkip = 0;
     Die dice;
     // Determining how many dice to roll base on chip amount
-    for(int i = 0; i < mGameSize; i++)
+    if(currPlayers.get(0).getChips() > 3)
+        userDie = 3;
+    else
+        userDie = currPlayers.get(0).getChips();
+    cout << "Player #" << currPlayers.get(0) << " has " << currPlayers.get(0).getChips() << " left" << endl;
+    cout << "Rolling " << userDie << " dice" << endl;
+    // Main logic for each roll
+    for(int i = 0; i < userDie; i++)
     {
-        if(currPlayers.get(i).getChips() > 3)
-            userDie = 3;
-        else
-            userDie = currPlayers.get(i).getChips();
-        cout << "Player #" << currPlayers.get(i) << " has " << currPlayers.get(i).getChips() << " left" << endl;
-        cout << "Rolling " << userDie << " dice" << endl;
-        // Main logic for each roll
-        for(int i = 0; i < userDie; i++)
+        int x = dice.roll();
+        // Keep roll logic and output
+        if(x <= 2)
+            cout << "Rolled a " << x << " - keep!" << endl;
+        // Give left logic 
+        else if(x == 3)
         {
-            int x = dice.roll();
-            // Keep roll logic and output
-            if(x <= 2)
-                cout << "Rolled a " << x << " - keep!" << endl;
-            // Give left logic 
-            else if(x == 3)
-            {
-                currPlayers.get(i).giveChipTo(currPlayers.get(i+1));
-                cout << "Rolled a " << x << " - give left - Player #"<<  currPlayers.get(i) << " has " <<  currPlayers.get(i).getChips() << " chips - Player #"<<  currPlayers.get(i+1) << " has "<<  currPlayers.get(i+1).getChips() << " chips" << endl;
-            }
-            else if(x == 4)
-            {
-                currPlayers.get(i).giveChipTo(currPlayers.get(i-1));
-                cout << "Rolled a " << x << " - give left - Player #"<<  currPlayers.get(i) << " has " <<  currPlayers.get(i).getChips() << " chips - Player #"<<  currPlayers.get(i-1) << " has "<<  currPlayers.get(i+1).getChips() << " chips" << endl;
-            }
-        //     } else if(x == 5){
-        //     // Give center logic
-        //     Player1.giveChipToCenter(mCenterChips);
-        //     currPlayers.set(mCurrPlayer-1, Player1);
-        //     cout << "Rolled a " << x << " - give center - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " - Center has " << mCenterChips << " chips" << endl;
-        //     } else if(x == 6){
-        //     // Reverse logic
-        //     cout << "Rolled a " << x << " - reverse!" << endl;
-        //     if(mDirection == 1){
-        //         mDirection = 0;
-        //     } else{
-        //         mDirection = 1;
-        //     }
-        //     } else{
-        //     // Skip logic
-        //         playerSkip += 1;
-        //         cout << "Rolled a " << x << " - skip! skipping " << playerSkip << " players" << endl;
-        //     }
-        // }
-        // End of turn logic to determine which player to move to next based on indice of current player
+            currPlayers.get(0).giveChipTo(currPlayers.get(1));
+            cout << "Rolled a " << x << " - give left - Player #"<<  currPlayers.get(0) << " has " <<  currPlayers.get(0).getChips() << " chips - Player #"<<  currPlayers.get(1) << " has "<<  currPlayers.get(1).getChips() << " chips" << endl;
         }
+        else if(x == 4)
+        {
+            currPlayers.get(0).giveChipTo(currPlayers.get(-1));
+            cout << "Rolled a " << x << " - give left - Player #"<<  currPlayers.get(0) << " has " <<  currPlayers.get(0).getChips() << " chips - Player #"<<  currPlayers.get(-1) << " has "<<  currPlayers.get(-1).getChips() << " chips" << endl;
+        }
+    //     } else if(x == 5){
+    //     // Give center logic
+    //     Player1.giveChipToCenter(mCenterChips);
+    //     currPlayers.set(mCurrPlayer-1, Player1);
+    //     cout << "Rolled a " << x << " - give center - Player #"<< mCurrPlayer << " has " << currPlayers.get(mCurrPlayer-1).getChips() << " - Center has " << mCenterChips << " chips" << endl;
+    //     } else if(x == 6){
+    //     // Reverse logic
+    //     cout << "Rolled a " << x << " - reverse!" << endl;
+    //     if(mDirection == 1){
+    //         mDirection = 0;
+    //     } else{
+    //         mDirection = 1;
+    //     }
+    //     } else{
+    //     // Skip logic
+    //         playerSkip += 1;
+    //         cout << "Rolled a " << x << " - skip! skipping " << playerSkip << " players" << endl;
+    //     }
+    // }
+    // End of turn logic to determine which player to move to next based on indice of current player
     }
 }
 

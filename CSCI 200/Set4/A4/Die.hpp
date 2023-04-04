@@ -15,7 +15,7 @@ class Die
 int Die::roll()
 {
     // rolls a die between 0 and 7
-    int x = rand() % (7-0+1) + 0;
+    int x = rand() % (8);
     return x;
 }
 

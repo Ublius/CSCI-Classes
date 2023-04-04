@@ -168,20 +168,11 @@ template <typename T>
 T LinkedList<T>::get(const int POS)
 {
     const Node<T>* pCURR_NODE = mpHead;
-    int counter = 0;
-    // advance through list counting number of jumps and continue until position found or at end
-    if(POS < 0)
-        throw std::out_of_range("Position is out of range");
-    // if valid position, return value
-    while(pCURR_NODE && counter < POS)
-    {
+    if (POS == 1)
         pCURR_NODE = pCURR_NODE->pNext;
-        counter++;
-    }
-    // otherwise throw excepetion
-    if(!pCURR_NODE || counter != POS)
-        throw std::out_of_range("Position is out of range");
-    
+    else if (POS == -1)
+        pCURR_NODE = pCURR_NODE->pPrev;
+    mpHead = pCURR_NODE;
     return pCURR_NODE->value;
 }
 

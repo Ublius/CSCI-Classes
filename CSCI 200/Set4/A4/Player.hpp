@@ -28,7 +28,7 @@ class Player {
     * @brief
     * @param
     */
-    void giveChipTo(Player& target);
+    void giveChipTo(Player target);
     /**
     * @brief
     * @param
@@ -74,7 +74,7 @@ Player& Player::operator=(const Player& OTHER){
   return *this;
 }
 
-void Player::giveChipTo(Player& target)
+void Player::giveChipTo(Player target)
 {
     mChipNum--;
     target.recieveChip();

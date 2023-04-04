@@ -7,6 +7,9 @@
  * Change your Node and LinkedList classes to be templated
  */
 
+#ifndef LINKEDLIST_HPP
+#define LINKEDLIST_HPP
+
 #include <exception>
 #include <iostream>
 
@@ -396,3 +399,5 @@ unsigned int LinkedList<T>::size()
     }
     return counter;
 }
+
+#endif

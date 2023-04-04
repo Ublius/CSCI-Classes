@@ -120,7 +120,8 @@ void Game::gameTurn(){
         }
         else if(x == 4)
         {
-            currPlayers.get(0).giveChipTo(currPlayers.get(-1));
+            Player prevPlayer = currPlayers.get(-1);
+            currPlayers.get(0).giveChipTo(prevPlayer);
             cout << "Rolled a " << x << " - give left - Player #" << currPlayers.get(0).getPlayer() << " has " <<  currPlayers.get(0).getChips() << " chips - Player #"<<  currPlayers.get(-1).getPlayer() << " has "<<  currPlayers.get(-1).getChips() << " chips" << endl;
         }
     //     } else if(x == 5){

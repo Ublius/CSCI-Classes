@@ -214,6 +214,8 @@ void LinkedList<T>::insert(const int POS, const T VALUE)
             // head and tail are the new node
             mpHead = pNewNode;
             mpTail = pNewNode;
+            mpHead->pPrev = mpTail;
+            mpTail->pNext = mpHead;
         }
         // otherwise, chain into existing node
         else
@@ -229,40 +231,18 @@ void LinkedList<T>::insert(const int POS, const T VALUE)
         Node<T>* pCurrNode = mpHead;
         int counter = 0;
         // advance through list counting number of jumps and continue until position found or at end
-        while(pCurrNode != nullptr && counter < POS) 
+        while(counter < POS) 
         {
             counter++;
             pCurrNode = pCurrNode->pNext;
         }
-        // if we have gone past the end
-        if(!pCurrNode) 
-        {
-            Node<T>* pNewNode = mMakeNodeForValue(VALUE);
-            if(!mpHead)
-            {
-                // head and tail are the new node       
-                mpHead = pNewNode;
-                mpTail = pNewNode;
-            }
-            // otherwise, chain off existing node
-            else
-            {
-                // link new node and tail, update tail
-                mpTail->pNext = pNewNode;
-                pNewNode->pPrev = mpTail;
-                mpTail = pNewNode;
-            }
-        }       
-        else 
-        {
-            // otherwise add before target position
-            Node<T>* pNewNode = mMakeNodeForValue(VALUE);
-            Node<T>* prevNode = pCurrNode->pPrev;
-            pNewNode->pPrev = prevNode;
-            pNewNode->pNext = pCurrNode;
-            pCurrNode->pPrev = pNewNode;
-            prevNode->pNext = pNewNode;
-        }
+        // otherwise add before target position
+        Node<T>* pNewNode = mMakeNodeForValue(VALUE);
+        Node<T>* prevNode = pCurrNode->pPrev;
+        pNewNode->pPrev = prevNode;
+        pNewNode->pNext = pCurrNode;
+        pCurrNode->pPrev = pNewNode;
+        prevNode->pNext = pNewNode;
     }
 }
 

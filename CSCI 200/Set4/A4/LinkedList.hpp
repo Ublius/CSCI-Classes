@@ -167,7 +167,7 @@ LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T>& OTHER)
 template <typename T>
 T LinkedList<T>::get(const int POS)
 {
-    const Node<T>* pCURR_NODE = mpHead;
+    Node<T>* pCURR_NODE = mpHead;
     if (POS == 1)
         pCURR_NODE = pCURR_NODE->pNext;
     else if (POS == -1)

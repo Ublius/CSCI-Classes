@@ -74,7 +74,7 @@ Player& Player::operator=(const Player& OTHER){
   return *this;
 }
 
-void Player::giveChipTo(Player*& target)
+void Player::giveChipTo(Player& target)
 {
     mChipNum--;
     target.recieveChip();

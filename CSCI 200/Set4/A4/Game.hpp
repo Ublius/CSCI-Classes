@@ -114,7 +114,7 @@ void Game::gameTurn(){
         // Give left logic 
         else if(x == 3)
         {
-            currPlayers.get(0).giveChipTo(currPlayers.get(1));
+            currPlayers.get(0).giveChipTo(*(currPlayers.get(1)));
             cout << "Rolled a " << x << " - give left - Player #" << currPlayers.get(0).getPlayer() << " has " <<  currPlayers.get(0).getChips() << " chips - Player #"<<  currPlayers.get(1).getPlayer() << " has "<<  currPlayers.get(1).getChips() << " chips" << endl;
         }
         else if(x == 4)

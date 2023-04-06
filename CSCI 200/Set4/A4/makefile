@@ -1,5 +1,5 @@
 TARGET = A4
-SRC_FILES = main.cpp Node.hpp LinkedList.hpp Die.hpp Game.hpp Player.hpp
+SRC_FILES = main.cpp Node.hpp LinkedList.hpp Game.cpp Player.cpp
 
 CXX = g++
 CFLAGS = -Wall

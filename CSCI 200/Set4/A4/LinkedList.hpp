@@ -75,14 +75,17 @@ LinkedList<T>::LinkedList(int size)
 template<typename T>
 LinkedList<T>::~LinkedList() 
 {
-    Node<T>* pTemp = mpHead;
-    while (pTemp != nullptr) {
-        Node<T>* pNext = pTemp->pNext;
-        delete pTemp;
-        pTemp = pNext;
+    int counter = 0;
+    while(counter < mSize) 
+    {
+        mpHead = mpHead->pNext;
+        if(mpHead == nullptr) 
+        {
+            mpTail = nullptr;
+            break;
+        }
+        counter++;
     }
-    mpHead = nullptr;
-    mSize = 0;
     // int counter = 0;
     // while(counter < mSize) 
     // {

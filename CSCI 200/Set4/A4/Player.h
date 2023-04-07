@@ -41,7 +41,7 @@ public:
     * This function will decrement the callee's chips by one and increase the target's chips by one
     * @param PLAYER_NUM player that will be receiving the chip
     */
-    void chipToPlayer(Player &PLAYER_NUM);
+    void chipToPlayer(Player& PLAYER_NUM);
     
     /**
     * @brief A function to give a single chip to the center. 

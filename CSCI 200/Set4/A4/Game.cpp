@@ -69,33 +69,33 @@ void movePlayer(bool direction, Node<Player>*& pCurrNode) {
         pCurrNode = pCurrNode->pPrev;
 }
 
-bool runTurn(const vector<int> diceActions, bool& direction, Node<Player>*& pCurrNode, int& noZeroChips, int &centerChips, int chipCount) {
+bool playTurn(const vector<int> diceActions, bool& direction, Node<Player>*& pCurrNode, int& noZeroChips, int &centerChips, int chipCount) {
     int count = 0;
     bool isZeroChips = false;
     bool zeroChips = false;
     Player currNode = pCurrNode->value;
-    if (chipCount > 0) 
+    if(chipCount > 0) 
     {
         cout << left << "Player #" << currNode.getPlayer() << " has " << currNode.getChipCount() << " chips left" << endl;
         cout << right << setw(17) << "Rolling " << chipCount << " dice" << endl;
     }
     
-    for (std::vector<int>::size_type i = 0; i < diceActions.size(); i++) 
+    for(std::vector<int>::size_type i = 0; i < diceActions.size(); i++) 
     {
-        if (diceActions[i] == 3) 
+        if(diceActions[i] == 3) 
         {
             cout << right << setw(18) << "Rolled a " << diceActions[i] << " - give left - ";
             passLeft(pCurrNode, zeroChips);
         }
-        else if (diceActions[i] == 4) 
+        else if(diceActions[i] == 4) 
         {
             cout << right << setw(18) << "Rolled a " << diceActions[i] << " - give right - ";
             passRight(pCurrNode, zeroChips);
         }
-        else if (diceActions[i] == 5) 
+        else if(diceActions[i] == 5) 
         {
             Player currNode = pCurrNode->value;
-            if (currNode.getChipCount() > 0) 
+            if(currNode.getChipCount() > 0) 
             {
                 currNode.chipToCenter();
                 pCurrNode->value = currNode;
@@ -103,31 +103,27 @@ bool runTurn(const vector<int> diceActions, bool& direction, Node<Player>*& pCur
             }
             cout << right << setw(18) << "Rolled a " << diceActions[i] << " - give center - Center has " << centerChips << " chips - Player #" << currNode.getPlayer() << " has " << currNode.getChipCount() << " chips" << endl;
         }
-        else if (diceActions[i] == 7) 
+        else if(diceActions[i] == 7) 
         {
             count = skipPlayer(count);
             cout << right << setw(18) << "Rolled a " << diceActions[i] << " - skip! skipping " << count << " players" << endl;
         }
-        else if (diceActions[i] == 6) 
+        else if(diceActions[i] == 6) 
         {
             cout << right << setw(18) << "Rolled a " << diceActions[i] << " - reverse!" << endl;
             reverseDirection(direction);
         }
         else 
-        {
             cout << right << setw(18) << "Rolled a " << diceActions[i] << " - keep!" << endl;
-        }
     }
     currNode = pCurrNode->value;
     chipCount = currNode.getChipCount();
-    if (chipCount == 0) {
+    if(chipCount == 0) 
         isZeroChips = true;
-    }
-    for (int i = 0; i <= count; i++) {
+    for(int i = 0; i <= count; i++) {
         movePlayer(direction, pCurrNode);
     }
-    if (zeroChips == true) {
+    if(zeroChips == true)
         noZeroChips++;
-    }
     return isZeroChips;
 }

@@ -83,7 +83,7 @@ int main() {
                 numbers.push_back(random);
             }
             // Run a turn and check if the player now has zero chips
-            bool hasZeroChips = runTurn(numbers, direction, pCurrNode, noZeroChips, centerChips, chipCount);
+            bool hasZeroChips = playTurn(numbers, direction, pCurrNode, noZeroChips, centerChips, chipCount);
             // Decreate the number of players who dont have zero chips
             if(hasZeroChips && !zeroChips) 
                 noZeroChips--;

@@ -66,6 +66,6 @@ void movePlayer(bool direction, Node<Player>*& pCurrNode);
  * @return True if the chip count for the current player is 0, false if the chip count is
  * not 0
 */
-bool runTurn(const std::vector<int> diceActions, bool& direction, Node<Player>*& pCurrNode, int& noZeroChips, int &centerChips, int chipCount);
+bool playTurn(const std::vector<int> diceActions, bool& direction, Node<Player>*& pCurrNode, int& noZeroChips, int &centerChips, int chipCount);
 
 #endif

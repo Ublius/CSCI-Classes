@@ -32,7 +32,7 @@ int Player::getChipCount()
     return numChips;
 }
 
-void Player::chipToPlayer(Player &PLAYER_NUM) 
+void Player::chipToPlayer(Player& PLAYER_NUM) 
 {
     numChips--;
     PLAYER_NUM.numChips++;

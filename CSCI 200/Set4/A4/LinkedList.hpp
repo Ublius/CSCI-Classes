@@ -86,21 +86,6 @@ LinkedList<T>::~LinkedList()
         }
         counter++;
     }
-    // int counter = 0;
-    // while(counter < mSize) 
-    // {
-    //     Node<T>* pNodeDelete = mpHead;
-    //     mpHead = mpHead->pNext;
-    //     if(mpHead == nullptr) 
-    //     {
-    //         pNodeDelete = nullptr;
-    //         mpTail = nullptr;
-    //         break;
-    //     }
-    //     else 
-    //         pNodeDelete = nullptr;
-    //     counter++;
-    // }
 }
 
 template<typename T>

@@ -109,7 +109,12 @@ class LinkedList
          * @param headRef A pointer to the head of the linked list to be sorted.
         */
         void mergeSort(Node<T>** headRef);
-        int binarySearch(LinkedList<T>& list, const T& target);
+        /**
+         * @brief 
+         * @param TARGET 
+         * @return
+        */
+        int binarySearch(const T TARGET);
         /**
          * @brief Pointer to the head node of the list
         */
@@ -422,7 +427,7 @@ unsigned int LinkedList<T>::size()
 }
 
 template <typename T>
-Node<T>* merge(Node<T>* left, Node<T>* right) 
+Node<T>* LinkedList<T>::merge(Node<T>* left, Node<T>* right) 
 {
     Node<T>* result = nullptr;
 
@@ -449,7 +454,7 @@ Node<T>* merge(Node<T>* left, Node<T>* right)
 }
 
 template <typename T>
-void split(Node<T>* source, Node<T>** left, Node<T>** right) 
+void LinkedList<T>::split(Node<T>* source, Node<T>** left, Node<T>** right) 
 {
     Node<T>* slow = source;
     Node<T>* fast = source->pNext;
@@ -471,7 +476,7 @@ void split(Node<T>* source, Node<T>** left, Node<T>** right)
 }
 
 template <typename T>
-void mergeSort(Node<T>** headRef) 
+void LinkedList<T>::mergeSort(Node<T>** headRef) 
 {
     Node<T>* head = *headRef;
     Node<T>* left;
@@ -493,25 +498,33 @@ void mergeSort(Node<T>** headRef)
 }
 
 template <typename T>
-int binarySearch(LinkedList<T>& list, const T& target) 
+int LinkedList<T>::binarySearch(const T TARGET) 
 {
-    int left = 0;
-    int right = list.size() - 1;
-    int result = -1;
-
-    while (left <= right) {
-        int mid = (left + right) / 2;
-        if (list.get(mid) >= target) {
-            if (list.get(mid) == target) {
-                result = mid;
-            }
-            right = mid - 1;
-        } else {
-            left = mid + 1;
+    // Set the minimum and maximum index values for the binary search
+    int min = 0, max = size() - 1;
+    // Run the binary search while the minimum index is less than or equal to the maximum index
+    while (min <= max) 
+    {
+        // Calculate the middle index of the range to search
+        int pos = (max + min) / 2;
+        // Get the value at the middle index
+        int value = get(pos);
+        // If the value at the middle index is equal to the target value
+        if (value == TARGET) 
+        {
+            // Move the position to the first occurrence of the value in the list
+            while (pos > 0 && get(pos - 1) == value) 
+                pos--;
+            return pos;
         }
+        // If the value at the middle index is greater than the target value, search the left half
+        else if (value > TARGET) 
+            max = pos - 1;
+         // If the value at the middle index is less than the target value, search the right half
+        else 
+            min = pos + 1;
     }
-
-    return result;
+    return -1;
 }
 
 #endif

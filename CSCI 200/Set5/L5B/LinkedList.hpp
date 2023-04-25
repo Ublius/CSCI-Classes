@@ -418,7 +418,7 @@ unsigned int LinkedList<T>::size()
 }
 
 template <typename T>
-Node<T>* merge(Node<T>* left, Node<T>* right) 
+Node<T>* LinkedList<T>::merge(Node<T>* left, Node<T>* right) 
 {
     Node<T>* result = nullptr;
 
@@ -445,7 +445,7 @@ Node<T>* merge(Node<T>* left, Node<T>* right)
 }
 
 template <typename T>
-void split(Node<T>* source, Node<T>** left, Node<T>** right) 
+void LinkedList<T>::split(Node<T>* source, Node<T>** left, Node<T>** right) 
 {
     Node<T>* slow = source;
     Node<T>* fast = source->pNext;
@@ -467,7 +467,7 @@ void split(Node<T>* source, Node<T>** left, Node<T>** right)
 }
 
 template <typename T>
-void mergeSort(Node<T>** headRef) 
+void LinkedList<T>::mergeSort(Node<T>** headRef) 
 {
     Node<T>* head = *headRef;
     Node<T>* left;

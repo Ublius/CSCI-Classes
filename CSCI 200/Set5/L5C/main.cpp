@@ -44,7 +44,7 @@ int main() {
     cout << endl;
 
     // Sort the list ascending
-    mergeSort(&(list.mpHead));
+    list.mergeSort(&list.mpHead);
 
     // Print the list forwards
     cout << "List forwards (sorted):" << endl;
@@ -64,7 +64,7 @@ int main() {
         cin >> target;
 
         // Perform binary search and print result
-        int pos = binarySearch(list, target);
+        int pos = list.binarySearch(target);
         if (pos == -1)
             cout << "Target value not found: -1." << endl;
         else 

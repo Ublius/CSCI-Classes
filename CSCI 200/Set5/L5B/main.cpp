@@ -30,7 +30,7 @@ int main() {
     }
     cout << endl;
     
-    mergeSort(&(myList.mpHead));
+    myList.mergeSort(&myList.mpHead);
 
     cout << "After sorting: ";
     for (unsigned int i = 0; i < myList.size(); i++) 

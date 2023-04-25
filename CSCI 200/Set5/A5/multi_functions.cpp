@@ -1,4 +1,13 @@
-// https://en.cppreference.com/w/cpp/container/vector
+/* CSCI 200: Assignment 5: A5 - a-MAZE-ing
+ *
+ * Author: Tristen Erpelding
+ * Resources used (Office Hours, Tutoring, Other Students, etc & in what capacity):
+ *     https://en.cppreference.com/w/cpp/container/vector  
+ *
+ * We will now combine the two-dimensional lists, stacks, and queues to implement a Maze solver using Breadth-First Search and Depth-First Search. 
+ * The maze will be represented as a 2D List. 
+ * The goal is to determine if it is possible to move from the Start Space to the End Space. 
+ */
 
 #include <iostream>
 #include <vector>

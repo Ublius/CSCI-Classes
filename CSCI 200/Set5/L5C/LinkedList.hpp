@@ -493,22 +493,25 @@ void mergeSort(Node<T>** headRef)
 }
 
 template <typename T>
-int binarySearch(LinkedList<T>& list, const T& target) {
+int binarySearch(LinkedList<T>& list, const T& target) 
+{
     int left = 0;
     int right = list.size() - 1;
+    int result = -1;
 
-    while (left <= right) 
-    {
+    while (left <= right) {
         int mid = (left + right) / 2;
-        if (list.get(mid) == target) 
-            return mid;
-        else if (list.get(mid) < target) 
-            left = mid + 1;
-        else 
+        if (list.get(mid) >= target) {
+            if (list.get(mid) == target) {
+                result = mid;
+            }
             right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
     }
 
-    return -1;
+    return result;
 }
 
 #endif

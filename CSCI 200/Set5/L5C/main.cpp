@@ -40,9 +40,7 @@ int main() {
     // Print the list forwards
     cout << "List forwards:" << endl;
     for (unsigned int i = 0; i < list.size(); i++) 
-    {
         cout << list.get(i) << " ";
-    }
     cout << endl;
 
     // Sort the list ascending
@@ -51,9 +49,7 @@ int main() {
     // Print the list forwards
     cout << "List forwards (sorted):" << endl;
     for (unsigned int i = 0; i < list.size(); i++) 
-    {
         cout << list.get(i) << " ";
-    }
     cout << endl;
 
     // Get user input for target values

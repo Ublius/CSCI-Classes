@@ -1,3 +1,11 @@
+/* CSCI 200: Lab 6B - SFML: Starcraft
+ *
+ * Author: Tristen Erpelding
+ *
+ * To read in a star data file, store the data in a list of objects, make modifications to the data, and then draw a star map similar to the one shown
+ * 
+*/
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -9,21 +17,29 @@
 using namespace sf;
 using namespace std;
 
+const int WIDTH = 640;
+const int HEIGHT = 640;
+
 int main(int argc, char* argv[]) {
     // create a window
-    RenderWindow window( VideoMode(640, 640), "SFML Test" );
+    RenderWindow window( VideoMode(WIDTH, HEIGHT), "Star Map" );
 
     /////////////////////////////////////
     // BEGIN ANY FILE LOADING
     string filename;
-    if(argc == 1) {
+    if(argc == 1) 
+    {
         cout << "Please enter the name for your file here: ";
         getline(cin, filename);
         cout << "Opening file '" << filename << "'" << endl;
-    } else if(argc == 2) {
+    } 
+    else if(argc == 2) 
+    {
         filename = argv[1];
         cout << "Opening file '" << filename << "'" << endl;
-    } else {
+    } 
+    else 
+    {
         cerr << "Usage: " << argv[0] << " [filename]" << endl;
         cerr << "  filename   - optional file to open upon start" << endl;
         return -2;
@@ -32,35 +48,28 @@ int main(int argc, char* argv[]) {
     // open file for parsing
     ifstream fileIn;
     fileIn.open(filename);
-    if (fileIn.fail()) {
+    if (fileIn.fail()) 
+    {
         cerr << "Error opening input file";
         return -1;
     }
     cout << "File opened successfully" << endl;
 
-
     // Initializing variables for file reading
     vector<Star> starList;
-    float xPos;
-    float yPos;
-    float zPos;
-    float sBrightness;
-    int draperValue;
-    int harvardValue;
+    float xPos, yPos, zPos, sBrightness;
+    int draperValue, harvardValue;
 
-    // While true loop to help read the file and set all coordinates needed
-    while(true){
-        fileIn >> xPos;
-        fileIn >> yPos;
-        fileIn >> zPos;
-        fileIn >> sBrightness;
-        fileIn >> draperValue;
-        fileIn >> harvardValue;
-        Star tempStar(640, 640, sBrightness);
+    // Loop through file while there are still values to read
+    while(fileIn >> xPos >> yPos >> zPos >> sBrightness >> draperValue >> harvardValue)
+    {
+        // Create a new Star object with default window size and set its position and brightness
+        Star tempStar(WIDTH, HEIGHT, sBrightness);
         tempStar.setPosition(xPos, yPos);
         tempStar.setBrightness(sBrightness);
-        if(sBrightness>= 0.0 && sBrightness <= 8.0){starList.push_back(tempStar);}
-        if( fileIn.eof() ) break;
+        // Add the star to the starList if it has a valid brightness value
+        if(sBrightness >= 0.0 && sBrightness <= 8.0)
+            starList.push_back(tempStar);
     }
 
     //  END  ANY FILE LOADING
@@ -70,7 +79,8 @@ int main(int argc, char* argv[]) {
     Event event;
 
     // while the window is open
-    while( window.isOpen() ) {
+    while( window.isOpen() ) 
+    {
         // clear any existing contents
         window.clear();
 
@@ -78,13 +88,11 @@ int main(int argc, char* argv[]) {
         // BEGIN DRAWING HERE
 
         // Loop to draw the stars in SFML
-        for(size_t i = 0; i < starList.size(); i++){
+        for(size_t i = 0; i < starList.size(); i++)
             window.draw(starList.at(i));
-        }
 
         //  END  DRAWING HERE
         /////////////////////////////////////
-
 
         // display the current contents of the window
         window.display();

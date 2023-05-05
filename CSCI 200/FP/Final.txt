@@ -1,0 +1,22 @@
+TITLE: Tristen Erpelding, CSCI 200 A, School Local Portal (SLP)
+
+PROBLEM DESCRIPTION: My project is a comprehensive school management system. It
+enables school administrators to efficiently manage various aspects of their institution, such as
+student enrollment, and scheduling. The system provides a user-friendly CLI (command-line) interface 
+that enables easy navigation and interaction. The program uses various data structures and algorithms to optimize its performance.The ultimate goal of this project is to create an efficient and reliable tool that simplifies the day-to-
+day tasks of school administration, making it easier to provide quality education to students.
+
+PROGRAM DOCUMENTATION: The way to run the program is very simple and easy to follow. When running if no parameter are entered
+then it will ask you for the file with all the student data. That file should include first name, last name, current year, and expected graduation year. Once the file has been entered 3 different distinct options will appear, and those options include exiting the program, viewing teacher information which shows all the classes
+teachers are assigned to, and student information. Within student information you'll be able to add and view classes of that student. When trying to add classes it will prompt you for a file containing all the available classes which should include the subject and course code. Their are many areas that I would have like to improved on if even the time. I would have liked to made and abstract user class that both teachers and students can extend from. I also would have liked to implement a way in which teachers could edit some student information. Finally, creating an admin class that edit both teachers and students would be cool too.
+
+LIST DATA STRUCTURE: I chose to user vectors in a bunch of different things in my program such as storing classes and student data. I believe vectors are super easy to work with and I just needed some sort of dynamic array that could be templated and I wouldn't have to create it myself. It implemented well when I was getting the student data and class data, I also was able to use vectors on the student that stored a list of classes that they were enrolled in.
+
+TESTS:
+    TEST 1: Running the program with ./FP.exe Student.txt will open the program as expected and allow you to view student information of all the different students listed within the .txt file
+    TEST 2: Running the program with ./FP.exe without any parameters will prompt you for a valid file if you type an invalid file will exit the program but if you enter a valid file then the program will run as expected.
+    TEST 3: Once within the main program with the correct student file entered you'll be able to access student information and from there you can add classes when adding class it will ask for classes.txt file this file is used to load all these classes that students can enroll from.
+    TEST 4: Once within the main program with the correct student file entered you'll be able to access the students currently enrolled classes if no classes have been added then none will shop up but if classes have been added then they will appear.
+    TEST 5: Once within the main program you can type 2 which will show all teacher information you have to give it the provided classes.txt file and it wil generate teachers for each class. If an incorrect file is entered then the program will exit.
+
+REFLECTIONS: I learned a lot from this project from having two classes interact with each other that weren't associated with each other for example my teachers class and classes class. I also started to better understand the use of pointers and how they can be effectively used. It allowed for easy functionality between my students and classes and storing a vector of classes within students, as well as being able to create a new teacher when a new class is created and associating that teacher with that new class. Working on class and inheritance was very benefical throught out the year as it helped me better my knowledge within c++. If I had to do another project of smiliar scope or with a larger scope that I would start sooner as I started this pretty late and I feel like with much more time and and a greater amount of deadlines the I feel like I could have greatly extended my project. I would have included grades, writing data to a file so it can be re opened and if I got crazy then creating a web sever for it so you could jsut access your localhost and be able to see it graphically online.

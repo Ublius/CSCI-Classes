@@ -2,6 +2,9 @@
  *
  * Author: Tristen Erpelding
  * 
+ * Resources:
+ * Finding out how to clear cin and ignore anything that isn't a number
+ * 
  * A comprehensive school management system. 
  * Itenables school administrators to efficiently manage various aspects of their institution, such as student enrollment, and scheduling. 
  * The system provides a user-friendly CLI (command-line) interface that enables easy navigation and interaction.
@@ -26,7 +29,7 @@ int main(int argc, char* argv[])
     string filename;
     if(argc == 1)
     {
-        cout << "Please enter the name for your students file here: ";
+        cout << "Please enter the name of your students file here: ";
         getline(cin, filename);
         cout << "Opening file '" << filename << "'" << endl;
     } 
@@ -51,11 +54,13 @@ int main(int argc, char* argv[])
     }
     cout << "File opened successfully" << endl;
 
-
+    // Declare a vector to hold pointers to Student objects
     vector<Student*> studentList;
+    // Declare variables to hold information about each student
     string firstName, lastName;
     int currYear, gradYear;
 
+    // Read in student information from a file and create new Student objects, storing them in the vector
     while (fileIn >> firstName >> lastName >> currYear >> gradYear)
     {
         Student* newStudent = new Student(firstName, lastName, gradYear, currYear);
@@ -63,8 +68,9 @@ int main(int argc, char* argv[])
     }
 
     int studentChoice;
+    // Get the number of students in the vector
     int studentCount = studentList.size();
-
+    // Declare a vector to hold pointers to Classes objects
     vector<Classes*> classList;
 
     unsigned int choice;
@@ -97,11 +103,14 @@ int main(int argc, char* argv[])
             
             while(selectStudent)
             {
+                // Outputting the current number of students registered in the system and their names
                 cout << "Their are currently " << studentCount << " student's registered in the system." << endl;
-
+                
+                // Iterating through the student list and printing the names of each student along with their index
                 for(int i = 0; i < studentCount; i++)
                     cout << "Student " << i+1 << ": " << studentList.at(i)->getName() << endl;
                 
+                // Prompting the user to input the index of the student they want to access.
                 cout << endl;
                 cout << "Which student would you like to access? ";
                 cin >> studentChoice;
@@ -116,18 +125,21 @@ int main(int argc, char* argv[])
                     cout << endl;
                 }
 
+                // Validate user input for student selection
                 while(studentChoice > studentCount || studentChoice < 1)
                 {
                     cout << "That is an invalid selection. Please select again." << endl; 
                     cout << "Which student would you like to access? ";
                     cin >> studentChoice;
                 }
-                
+
+                // Confirm user selection
                 int confirmedChoice = 0;
                 cout << "You have chosen student " << studentChoice << " who is "  << studentList.at(studentChoice - 1)->getName() << endl;
                 cout << "Please confirm that is correct. (1 for yes or -1 for no): ";
                 cin >> confirmedChoice;
 
+                // Validate user confirmation input
                 while(confirmedChoice != 1 && confirmedChoice != -1)
                 {
                     cout << "That is an invalid selection. Please select again." << endl; 
@@ -136,6 +148,7 @@ int main(int argc, char* argv[])
                 }
                 cout << endl;
 
+                // Break loop if user confirmed selection
                 if(confirmedChoice == 1)
                 {
                     selectStudent = false;
@@ -166,33 +179,41 @@ int main(int argc, char* argv[])
 
             if(newChoice == 1)
             {
+                // Check if the file is already open
                 if(openFile)
                 {
                     // string classesFileName = "Classes.txt";
+                    // Prompt user to enter the location of the classes.txt file
                     string classesFileName;
                     cout << "Enter the location of the classes.txt file: ";
                     cin >> classesFileName;
 
+                    // Create an input file stream and open the file
                     ifstream fileIn;
                     fileIn.open(classesFileName);
 
+                    // Check if file opening was successful
                     if (fileIn.fail()) 
                     {
+                        // Print error message and exit program
                         cerr << "Error opening input file";
                         return -1;
                     }
+                    // Print success message and newline character
                     cout << "File opened successfully" << endl;
                     cout << endl;
 
                     
                     string className;
                     unsigned int coruseNum;
-
+                    // Read class name and course number from the file, 
                     while (fileIn >> className >> coruseNum)
                     {
+                        // Create a new Class object and add it to the classList vector
                         Classes* newClass = new Classes(className, coruseNum);
                         classList.push_back(newClass);
                     }
+                    // Set openFile to false to prevent the file from being opened again
                     openFile = false;
                 }
 
@@ -202,12 +223,15 @@ int main(int argc, char* argv[])
 
                 while(selectClass)
                 {
+                    // Output the number of classes in the system and list each class with its name, course number, and teacher's name
                     cout << "Their are currently " << classCount << " classes's registered in the system." << endl;
 
                     for(int i = 0; i < classCount; i++)
                         cout << "Class " << i+1 << ": " << classList.at(i)->getClassName() << ", Course Number: " << classList.at(i)->getCourseNum() << ", Teacher: " << classList.at(i)->getClassTeach()->getFullName() << endl;
                     
                     cout << endl;
+
+                    // Prompt the user to select a class to add and handle any invalid input
                     cout << "Which class would you like to add? (-1 to exit): ";
                     cin >> classChoice;
 
@@ -221,6 +245,7 @@ int main(int argc, char* argv[])
                         cout << endl;
                     }
 
+                    // Handle the case where the user chooses to exit the add class menu
                     if(classChoice == -1)
                     {
                         cout << "Returning to " << studentList.at(studentChoice - 1)->getName() << " menu" << endl;
@@ -228,6 +253,7 @@ int main(int argc, char* argv[])
                         break;
                     }
 
+                    // Ensure that the user selects a valid class to add
                     while(classChoice > classCount || classChoice < 1)
                     {
                         cout << "That is an invalid selection. Please select again." << endl; 
@@ -235,11 +261,13 @@ int main(int argc, char* argv[])
                         cin >> classChoice;
                     }
                     
+                    // Prompt user to confirm their selected class choice
                     int confirmedChoice = 0;
                     cout << "You have chosen class " << classChoice << " which is "  << classList.at(classChoice - 1)->getClassName() << endl;
                     cout << "Please confirm that is correct. (1 for yes or -1 for no): ";
                     cin >> confirmedChoice;
 
+                     // Validate user input for class confirmation
                     while(confirmedChoice != 1 && confirmedChoice != -1)
                     {
                         cout << "That is an invalid selection. Please select again." << endl; 
@@ -248,14 +276,17 @@ int main(int argc, char* argv[])
                     }
                     cout << endl;
 
+                    // If user confirms their class choice, add the class to the student's list
                     if(confirmedChoice == 1)
                     {
                         studentList.at(studentChoice - 1)->addClass(classList.at(classChoice - 1));
 
+                        // Prompt user if they want to add more classes
                         int addMore = 0;
                         cout << "Would you like to add add more classes? (1 for yes or -1 for no): ";
                         cin >> addMore;
 
+                        // Validate user input for adding more classes
                         while(addMore != 1 && addMore != -1)
                         {
                             cout << "That is an invalid selection. Please select again." << endl; 
@@ -265,6 +296,7 @@ int main(int argc, char* argv[])
 
                         cout << endl;
 
+                        // If user chooses to not add more classes, exit the loop
                         if(addMore == -1)
                         {
                             selectClass = false;
@@ -272,8 +304,10 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
+                // Check if chose to not add more classes
                 if(classChoice != -1)
                 {
+                    // Print the current students classes
                     cout << studentList.at(studentChoice - 1)->getName() << " is now enrolled in" << endl;
                     cout << endl;
                     studentList.at(studentChoice - 1)->printClasses();
@@ -283,6 +317,7 @@ int main(int argc, char* argv[])
                     cout << "Would you like to select a new student to view? (1 for yes or -1 for no): ";
                     cin >> continueProgram;
 
+                    // Validate user input for continuing the program
                     while(continueProgram != 1 && continueProgram != -1)
                     {
                         cout << "That is an invalid selection. Please select again." << endl; 
@@ -292,6 +327,7 @@ int main(int argc, char* argv[])
 
                     cout << endl;
 
+                    // If user chooses to continue, set selectStudent to true to allow selecting a new student
                     if(continueProgram == 1)
                     {
                         selectStudent = true;
@@ -299,6 +335,7 @@ int main(int argc, char* argv[])
                 }
 
             }
+            // If the user chose to view the student's classes, display the student's current classes
             else if(newChoice == 2)
             {
                 cout << studentList.at(studentChoice - 1)->getName() << " is enrolled in" << endl;
@@ -306,15 +343,16 @@ int main(int argc, char* argv[])
                 studentList.at(studentChoice - 1)->printClasses();
                 cout << endl;
             }
+            // If the user chose to go back to selecting a student, set selectStudent to true
             else if(newChoice == 3)
                 selectStudent = true;
-            else if(newChoice == 3)
-                selectStudent = true;
+            // If the user chose to quit the current student, set selectStudent to true and break out of the loop
             else if(newChoice == 4)
             {
                 selectStudent = true;
                 break;
             }
+            // If the user made an invalid selection, display an error message and prompt to select again.
             else
             {
                 cout << "Invalid Selection, please select again." << endl;
@@ -324,40 +362,50 @@ int main(int argc, char* argv[])
         }
         if(choice == 2)
         {
+            // Check if the file is already open
             if(openFile)
             {
                 // string classesFileName = "Classes.txt";
+                // Prompt user to enter the location of the classes.txt file
                 string classesFileName;
                 cout << "Enter the location of the classes.txt file: ";
                 cin >> classesFileName;
 
+                // Create an input file stream and open the file
                 ifstream fileIn;
                 fileIn.open(classesFileName);
 
+                // Check if file opening was successful
                 if (fileIn.fail()) 
                 {
+                    // Print error message and exit program
                     cerr << "Error opening input file";
                     return -1;
                 }
+                // Print success message and newline character
                 cout << "File opened successfully" << endl;
                 cout << endl;
 
                 
                 string className;
                 unsigned int coruseNum;
-
+                // Read class name and course number from the file, 
                 while (fileIn >> className >> coruseNum)
                 {
+                    // Create a new Class object and add it to the classList vector
                     Classes* newClass = new Classes(className, coruseNum);
                     classList.push_back(newClass);
                 }
+                // Set openFile to false to prevent the file from being opened again
                 openFile = false;
             }
+            // Print the curent classes and there associated teachers
             cout << "Curent Teachers and ther Classes:" << endl;
             for (Classes* currClass : classList)
                 cout << currClass->getClassName() << " (" << currClass->getCourseNum() << "): " << currClass->getClassTeach()->getFullName() << endl;
             cout << endl;
         }
+        // User chose to quit the program
         else if(choice == 3)
         {
             cout << "Thank you for using the School Management System!" << endl;

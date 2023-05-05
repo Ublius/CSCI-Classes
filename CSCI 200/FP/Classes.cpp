@@ -2,6 +2,9 @@
  *
  * Author: Tristen Erpelding
  * 
+ * Resources:
+ * Finding out how to clear cin and ignore anything that isn't a number
+ * 
  * A comprehensive school management system. 
  * Itenables school administrators to efficiently manage various aspects of their institution, such as student enrollment, and scheduling. 
  * The system provides a user-friendly CLI (command-line) interface that enables easy navigation and interaction.
@@ -11,8 +14,10 @@
 
 Classes::Classes(const std::string SUBJECT, const unsigned int COURSENUM)
 {
+    // Assigns the subject and course number to the member variables
     mSubject = SUBJECT;
     mCourseNum = COURSENUM;
+    // Creates a new Teacher object and assigns it to the class
     mpAssignTeacher = new Teacher(this);
 }
 

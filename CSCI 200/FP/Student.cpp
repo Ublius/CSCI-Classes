@@ -1,3 +1,14 @@
+/* CSCI 200: Final Project: School Management System
+ *
+ * Author: Tristen Erpelding
+ * 
+ * Resources:
+ * Finding out how to clear cin and ignore anything that isn't a number
+ * 
+ * A comprehensive school management system. 
+ * Itenables school administrators to efficiently manage various aspects of their institution, such as student enrollment, and scheduling. 
+ * The system provides a user-friendly CLI (command-line) interface that enables easy navigation and interaction.
+*/
 
 #include <iomanip>
 

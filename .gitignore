@@ -152,3 +152,20 @@ cython_debug/
 #.idea/
 *.zip
 input/
+
+#CSCI 220
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+bin
+lib
+run-*
+build

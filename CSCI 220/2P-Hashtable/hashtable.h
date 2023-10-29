@@ -54,7 +54,7 @@ public:
                     temp[hash(table[i][j])%numSize].push_back(table[i][j]);
             }
             // Set the hashtable to the temporary hashtable
-            table = temp;
+            table.swap(temp);
         }
     };
 

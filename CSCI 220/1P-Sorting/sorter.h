@@ -18,8 +18,70 @@
 #include <string>
 #include <cstddef>
 #include <vector>
+#include <queue>
 
 using namespace std;
+
+
+//Improved
+
+// template <class T>
+// void merge(vector<T>& arr, int left, int middle, int right) {
+//     int n1 = middle - left + 1;
+//     int n2 = right - middle;
+
+//     vector<T> leftArr(n1);
+//     vector<T> rightArr(n2);
+
+//     for (int i = 0; i < n1; i++) {
+//         leftArr[i] = arr[left + i];
+//     }
+//     for (int j = 0; j < n2; j++) {
+//         rightArr[j] = arr[middle + 1 + j];
+//     }
+
+//     int i = 0, j = 0, k = left;
+
+//     while (i < n1 && j < n2) {
+//         if (leftArr[i] <= rightArr[j]) {
+//             arr[k] = leftArr[i];
+//             i++;
+//         } else {
+//             arr[k] = rightArr[j];
+//             j++;
+//         }
+//         k++;
+//     }
+
+//     while (i < n1) {
+//         arr[k] = leftArr[i];
+//         i++;
+//         k++;
+//     }
+
+//     while (j < n2) {
+//         arr[k] = rightArr[j];
+//         j++;
+//         k++;
+//     }
+// }
+
+//Improved
+
+// template <class T>
+// void mergeSort(vector<T>& arr, int left, int right) {
+//     if (left < right) {
+//         int middle = left + (right - left) / 2;
+
+//         mergeSort(arr, left, middle);
+//         mergeSort(arr, middle + 1, right);
+
+//         merge(arr, left, middle, right);
+//     }
+// }
+
+
+//OLD
 
 template <class T>
 vector<T> kMerge(vector<vector<T>>& partitions)
@@ -68,6 +130,74 @@ vector<T> kMerge(vector<vector<T>>& partitions)
 template <class T>
 void sorter(vector<T> &vec, int k)
 {
+
+    //Improved
+
+    // int n = vec.size();
+
+    // if (n <= 1) {
+    //     return;
+    // }
+
+    // if (n <= k) {
+    //     mergeSort(vec, 0, n - 1);
+    // }
+    // else {
+    //     int partitionSize = n / k;
+    //     int remainder = n % k;
+
+    //     for (int i = 0; i < k; i++) {
+    //         int partitionStart = i * partitionSize + min(i, remainder);
+    //         int partitionEnd = partitionStart + partitionSize + (i < remainder ? 1 : 0);
+
+    //         mergeSort(vec, partitionStart, partitionEnd - 1);
+    //     }
+
+    //     queue<vector<T>> partitions;
+
+    //     for (int i = 0; i < k; i++) {
+    //         partitions.push(vector<T>(vec.begin() + i * partitionSize + min(i, remainder),
+    //                                          vec.begin() + i * partitionSize + min(i, remainder) +
+    //                                          partitionSize + (i < remainder ? 1 : 0)));
+    //     }
+
+    //     while (partitions.size() > 1) {
+    //         vector<T> partition1 = partitions.front();
+    //         partitions.pop();
+    //         vector<T> partition2 = partitions.front();
+    //         partitions.pop();
+
+    //         vector<T> mergedPartition;
+    //         int i = 0, j = 0;
+    //         while (i < partition1.size() && j < partition2.size()) {
+    //             if (partition1[i] <= partition2[j]) {
+    //                 mergedPartition.push_back(partition1[i]);
+    //                 i++;
+    //             } else {
+    //                 mergedPartition.push_back(partition2[j]);
+    //                 j++;
+    //             }
+    //         }
+
+    //         while (i < partition1.size()) {
+    //             mergedPartition.push_back(partition1[i]);
+    //             i++;
+    //         }
+
+    //         while (j < partition2.size()) {
+    //             mergedPartition.push_back(partition2[j]);
+    //             j++;
+    //         }
+
+    //         partitions.push(mergedPartition);
+    //     }
+
+    //     vec = partitions.front();
+    // }
+
+
+    //OLD
+
     int n = vec.size();
     if (n <= 1)
         return;
@@ -85,6 +215,7 @@ void sorter(vector<T> &vec, int k)
 	
 	// Merge the sorted partitions back into the original vector
     vec = kMerge(partitions);
+
 }
 
 #endif

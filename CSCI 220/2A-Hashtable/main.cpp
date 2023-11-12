@@ -9,39 +9,75 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include "hashtable.h"
 #include "hash_functions.h"
+#include "random220.h"
+
 
 using namespace std;
 
+template <class T, class H = std::hash<T>>
+void experiment(T M, H& table)
+{
+    // Constants
+    const int W = 172823;  // Total number of words in dictionary.txt
+    const double p = static_cast<double>(2 * M) / W;  // Probability for word inclusion in experiment
+
+    // Container to store words for testing
+    vector<string> words;
+
+    // Sampling loop
+    string str;
+    ifstream inputfile("dictionary.txt");
+    if (!inputfile.is_open()) {
+        cerr << "Error opening dictionary.txt" << endl;
+        return;
+    }
+
+    while (inputfile >> str) {
+        // Should we use it for the experiment?
+        if (bernoulli(p)) {
+            words.push_back(str);  // Save the word for testing
+
+            // Should it go into the table?
+            if (bernoulli(0.5)) {
+                table.insert(str);  // Insert the word into the hashtable
+            }
+        }
+    }
+
+    // Testing loop
+    double tests = 0;
+    double comparisons = 0;
+    for (string str : words) {
+        // Should we use it for testing?
+        if (bernoulli(1000.0 / words.size())) {
+            tests++;
+            comparisons += table.contains(str);
+        }
+    }
+
+    // Calculate average number of comparisons per test
+    double averageComparisons = comparisons / tests;
+
+    // Output the result
+    cout << "Hashtable Size: " << table.size() << ", Average Comparisons per Test: " << averageComparisons << endl;
+}
 int main() {
-    // You can use this main() to run your own analysis or testing code.
-    cout << "If you are seeing this, you have successfully run main!" << endl;
+    seed_now();
 
-    // ==================================================================
-    // The code below this point is relevant for the analysis part of the
-    // hashtable project.  You do not need it for the programming part.
-    // ==================================================================
+    const int W = 172823;
+    const int num_experiments = 10;
 
-    // The code below illustrates how to use the provided hash function 
-    // "functional" objects, and lets you see the different hash values 
-    // produced by each.
-    // hash0 h0;
-    // hash1 h1;
-    // hash2 h2;
-    // hash3 h3;
-    // hash4 h4;
+    hashtable<string, hash0> ht;
 
-    // string s("Hello");
-    // cout << h0(s) << endl;
-    // cout << h1(s) << endl;
-    // cout << h2(s) << endl;
-    // cout << h3(s) << endl;
-    // cout << h4(s) << endl;
-
-    // // Here's how you create a hashtable to use a particular hash function:
-    // hashtable<string, hash1> ht;
-    // ht.insert(s);
+    for (int i = 0; i < num_experiments; ++i) 
+    {
+        int table_size = equalikely(0, W / 2);
+        experiment(table_size, ht);
+    }
+    return 0;
 }
 

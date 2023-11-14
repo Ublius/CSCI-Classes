@@ -30,76 +30,77 @@ public:
     // basic hashset operations
     void insert(const T& key)
     {
-        // Use the modified contains function to get the number of comparisons
-        int comparisons = contains(key);
+        if(contains(key))
+            return;
 
-        // If the key is not present, insert it
-        if (comparisons == 0) 
+        // Append the key to the appropriate chain
+        table[hash(key)%numSize].push_back(key);
+        // Increment the number of keys in the hashtable
+        numKeys++;
+
+        // Check if the load factor is greater than 0.75
+        if(load_factor() > 0.75)
         {
-            // Append the key to the appropriate chain
-            table[hash(key) % numSize].push_back(key);
-            // Increment the number of keys in the hashtable
-            numKeys++;
-
-            // Check if the load factor is greater than 0.75
-            if (load_factor() > 0.75) 
+            // Resize the hashtable
+            numSize *= 2;
+            // Create a temporary hashtable
+            vector<vector<T>> temp(numSize);
+            // Iterate through the elements in the hashtable
+            for(unsigned int i = 0; i < table.size(); i++)
             {
-                // Resize the hashtable
-                numSize *= 2;
-                // Create a temporary hashtable
-                vector<vector<T>> temp(numSize);
-                // Iterate through the elements in the hashtable
-                for (unsigned int i = 0; i < table.size(); i++) 
-                {
-                    // Iterate through the elements in the chain at the current index
-                    for (unsigned int j = 0; j < table[i].size(); j++)
-                        // Append the current element to the appropriate chain in the temporary hashtable
-                        temp[hash(table[i][j]) % numSize].push_back(table[i][j]);
-                }
-                // Set the hashtable to the temporary hashtable
-                table.swap(temp);
+                // Iterate through the elements in the chain at the current index
+                for(unsigned int j = 0; j < table[i].size(); j++)
+                    // Append the current element to the appropriate chain in the temporary hashtable
+                    temp[hash(table[i][j])%numSize].push_back(table[i][j]);
             }
+            // Set the hashtable to the temporary hashtable
+            table.swap(temp);
         }
     };
 
     void remove(const T& key)
     {
-        // Use the modified contains function to get the number of comparisons
-         int comparisons = contains(key);
+        if(!contains(key))
+            return;
 
-        // If the key is present, remove it
-         if (comparisons > 0) 
-         {
-            // Iterate through the elements in the chain at the calculated index
-            for (unsigned int i = 0; i < table[hash(key) % numSize].size(); i++) 
+        // Iterate through the elements in the chain at the calculated index
+        for(unsigned int i = 0; i < table[hash(key)%numSize].size(); i++)
+        {
+            // Check if the current element in the chain is equal to the key
+            if(table[hash(key)%numSize][i] == key)
             {
-                // Check if the current element in the chain is equal to the key
-                if (table[hash(key) % numSize][i] == key) 
-                {
-                    // Remove the key from the chain by erasing it from the vector
-                    table[hash(key) % numSize].erase(table[hash(key) % numSize].begin() + i);
-                    // Decrement the number of keys in the hashtable
-                    numKeys--;
-                }
+                // Remove the key from the chain by erasing it from the vector
+                table[hash(key)%numSize].erase(table[hash(key)%numSize].begin()+i);
+                // Decrement the number of keys in the hashtable
+                numKeys--;
             }
         }
     };
 
-    int contains(const T& key)
+    bool contains(const T& key)
     {
-        int numComparisons = 0;
         // Iterate through the elements in the chain at the calculated index
         for(unsigned int i = 0; i < table[hash(key)%numSize].size(); i++)
         {
-            numComparisons++;
             // Check if the current element in the chain is equal to the key
             if(table[hash(key)%numSize][i] == key)
-            {
-                // comparisonCount = numComparisons;
-                return numComparisons;
-            }
+                return true;
         }
-        return numComparisons;
+        return false;
+    };
+
+    int countContains(const T& key)
+    {
+        int counter = 0;
+        // Iterate through the elements in the chain at the calculated index
+        for(unsigned int i = 0; i < table[hash(key)%numSize].size(); i++)
+        {
+            counter++;
+            // Check if the current element in the chain is equal to the key
+            if(table[hash(key)%numSize][i] == key)
+                return counter;
+        }
+        return counter;
     };
 
     size_t size()
@@ -121,7 +122,6 @@ private:
     vector<vector<T>> table;
     size_t numSize;
     size_t numKeys;
-    int comparisonCount;
  
 };
 

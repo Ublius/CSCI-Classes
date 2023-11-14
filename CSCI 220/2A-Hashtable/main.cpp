@@ -7,6 +7,7 @@
  * produces the program run-main.
 */
 
+#include <ios>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -18,8 +19,7 @@
 
 using namespace std;
 
-template <class T, class H = std::hash<T>>
-void experiment(T M, H& table)
+void experiment(int M)
 {
     // Constants
     const int W = 172823;  // Total number of words in dictionary.txt
@@ -27,6 +27,8 @@ void experiment(T M, H& table)
 
     // Container to store words for testing
     vector<string> words;
+    hashtable<string, hash4> table;
+
 
     // Sampling loop
     string str;
@@ -55,7 +57,7 @@ void experiment(T M, H& table)
         // Should we use it for testing?
         if (bernoulli(1000.0 / words.size())) {
             tests++;
-            comparisons += table.contains(str);
+            comparisons += table.countContains(str);
         }
     }
 
@@ -63,21 +65,19 @@ void experiment(T M, H& table)
     double averageComparisons = comparisons / tests;
 
     // Output the result
-    cout << "Hashtable Size: " << table.size() << ", Average Comparisons per Test: " << averageComparisons << endl;
+    ofstream output;
+    output.open("hash4.csv", std::ios_base::app);
+    output << table.size() << "," << averageComparisons << "\n";
+    output.close();
 }
 int main() {
     seed_now();
 
     const int W = 172823;
-    const int num_experiments = 10;
-
-    hashtable<string, hash0> ht;
-
+    const int num_experiments = 500;
     for (int i = 0; i < num_experiments; ++i) 
-    {
-        int table_size = equalikely(0, W / 2);
-        experiment(table_size, ht);
-    }
+        experiment(equalikely(0, W / 2));
+
     return 0;
 }
 

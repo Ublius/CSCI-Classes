@@ -1,0 +1,11 @@
+https://parrotsec.org/
+https://wiki.archlinux.org/title/Pacman
+https://en.wikipedia.org/wiki/APT_(software)
+https://xfce.org/
+https://www.gnome.org/
+https://en.wikipedia.org/wiki/Long-term_support
+https://en.wikipedia.org/wiki/Rolling_release
+https://en.wikipedia.org/wiki/Tiling_window_manager
+https://i3wm.org/
+https://en.wikipedia.org/wiki/Journaling_file_system
+https://en.wikipedia.org/wiki/Ext2

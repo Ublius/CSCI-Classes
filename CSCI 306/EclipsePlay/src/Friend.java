@@ -1,5 +1,5 @@
 /**
- * @author Mark Baldwin
+ * @author Tristen Erpelding
  *
  */
 public class Friend {
@@ -11,13 +11,20 @@ public class Friend {
 		this.email = email;
 	}
 
-	@Override
-	public String toString() {
-		return "Person [name=" + name + ", email=" + email + "]";
-	}
+	// @Override
+	// public String toString() {
+	// 	return "Person [name=" + name + ", email=" + email + "]";
+	// }
 
 	public String getName() {
 		return name;
 	}
 
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getEmail() {
+		return email;
+	}
 }

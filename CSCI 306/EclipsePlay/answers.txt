@@ -1,1 +1,4 @@
-1. 
+Name: Tristen Erpelding
+1. What "File->Revert" does is that it restores the file to the last save point. It dosen't matter how many changes were made it will change the file back to how it was when it was last saved.
+2. With each iteration of the for loop the variable person is getting updated with the memory address of each friend in the friends array. When it's printing the class the toString function in the Friend class is getting called which then displays who each person is.
+3. When the toString function is commented out the memory address of each friend within the friends array is printed instead. 

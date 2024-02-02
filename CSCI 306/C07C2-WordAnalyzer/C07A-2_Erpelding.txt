@@ -1,0 +1,18 @@
+1. The method and line that made the call to the Java library was the "firstRepeatedCharacter" method in the file WordAnalyzer.java on line 32. 
+The line from main that triggered the error was on line 17. I think and error was thrown because when following the trace 
+it can be seen that and if statement is being executed checking if char(i+1) is equal to the current char. 
+This throws an error because it is not checking if i+1 is within the range of the word.
+2. I would fix the bug by changing the if statement "if (i + 1 < word.length() && ch == word.charAt(i + 1))" in the WordAnalyzer.java file. 
+When I make these changes the output becomes:
+First repeated character = a
+First repeated character = o
+No repeated character.
+No repeated character.
+
+3. When I execute without the -ea option the program throws a can not do .length() on a null.
+When I run the program with -ea flag the program still throws an error however the error this time says AssertionError.
+
+4. The value of the word is "aabbcdaaaabb" this is correct as this is what we originally passed.
+5. The c_index is 2 and this not what we expect. We would have expected to see 3.
+6. The bug is that it is not counting repeated groups of characters because it checks if the character before it is different.
+This determines if it is the start of the repetition then increases count. I would fix it by removing the if statement "if ( word.charAt(c_index - 1) != word.charAt(c_index))" and adding "c_index++;". This will help fix the bug because it will count repeated characters more than once.

@@ -176,6 +176,8 @@ build
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 .settings
+.settings/
+.metadata
 
 # Compiled class file
 *.class

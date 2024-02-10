@@ -55,6 +55,11 @@ addi a0, zero, %int
 ecall
 .end_macro
 
+.macro store_int_array(%array,%index)
+slli t1, %index, 2 # t1 = index * 4 (since each integer is 4 bytes)
+add t1, t1, %array # t1 = base address of array + offset
+sw a0, 0(t1) # Store the word from a0 into the address in t1
+.end_macro 
 
 .data
 Prompt: .string "Welcome to the thunderdome."

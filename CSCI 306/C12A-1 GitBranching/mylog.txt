@@ -1,0 +1,21 @@
+* f0596d3 (HEAD -> main, origin/main, origin/HEAD) Revert "Revert "Added Dog Class""
+| *   aedb859 (addDog) Merge branch 'main' into addDog
+| |\  
+| |/  
+|/|   
+* | 606d2b1 Revert "Added Dog Class"
+|/  
+* 7793320 Added Dog Class
+*   dfa673a Merge branch 'addmouse'
+|\  
+| * 814fd84 (addmouse) Changed to EEEK
+| * a0e866f Added Mouse
+* |   adbd1d9 Merge branch 'catears'
+|\ \  
+| |/  
+|/|   
+| * cad330f (catears) Add cat ears
+|/  
+* 883311b Draw Whiskers
+* e1d093d Add Whiskers to Cat.java
+* f7ee401 Initial Commit of C12A-1 GitBranching

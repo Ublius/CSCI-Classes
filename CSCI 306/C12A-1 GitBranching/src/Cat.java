@@ -55,7 +55,6 @@ public class Cat {
 		g2.drawString("Meow", catX, catY+HEAD_DIMENSION+10);	
 		// Draw whiskers
 		g2.setColor(Color.white);
-		
 		// Draw whiskers on the left of face
 		// -2 draws whisker just to left of mouth
 		x = catX + MOUTH_X - 2;

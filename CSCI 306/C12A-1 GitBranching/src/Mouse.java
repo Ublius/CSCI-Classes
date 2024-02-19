@@ -17,6 +17,6 @@ public class Mouse {
 		g2.drawLine(x, y, x2, y);
 		// text appears below mouse body, +10 places below 
 		// so it doesn't overlap the drawing
-		g2.drawString("Squeak", mouseX, mouseY+BODY_HEIGHT+10);	
+		g2.drawString("EEEK", mouseX, mouseY+BODY_HEIGHT+10);	
 	}
 }

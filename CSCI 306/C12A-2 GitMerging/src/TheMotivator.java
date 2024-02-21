@@ -12,6 +12,7 @@ public class TheMotivator {
 
     public void name() {
         System.out.println("My name is TheMotivator");
+        System.out.println("I motivate");
     }
 
 	public static void main(String[] args) {

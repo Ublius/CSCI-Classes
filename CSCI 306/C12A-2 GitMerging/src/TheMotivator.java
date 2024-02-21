@@ -8,7 +8,7 @@ public class TheMotivator {
 			System.out.println("That's good ");
 		else
 			System.out.println("Well, what can I say?");
-        System.out.println("But you can do better next time.");
+        System.out.println("No Test");
 	}
 	public static void main(String[] args) {
 		TheMotivator mtoive = new TheMotivator();

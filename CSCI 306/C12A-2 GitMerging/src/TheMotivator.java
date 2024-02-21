@@ -18,6 +18,7 @@ public class TheMotivator {
 			System.out.println("That's good ");
 		else
 			System.out.println("Well, what can I say?");
+        System.out.println("Test");
 	}
 
     public void name() {

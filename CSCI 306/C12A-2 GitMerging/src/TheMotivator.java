@@ -9,8 +9,14 @@ public class TheMotivator {
 		else
 			System.out.println("Well, what can I say?");
 	}
+
+    public void name() {
+        System.out.println("My name is TheMotivator");
+    }
+
 	public static void main(String[] args) {
 		TheMotivator mtoive = new TheMotivator();
 		mtoive.feedback(60);
+        mtoive.name();
 	}
 }

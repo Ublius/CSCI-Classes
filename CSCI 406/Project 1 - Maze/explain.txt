@@ -1,0 +1,32 @@
+2 Input
+The first line of the input file contains two integers and two strings. The integers are the number
+of villages 2 ≤ V ≤ 50000 and the number of transit lines 1 ≤ T ≤ 50000, respectively. The
+two strings denote the starting village and the ending village (Startsburg and Endenville in the
+example).
+For the example provided from Abbot’s Mad Maze book, there are 36 villages labeled
+A, B, C, . . . , X, Y, Z, a, b, . . . , i, j and 70 transit lines. For inputs with more than 52 villages, you
+can expect the naming convention to begin to repeat alphabetically. For example, z would be
+followed by AA, AB, AC, . . ., AY, AZ, Aa, . . ., Ay, Az, BA, BB, . . . , zy, zz, AAA, AAB, etc. Each
+subsequent line describes a transit line: it includes the two villages joined by the line, the color
+of the line (R, G, B) and the type of the transit line (H, C, T, B) for Horse, Cable car, Trolley,
+and Bus, respectively. For example, the second input line indicates that the first transit line joins
+villages A and B, using the Red company, and that this is a Cable Car. The entire input file for
+Abbot’s maze is included at the end in the appendix.
+3 Weights
+Although, in Abbott’s maze, Grandpa is able to make the journey from Startsburg to Endenville
+on only one fare, he only reaches home at midnight. We want to help him try to make it back home
+as soon as possible with the help of Dijkstra’s Algorithm (which had not been invented in 1910).
+We consider both travel and transfer times as follows:
+• Travel time between neighboring villages on any transit line is 10 minutes.
+• Transfer time between two lines at a village is
+3
+– 5 minutes if the two line types are the same but belong to different companies.
+– 2 minutes if the two line types are different but belong to the same company.
+– 0 minutes if the two line types are the same and belong to the same company.
+4 Output Format
+The first line of the output must contain the length of the shortest path found by your algorithm.
+This represents the minimum time to make the complete journey. The second line gives the short-
+est path from Startsburg (Village A) to Endenville (Village j). The path should be presented as a
+space-delimited sequence of village ids. For example, one possible path may start off as follows:
+A B F K P Q R
+If there is no path from Startsburg to Endenville, then output “NO PATH”

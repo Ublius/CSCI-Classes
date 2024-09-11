@@ -1,0 +1,20 @@
+00-sample
+106
+A B D E F D B C F G
+
+01-no_path
+NO PATH
+
+02-bwd
+10
+B A
+
+03-isolated_villages
+10
+aA r
+
+04-book
+
+05-large
+
+06-larger

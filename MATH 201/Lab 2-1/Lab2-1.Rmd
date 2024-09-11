@@ -1,0 +1,313 @@
+---
+title: "Lab 2-1: Sampling distributions and confidence intervals"
+output: html_notebook
+---
+
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+### Objectives:
+
+For this lab you should...
+
+-   Use technology to explore sampling variability and create a sampling distribution
+-   Use technology to create a sampling distribution
+-   Calculate standard error of a statistic from a sampling distribution
+-   Build and interpret confidence intervals using the standard error from a sampling distribution.
+-   Use confidence intervals to make conclusions about a population parameter.
+
+# Part 1: Samples from a population
+
+If you are in class for this portion of the lab, *you must work in a small group*. There are several bins of beads in the classroom. Right now, join a group around one of the beads (aim for the same amount of students in each group), and introduce yourself. You will be working together for part 1.
+
+If you are not in class for this portion of the lab, use the online app linked in the video page. Instead of estimating proportion of green, online participants are estimating the proportion of blue.
+
+### Premise
+
+The bin of beads represents a small town, with each bead representing a person in town with a specific opinion. The green (or blue) beads support a ballot initiative to increase sales tax to fund bicycle trails, and the white (or red) beads oppose the initiative. Your group of students are pollsters - you want to determine how much support the initiative has in your town.
+
+The sampling paddle is your tool to take simple random samples from the town population.
+
+**TASK 1.1** What is the population parameter you are interested in learning about? Use correct notation.
+
+    **Response**
+
+**TASK 1.2** Using the sampling paddle, take a sample of the population and answer the below questions. 
+
+    **Response**
+    - What is n, the sample size?
+    - What is your sample statistic, both notation and value?
+    
+
+**TASK 1.3** If you are remote, take two more samples and calculate the sample estimates. If you are in person, compare your sample with the others in your group. Summarize what you notice about the differences between the samples in a sentence or two here.
+
+    **Response**
+
+**TASK 1.4** Now, take at least 30 samples (more if you like!) and make a vector of the sample statistics in R. Make a dotplot of your sample statistics and discuss the center and spread of the dotplot.
+
+    **Response**
+
+```{r}
+# the code below creates a vector in R.  It should be a vector of sample proportions x1, x2, x3.  All proportions should be between 0 and 1
+SampleStatistics <- c(0.6, 0.9, 0.7, 0.725, 0.775, 0.75, 0.75, 0.8, 0.825, 0.65, 0.7, 0.8, 0.725, 0.725, 0.75, 0.65, 0.75, 0.65, 0.7, 0.75, 0.725, 0.7, 0.75, 0.75, 0.85, 0.725, 0.775, 0.725, 0.725, 0.7)
+
+# the code below creates a dotplot of your sample statistics.
+gf_dotplot( ~ SampleStatistics)
+```
+
+**TASK 1.5** Based on everything you have done so far, what do you think is the best guess for the population parameter in your town? Write a sentence justifying your answer.
+
+    **Response**
+
+**TASK 1.6** Calculate the standard deviation of your sample statistics. The specific name for this value is the *standard error*. Whenever we discuss the standard error of a statistic, it describes the how variable statistics are when they are calculated from different samples drawn from the same population.
+
+    **Response**
+
+```{r}
+# the code below calculates the standard deviation of the vector named 'SampleStatistics'
+
+sd(~SampleStatistics)
+```
+
+
+# Part 2: Baseball Player Salaries
+
+We can also create sampling distributions for the rest of the big 5 parameters. In this section, you will create several sampling distributions for means of different populations and of different sizes.
+
+### Sampling Distribution
+
+To create a sampling distribution from simple random samples, we must have access to the entire population. For this section we have access to all opening day salaries for major league baseball players in 2019 (in millions of dollar). We can load the dataset, called BaseballSalaries2019, from our textbook using the code below:
+
+```{r}
+# load the data frame
+data("BaseballSalaries2019")
+
+# look at the first six rows 
+head(BaseballSalaries2019)
+```
+
+**TASK 2.1** Find the mean and standard deviation of salary in the population. Recall that the commands mean(~Y, data = DataSetName) and sd(~Y, data = DataSetName) can help you accomplish this task. *include proper notation for each quantity*
+
+    **Response**
+
+```{r}
+mean(~Salary, data = BaseballSalaries2019)
+sd(~Salary, data = BaseballSalaries2019)
+```
+
+**TASK 2.2** Create a histogram of the salaries and describe the shape of the distribution. Hint: remember gf_histogram()
+
+    **Response**
+
+```{r}
+gf_histogram(~ Salary, data = BaseballSalaries2019)
+```
+
+**TASK 2.3** Imagine you take a sample of size 100 from this population.  Use the code below to generate such a sample and name it "Sample100".  Calculate the sample mean (x-bar) and sample standard deviation (s) for your sample.
+
+    **Response**
+
+```{r}
+#Code below takes a sample of size 100
+Sample100 <- sample_n(BaseballSalaries2019, 100)
+
+# Now you write code to find the sample mean and sample standard deviation of the variable 'Salary'
+mean(~ Salary, data = Sample100)
+sd(~ Salary, data = Sample100)
+```
+
+
+
+**TASK 2.4** Use the code below to generate 2000 samples of size 100, saving the sample mean salary for each sample, and creating a histogram.  What does an observation plotted in the histogram represent?
+
+    **Response**
+
+```{r}
+# save space for the means
+SalaryMeans <- rep(NA, 2000)
+
+# generate 200 samples, saving the mean of each one
+for(i in 1:2000){
+  # take a sample
+  TemporarySample <- sample_n(BaseballSalaries2019, 100)
+  # save the mean
+  SalaryMeans[i] <- mean(~Salary, data = TemporarySample)
+}
+
+gf_histogram(~SalaryMeans)
+
+mean(SalaryMeans)
+sd(SalaryMeans)
+```
+
+**TASK 2.5** Describe the shape of your sampling distribution, and compare it to the shape of the population.
+
+    **Response**
+
+**TASK 2.6** Calculate the center of your sampling distribution, as measured by the mean of the vector of sample means. How does this value compare to the population mean?
+
+    **Response**
+
+```{r}
+
+```
+
+**TASK 2.7** Calculate the standard error of the sample mean using your vector of sample means. Recall that the standard error of a statistic is the standard deviation of the sampling distribution.
+
+    **Response**
+
+```{r}
+
+```
+
+**TASK 2.8** Hopefully the standard error you calculated in 2.7 roughly matches the standard error you could estimate from the histogram in 2.4.  Explain how you could estimate the SE from the histogram, and show how it is roughly the same.
+
+    **Response**
+
+### Confidence intervals
+
+**TASK 2.9 Directions** For each of the sample means below (assumed to be means for samples of baseball player salaries) calculate the corresponding 95% confidence interval. You will need to use the standard error you calculated from 2.6. Indicate whether the confidence interval successfully captures the true population mean salary.
+
+**TASK 2.9.1** $\bar{X}$= 4
+
+-   **Confidence Interval**
+
+-   **Captured mu?**
+
+**TASK 2.9.2** $\bar{X}$= 3.1
+
+-   **Confidence Interval**
+
+-   **Captured mu?**
+
+**TASK 2.9.3** $\bar{X}$= 5.2
+
+-   **Confidence Interval**
+
+-   **Captured mu?**
+
+
+# Part 3: Sample size and confidence intervals
+
+For this activity we will use the dataset *AllCountries* from the Lock5Data package.  These data consist of measurements from all countries.  We will study the variable *FemaleLabor*, which provides the percentage of females aged 15-64 that participate in the countries workforce.  Our goal will be to build sampling distributions from samples of various sizes for the mean of this variable.
+
+**TASK 3.0** Modify the code below to generate a sampling distribution of the mean with 2000 samples, using a sample size of n=10.
+
+```{r}
+# load the dataset
+data("AllCountries")
+
+
+# wrangle the data a little bit to select only a couple variables and to remove missing (NA) values
+AllCountries <- AllCountries %>% 
+  dplyr::select(Country,FemaleLabor,LifeExpectancy) %>%
+  na.omit()
+
+mean(~FemaleLabor, data = AllCountries)
+sd(~FemaleLabor, data = AllCountries)
+
+# allocate space to store your sample means
+SampleMeans <- rep(NA, 100)
+
+# draw the correct number of samples, and for each of them save the sample mean
+
+for(i in 1:100){ # modify this line
+  TemporarySample <- sample_n(AllCountries, size = 100)  # modify this line
+  SampleMeans[i] <- mean(~FemaleLabor, data = TemporarySample)
+}
+
+#gf_histogram(~SampleMeans)
+#mean(SampleMeans)
+#sd(SampleMeans)
+#se(SampleMeans)
+```
+
+**TASK 3.1** Use your vector of sample means to create a histogram of your sampling distribution, and to calculate the standard error of the sample mean.  Answer the questions below.
+
+```{r}
+
+```
+
+
+  A. Where is the center of the distribution?
+
+    **Response**
+    
+  B. What is the standard error?
+    
+    **Response**
+  
+  C.  If we were to build a 95% confidence interval using one of the sample means, how wide would it be (from the lower bound to the upper bound)?
+    
+    **Response** 
+
+**TASK 3.2** Now generate a sampling distribution for the mean using samples of size n=50.  Again, you will need to calculate the means for 2000 samples and save them as a vector.  Then produce the histogram, calculate the standard error, and answer the questions below.  You should copy and paste the code from 3-1, changing the relative numbers.
+
+```{r}
+
+```
+
+
+  A. Where is the center of the distribution?
+
+    **Response**
+    
+  B. What is the standard error?
+    
+    **Response**
+  
+  C.  If we were to build a 95% confidence interval using one of the sample means, how wide would it be  (from the lower bound to the upper bound)?
+    
+    **Response**
+  
+
+**TASK 3.3** Finally, generate a sampling distribution for the mean using samples of size n=100.  Again, you will need to calculate the means for 2000 samples and save them as a vector.  Then produce the histogram, calculate the standard error, and answer the questions below.
+
+```{r}
+
+```
+
+
+  A. Where is the center of the distribution?
+
+    **Response**
+    
+  B. What is the standard error?
+    
+    **Response**
+  
+  C.  If we were to build a 95% confidence interval using one of the sample means, how wide would it be  (from the lower bound to the upper bound)?
+    
+    **Response**
+  
+
+**TASK 3.4**	What happens to the center of the distribution as the sample size increases?
+
+    **Response**
+
+
+**TASK 3.5**	What happens to the standard error, and the width of confidence intervals as the sample size increases?
+
+
+
+
+# Part 4: Interpreting a confidence interval.
+
+Using a sample of 24 deliveries described in “Diary of a Pizza Girl” on the Slice website, we find a 95% confidence interval for the mean tip given for a pizza delivery to be \$2.18 to \$3.90.  Which of the following is a correct interpretation of this interval?  
+5t23 
+  a.	I am 95% sure that all pizza delivery tips will be between \$2.18 and \$3.90.
+  b.	95% of all pizza delivery tips will be between \$2.18 and \$3.90.
+  c.	I am 95% sure that the mean pizza delivery tip for this sample will be between \$2.18 and \$3.90.
+  d.	I am 95% sure that the mean tip for all pizza deliveries in this area will be between \$2.18 and \$3.90.
+  e.	I am 95% sure that the confidence interval for the mean pizza delivery tip will be between \$2.18 and \$3.90.
+  
+    **Response**

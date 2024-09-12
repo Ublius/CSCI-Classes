@@ -14,7 +14,15 @@ B A
 aA r
 
 04-book
+631
+A B E O U V a f Z U O E B C D J N T S R Q P K F G L Q W b a Z V W X S Y e d S M I D G K O V b h i j
 
 05-large
+2837
+A Q C R h x i y j z AO y z AP AQ AA l m W V H G V F G W I Y n o a q p AE AF r AG s AH AW Ak Ay Ai Aj Az BA BO Bc Bd BN Ay BM Ba Bb BN Ax Ah Ag Au Af AQ AC AS AR AD AC AR AS AC AQ Af Au Ag Ah Ax BN Bb Ba BM Ay BN Bd Bc BO BA Az Aj Ai Ay Ak AW AH s AG r AF AE p q a o n Y I W G F V G H V W m l AA AQ AP z y AO z j y i x h R S D E U i T h w v AL AM Ac As BG Ar Aq Ab Ap BE BU Bj Bi BT BS Bh Bx CN Cb CM Cc CO Cd Ct Cf Cg Ch Cv DK DJ DX Dl DW DI Cu Ct Cs Ce CQ Cg Cu Cf CR CB Bn BY BJ BX Bl CA Bm Bn CD CS CT CU CE CS Ci Ch Cx Cw DM Cy Cz DO De Dd DP DQ DB Cm CX CW CI CH CX Cl DA Cz Cl CV Ck Cj Cx DM Dc DO DN DM Da Do Dp
 
 06-larger
+1425
+A AS Bk DD Bm DF DE Bn DG Bp DI EZ Fs Ft HM If Jx LO Mg Mh OA PS Ql SE SF TW Up WI Ur TZ Us WL WM Xf WN Uu WM Xe Yw Yx Xf Xe Yx Yw aO aP bh cy eP fi hB iT iS jj lC mT nl nk nj pC pD qU rn tE uX vq xJ yc zv ABM ACe ADw AFP AGg AHy AJP AJO AKf ALy ANP ANQ AOi AQB ARS ASl AUC AVU AWm AYE AZX Aap AcI AdZ Aes AgL Ahd Aiw Aiv AkN Alg Alf Amx AoQ AoR Apj ArC Apl ArD Apm ArF ArG ArH
+
+

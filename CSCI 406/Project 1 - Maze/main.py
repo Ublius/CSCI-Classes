@@ -1,46 +1,124 @@
-import sys
 import networkx as nx
-# import matplotlib.pyplot as plt
+import sys
 
-# def get_transfer_time(line1, line2):
-#     if line1['type'] == line2['type'] and line1['color'] == line2['color']:
-#         return 0
-#     elif line1['type'] == line2['type']:
-#         return 5
-#     elif line1['color'] == line2['color']:
-#         return 2
-#     else:
-#         return 5
 
-# Read input
-inputLines = sys.stdin.read().strip().split('\n')
-firstLline = inputLines[0].split()
+def readInput():
+    inputLines = sys.stdin.read().strip().split('\n')
+    firstLine = inputLines[0].split()
+    startVillage = firstLine[2]
+    endVillage = firstLine[3]
 
-villages = int(firstLline[0])
-transit = int(firstLline[1])
+    return inputLines[1:], startVillage, endVillage
 
-startVillage = firstLline[2]
-endVillage = firstLline[3]
 
-graph = nx.Graph()
+def buildGraph(inputLines, startVillage, endVillage):
+    graph = nx.DiGraph()
+    adjDic = {}
 
-transitLines = []
-for line in inputLines[1:]:
-    village1, village2, color, transit_type = line.split()
-    transitLines.append((village1, village2, color, transit_type))
+    # Process each village pair and build the graph
+    for line in inputLines:
+        village1, village2, color, transitType = line.split()
 
-for line in transitLines:
-    village1, village2, color, type = line
-    travel_time = 10  # Travel time between neighboring villages
-    graph.add_edge((village1, color, type), (village2, color, type), weight=travel_time)
-    
-# try:
-#     shortest_path = nx.dijkstra_path(graph, startVillage, endVillage, weight='weight')
-#     shortest_path_length = nx.dijkstra_path_length(graph, startVillage, endVillage, weight='weight')
-#     print(shortest_path_length)
-#     print(" ".join(shortest_path))
-# except nx.NetworkXNoPath:
-#     print("NO PATH")                  
-                    
-# print(graph.edges(data=True)) 
+        # Create nodes for traveling from village1 to village2 and vice versa
+        # 0 = Leaving, 1 = Entering
+        node1L = (village1, village2, 0)  # Leaving village1, going to village2
+        node2E = (village1, village2, 1)  # Entering village2 from village1
+        node3L = (village2, village1, 0)  # Leaving village2, going to village1
+        node4E = (village2, village1, 1)  # Entering village1 from village2
 
+        # Add base edges with a weight of 10 for direct connections
+        graph.add_edge(node1L, node2E, weight=10)
+        graph.add_edge(node3L, node4E, weight=10)
+
+        # Connect start village to its leaving node and end village to its entering node
+        if village1 == startVillage:
+            graph.add_edge("start", node1L, weight=0)
+        if village1 == endVillage:
+            graph.add_edge(node4E, "end", weight=0)
+        if village2 == startVillage:
+            graph.add_edge("start", node3L, weight=0)
+        if village2 == endVillage:
+            graph.add_edge(node2E, "end", weight=0)
+
+        # Populate adjacency dictionary for future transition checks
+        if village1 in adjDic:
+            adjDic[village1] = adjDic[village1] + ((village2, color, transitType), )
+        else:
+            adjDic[village1] = ((village2, color, transitType), )
+        if village2 in adjDic:
+            adjDic[village2] = adjDic[village2] + ((village1, color, transitType), )
+        else:
+            adjDic[village2] = ((village1, color, transitType), )
+
+    return graph, adjDic
+
+
+def calculateCost(color, adjColor, transitType, adjTransitType):
+    if color == adjColor and transitType == adjTransitType:
+        return 0  # Same color and transit type
+    elif transitType == adjTransitType:
+        return 5  # Same transit type
+    elif color == adjColor:
+        return 2  # Same color
+    else:
+        return None  # No valid transition
+
+
+def addTransitionCosts(graph, adjDic):
+    for village, neighbors in adjDic.items():
+        for adjVillage, color, transitType in neighbors:
+            for adjAdjVillage, adjColor, adjTransitType in adjDic.get(adjVillage, []):
+                # Calculate the transition cost using the separate function
+                cost = calculateCost(color, adjColor, transitType, adjTransitType)
+
+                # Only add edges where a valid cost is found
+                if cost is not None and village != adjAdjVillage:
+                    # Define the nodes involved in this transition
+                    enter = (village, adjVillage, 1)  # Entering the adjacent village
+                    leave = (adjVillage, adjAdjVillage, 0)  # Leaving the adjacent village
+
+                    # Add the edge between entering and leaving nodes with the calculated cost
+                    graph.add_edge(enter, leave, weight=cost)
+
+
+def findShortestPath(graph, endVillage):
+    try:
+        # Calculate the shortest path length and the path itself
+        totalTime = nx.dijkstra_path_length(graph, "start", "end", weight="weight")
+        path = nx.dijkstra_path(graph, "start", "end", weight="weight")
+
+        # Output the total time to traverse
+        print(totalTime)
+
+        # Build the path, ignoring the 0 and 1 states for the final output
+        lst = []
+        for i in path:
+            if i == 'start':
+                continue
+            elif i == 'end':
+                continue
+            else:
+                lst.append(i[0])
+        lst.append(endVillage)
+        print(" ".join(lst[::2]))
+
+    except nx.NetworkXNoPath:
+        print("NO PATH")
+
+
+def main():
+    # Read input
+    inputLines, startVillage, endVillage = readInput()
+
+    # Build the graph and adjacency dictionary
+    graph, adjDic = buildGraph(inputLines, startVillage, endVillage)
+
+    # Add transition costs based on color and transit type
+    addTransitionCosts(graph, adjDic)
+
+    # Find and print the shortest path
+    findShortestPath(graph, endVillage)
+
+
+if __name__ == "__main__":
+    main()

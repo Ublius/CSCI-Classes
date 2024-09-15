@@ -27,8 +27,13 @@ int processConnection(int sockFd) {
     // Hint - don't forget to zero out the buffer each time you use it.
     DEBUG << "Calling read(" << sockFd << ", " << &buffer << ", " << MAX_LEN << ")" << ENDL;
     ssize_t bytesRead = read(sockFd, buffer, MAX_LEN);
-    std::string message(buffer, bytesRead);
-    DEBUG << "Received message of length " << bytesRead << ", containg the string " << '"' <<  message << '"' << ENDL;
+    size_t length = bytesRead;
+    std::string test(buffer); // Convert the buffer to a string
+    if (length > 0 && test[length - 1] == '\n') {
+        test[length - 1] = '\0'; // Remove the newline character
+        length--;
+    }
+    DEBUG << "Received message of length " << bytesRead << ", containg the string " << '"' <<  test << '"' << ENDL;
 
     // Display the message
     // INFO << "Received message: " << buffer << ENDL;

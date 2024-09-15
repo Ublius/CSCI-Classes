@@ -3,5 +3,4 @@
 Name:
 
 Compile: make
-Run: ./echo_s
-    * Opptional: -d [1-6]
+Run: ./echo_s -d [1-6]

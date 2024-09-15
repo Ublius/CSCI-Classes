@@ -2,5 +2,6 @@
 
 Name:
 
-Compile: make\n
+Compile: make
+
 Run: ./echo_s -d [1-6]

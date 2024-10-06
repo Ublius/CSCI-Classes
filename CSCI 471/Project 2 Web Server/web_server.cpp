@@ -88,7 +88,7 @@ int readRequest(int sockFd) {
 
   // Copy double endline
   char *header = (char *)malloc(numChars * sizeof(char));
-  memcpy(header + 0, buffer + 0, numChars);
+  memcpy(header, buffer, numChars);
   free(buffer);
 
   // First line of the header

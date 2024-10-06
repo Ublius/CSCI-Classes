@@ -1,0 +1,47 @@
+---
+title: "Quiz 1: Helper file"
+output: html_notebook
+---
+
+# You want to run the intro R code
+  
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# your code will be included in the html for this assignment
+knitr::opts_chunk$set(echo=TRUE) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+# Load the dataset
+
+```{r}
+data(Cars2020)
+
+```
+
+# Use the R Chunk below to write and run any code you need
+```{r}
+glimpse(Cars2020)
+
+tally(Size ~ Type, data = Cars2020)
+
+#favstats(Size ~ Type, data = Cars2020)
+tally(~Size, data = Cars2020)
+total_large = 21
+diff <- (11/110) - (5/110)
+diff
+
+gf_dotplot(~ Acc060, data = Cars2020)
+
+favstats(~ Height, data = Cars2020)
+```
+
+

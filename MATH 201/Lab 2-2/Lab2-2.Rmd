@@ -1,0 +1,357 @@
+---
+title: "Lab 2-2: Bootstrap Confidence Intervals"
+output: html_notebook
+---
+
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+
+### Objectives:
+
+For this lab you should...
+
+  - Generate bootstrap distributions to estimate 95% confidence intervals
+  - Use the percentile method to make P% confidence intervals for any P
+  - Interpret confidence intervals in context
+  
+# Part 1: Calculate a confidence interval for the proportion of green beads
+
+What is the proportion of green beads in the bin?  In this part of your lab assignment you will build a confidence interval to answer this question.
+
+This time, we do know the proportion, but it will not be revealed to you right away.
+
+**TASK 1.1** If you are completing this in the classroom, go to one of the bins and take one sample.  If you are completing this lab remotely, go to the link from the lecture video page.  Report the sample size and the sample estimate for your sample, using correct notation.
+
+    **Response**
+    
+To build the confidence interval, we must estimate the standard error of the statistic in 1.1.  You will do this by calculating the standard deviation of the bootstrap distribution.  
+
+**TASK 1.2** Describe the process of drawing a bootstrap sample for this example.  Be specific.
+
+  **Response**
+  
+**TASK 1.3** Once you have a bootstrap sample, what will you record from it to start generating the bootstrap distribution?
+
+  **Response**
+  
+**TASK 1.4**  Modify and run the code below to generate 2000 bootstrap statistics.  Report the approximate middle of your bootstrap distribution.
+
+    **Response**
+
+```{r}
+# reserve space for your bootstrap statistics
+
+#modify the value of 'NumberSamples'
+BootStats <- rep(NA, 2000)
+
+# generate bootstrap samples and save statistics
+
+# modify the values of 'NumberSamples', 'NumberWhite', 'NumberGreen', 'n'
+for(i in 1:2000){
+  TempSample <- sample(c(rep("White",54),rep("Green",46)), 
+                       size = 100,
+                       replace = T )
+  
+  BootStats[i] <- sum(TempSample=="Green")/100 # modify 'n'
+}
+
+# write some code here to determine the middle of your bootstrap distributing
+# Determine the middle of your bootstrap distribution (median)
+bootstrap_median <- median(BootStats)
+
+# Output the median
+#bootstrap_median
+# Calculate the 95% confidence interval
+lower_bound <- quantile(BootStats, 0.025)
+upper_bound <- quantile(BootStats, 0.975)
+
+# Output the median, standard error, and confidence interval
+list(
+  median = bootstrap_median,
+  standard_error = standard_error,
+  confidence_interval = c(lower_bound, upper_bound)
+)
+
+```
+
+**TASK 1.5** What is the standard error of your sample statistic?
+
+    **Response**
+
+```{r}
+
+```
+
+**TASK 1.6** Use your answers from 1.1 and 1.5 to estimate a 95% confidence interval.
+
+    **Response**
+    
+**TASK 1.7** Interpret your interval from 1.6 in context.
+
+    **Response**
+    
+**TASK 1.8** Across all sections of Math 201 this semester, we have 260 students creating intervals from this bead box in this manner.  How many of these intervals do you expect to capture the true population proportion?
+
+    **Response**
+
+# Part 2: Collect data and create a confidence interval to answer a research question 
+
+Consider the research questions below, all of which consider the population to be all math 201 students.
+
+  - What is the average number of credits students are taking this semester?
+  - How many hours of sleep did students get last night?
+  - What is the average height of all math 201 students?
+  - What is the average shoe size (in European sizing)?
+  - What is the average number of states visited?
+  - What is the average number of people texted in the last 24 hours?
+  - What is the average number of podcasts students subscribe to?
+  
+  
+You will choose one of these research questions to answer using data from your classmates.  
+
+**TASK 2.1** What research question did you choose?
+
+    **Response**
+    
+**TASK 2.2** What question should you ask people in order to answer this research question?
+
+    **Response**
+    
+**TASK 2.3** Go around the room and ask at least 15 people your question, recording their vector of responses here.  What kind of variable have you collected (Categorical or Quantitative)?
+
+    **Response**
+    
+```{r}
+MyResponses <- c(17, 15, 15, 18, 15, 14, 16, 15, 17, 16, 15, 17, 18, 15, 17)
+
+```
+
+**TASK 2.4** Create a visualization of your sample responses and describe the shape of the sample.
+
+    **Response**
+
+```{r}
+gf_histogram(~MyResponses, data = data.frame(MyResponses))
+```
+
+**TASK 2.5** Calculate and report the mean and standard deviation for your sample.
+
+    **Response**
+  
+```{r}
+# you may or may not need this code chunk, depending on what you code up in 2.4
+mean_response <- mean(MyResponses)
+sd_response <- sd(MyResponses)
+
+# Print the results
+mean_response
+sd_response
+
+```
+
+**TASK 2.6** Now generate your bootstrap distribution using at least 2000 bootstrap samples. Visualize your bootstrap distribution and describe the shape of the bootstrap distribution.
+
+    **Response**
+
+```{r}
+# reserve space for your bootstrap statistics
+BootStats2 <- rep(NA, 2000) # modify NumberSamples
+
+# generate bootstrap samples and save statistics
+for(i in 1:2000){ # Modify NumberSamples
+  TempSample <- sample(MyResponses, 
+                       size = 15, #modify n2
+                       replace = T )
+  BootStats2[i] <- mean(~TempSample)
+}
+
+# write some code here to visualize your bootstrap distribution
+gf_histogram(~BootStats2, data = data.frame(BootStats2))
+
+# write some code to calculate the standard error of the sample mean
+
+
+```
+
+
+**TASK 2.7** Use the percentile method to estimate the 95% confidence interval.
+
+    **Response**
+
+```{r}
+# Find the percentiles for a confidence interval based on the bootstrap distribution
+quantile(BootStats2, probs = c(0.025, 0.975)) # modify 'LowerPercentiles' and 'UpperPercentile'
+```
+
+**TASK 2.8** Using your vector of bootstrap means, calculate the standard error of the sample mean.
+
+    **Response**
+
+```{r}
+standard_error <- sd(BootStats2)
+
+# Print the standard error
+standard_error
+```
+
+**TASK 2.9** Now estimate the 95% confidence interval using the formula from class (stat - 2SE, stat + 2SE).
+
+    **Response**
+
+```{r}
+sample_mean <- mean(BootStats2)
+
+# Assuming standard_error is previously calculated
+# Calculate the 95% confidence interval using the formula
+lower_bound <- sample_mean - 2 * standard_error
+upper_bound <- sample_mean + 2 * standard_error
+
+# Print the confidence interval
+c(lower_bound, upper_bound)
+
+```
+
+**TASK 2.10**  Discuss any differences you observed between 2.7 and 2.8.  What could explain them (if you observed any).
+
+    **Response**
+
+
+# Part 3: Do people who had dogs growing up exercise more?
+
+At the beginning of the semester your class answered questions in the class data survey.  We will now use your responses to answer the research question: "Do people who grew up with dogs exercise more?"
+
+**TASK 3.1** What is the explanatory variable and what is the response variable?
+
+    **Response**
+    
+**TASK 3.2** Which parameter are we going to make inference about?  Use correct notation.
+
+    **Response**
+    
+**TASK 3.3** Load the dataset into R.  Write code to determine how many observations are there within each group (Dog - Yes/No)?  Hint: tally.
+
+    **Response**
+
+```{r}
+ClassData <- read.csv(file.choose())
+glimpse(ClassData)
+
+# write code to determine sample size for Dog (Yes/No) groups
+sample_sizes <- ClassData %>%
+  group_by(Dog) %>%
+  summarise(SampleSize = n())
+
+# Print the sample sizes for each group
+print(sample_sizes)
+
+```
+
+**TASK 3.4** Create a visualization of the data and summarize what you see here, specifically discuss what your visualization reveals about the answer to your research question.
+
+    **Response** 
+    
+```{r}
+gf_histogram(ExerciseMinutes ~ Dog, 
+           data = ClassData, 
+           fill = ~ Dog)
+```
+
+
+**TASK 3.5** What is your sample estimate for the population parameter?  Use correct notation, and the order can be (yes) - (no).
+
+    **Response** 
+
+```{r}
+mean_yes <- mean(ClassData$ExerciseMinutes[ClassData$Dog == "Yes"])
+mean_no <- mean(ClassData$ExerciseMinutes[ClassData$Dog == "No"])
+
+# Calculate the difference
+difference <- mean_yes - mean_no
+
+# Print the result rounded to three decimal places
+rounded_difference <- round(difference, 3)
+print(rounded_difference)
+```
+
+**TASK 3.6** Modify the code below to generate a bootstrap distribution using at least 2000 samples. 
+
+    **Response**
+
+```{r}
+# reserve space for your bootstrap statistics
+BootStats3 <- rep(NA, 2000) # modify NumberSamples
+
+# generate bootstrap samples and save statistics
+for(i in 1:2000){ # modify NumberSamples
+  TempSample <- rbind(sample_n(ClassData  |> filter(Dog =="Yes"), 
+                       size = 102,  # modify n_yes to be sample size for Dog Yes
+                       replace = T ),
+                      sample_n(ClassData  |> filter(Dog =="No"), 
+                       size = 22,  # modify n_no to be sample size for Dog No
+                       replace = T )
+  )
+
+  BootStats3[i] <- diff(mean(ExerciseMinutes ~ Dog, data = TempSample))
+}
+
+# write some code here to visualize your bootstrap distribution
+gf_histogram(~BootStats3, data = data.frame(BootStats3))
+
+```
+
+**TASK 3.7** Use the code chunk below to calculate and report the standard error of the difference in sample means.  Remember that the standard error is the standard deviation of a statistic.
+
+    **Response**
+    
+```{r}
+standard_error <- sd(BootStats3)
+
+# Print the standard error rounded to three decimal places
+#rounded_standard_error <- round(standard_error, 3)
+print(standard_error)
+```
+
+
+**TASK 3.8**	Using percentiles, find a 95% confidence interval for the difference of population means.
+
+    **Response**
+    
+```{r}
+#c(quantile(BootStats3,quantile(BootStats3, 0.025)), quantile(BootStats3,quantile(BootStats3, 0.975)))  # modify 'LowerProp' and 'UpperProp'
+
+lower_bound <- quantile(BootStats3, 0.025)
+upper_bound <- quantile(BootStats3, 0.975)
+confidence_interval <- c(lower_bound, upper_bound)
+print(confidence_interval)
+```
+
+**TASK 3.9** Find a 98% confidence interval for the difference of population means.  
+
+    **Response**
+    
+```{r}
+lower_bound_98 <- quantile(BootStats3, 0.01)
+upper_bound_98 <- quantile(BootStats3, 0.99)
+
+# Print the confidence interval rounded to three decimal places
+confidence_interval_98 <- c(lower_bound_98, upper_bound_98)
+#rounded_confidence_interval_98 <- round(confidence_interval_98, 3)
+print(confidence_interval_98)
+```
+
+**TASK 3.10** At 95% confidence, is there a difference between the average time spent exercising when comparing folks who had dogs growing up with folks who didn’t have dogs growing up? 
+
+What about at 98% confidence?
+
+    **Response**
+

@@ -4,4 +4,4 @@ Name:
 
 Compile: make
 
-Run: ./
+Run: ./web_server -d[1-6]

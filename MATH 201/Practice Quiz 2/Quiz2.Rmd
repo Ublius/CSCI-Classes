@@ -1,0 +1,64 @@
+---
+title: "Quiz 2: Helper file"
+output: html_notebook
+---
+
+# You want to run the intro R code
+  
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# your code will be included in the html for this assignment
+knitr::opts_chunk$set(echo=TRUE) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+# Load the dataset
+
+```{r}
+data(BikeCommute)
+
+
+```
+
+# You may or many not want to use the code chunk below
+```{r}
+glimpse(BikeCommute)
+favstats( ~ Minutes, data = BikeCommute)
+```
+
+
+# Consider the code chunk below that generates a bootstrap distribution for a population mean.  You will have to modify it to accomplish the tasks set forth in your exam.
+```{r}
+# reserve space for your bootstrap statistics
+BootStats <- rep(NA, 2000)           # modify this line
+
+# generate bootstrap samples and save statistics
+for(i in 1:2000){                    # modify this line
+  TempSample <- sample_n(BikeCommute,         # modify this line
+                       size = 56,              # modify this line
+                       replace = T )
+  BootStats[i] <- mean(~Minutes, data = TempSample) 
+}
+
+sd(BootStats)
+
+```
+
+# Again, here's another code chunk in case you want to use it.
+```{r}
+# this is code calculate the Pth percentile from a vector named MyVector
+
+quantile(BootStats, probs = c(0.05, 0.95))
+quantile(BootStats, 0.05)
+```
+
+
+

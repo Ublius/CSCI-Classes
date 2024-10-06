@@ -3,12 +3,7 @@
 // * -- Accepts TCP connections and serves a web page.
 // **************************************************************************************
 #include "web_server.h"
-#include <cstring>
-#include <string>
-#include <unistd.h>
-#include <iostream>
 #include <regex>
-#include <cstdio>
 #include <fstream>
 #include <sys/stat.h>
 
@@ -52,12 +47,6 @@ int processConnection(int sockFd) {
   }
   return 0;
 }
-    
-void copyBuffer(char *dest, char *source, int n, int offsetDest, int offsetSource) {
-  for (int i = 0; i < n; i++) {
-    dest[offsetDest + i] = source[offsetSource + i];
-  }
-}
 
 // *****************************************************************************
 // - Read the header
@@ -99,7 +88,7 @@ int readRequest(int sockFd) {
 
   // Copy double endline
   char *header = (char *)malloc(numChars * sizeof(char));
-  copyBuffer(header, buffer, numChars, 0, 0);
+  memcpy(header + 0, buffer + 0, numChars);
   free(buffer);
 
   // First line of the header
@@ -107,7 +96,7 @@ int readRequest(int sockFd) {
   numChars = result.prefix().length() + 2; // 2 is the length of the endline
   DEBUG << "Found endline at position " << numChars << ENDL;
   char *firstLine = (char *)malloc(numChars * sizeof(char));
-  copyBuffer(firstLine, header, numChars, 0, 0);
+  memcpy(firstLine, header, numChars);
   free(header);
 
   // Check if the first line is a GET request
@@ -138,18 +127,9 @@ int readRequest(int sockFd) {
 // Send one line (including the line terminator <LF><CR>)
 // *****************************************************************************
 void sendLine(int sockFd, std::string line) {
-  int l = line.length();
-  char buffer[l + 2];
-  for (int i = 0; i < l; i++) {
-    buffer[i] = line[i];
-  }
-
-  buffer[l] = '\n';
-  buffer[l+1] = '\r';
-
-  DEBUG << "Sending " << l+2 << " bytes to socket " << sockFd << ENDL;
-  int bytesWritten = write(sockFd, buffer, l+2);
-  if (bytesWritten != l+2) {
+  std::string formattedLine = line + "\r\n"; // Ensure proper CRLF termination
+  int bytesWritten = write(sockFd, formattedLine.c_str(), formattedLine.size());
+  if (bytesWritten != static_cast<int>(formattedLine.size())) {
     ERROR << "Error writing to client" << ENDL;
     exit(1);
   }
@@ -192,8 +172,7 @@ void serveFile(int sockFd, std::string filename) {
   }
 
   // Send the content length
- sendLine(sockFd, "content-length: " + std::to_string(len));
-
+  sendLine(sockFd, "content-length: " + std::to_string(len));
 
   // Send a blank line to terminate the header
   sendLine(sockFd, "");
@@ -211,7 +190,7 @@ void serveFile(int sockFd, std::string filename) {
   }
 
   char *buffer = (char *)malloc(MAX_LEN * sizeof(char));
-  bzero(buffer, MAX_LEN);
+  memset(buffer, 0, MAX_LEN);
   std::streamsize bytesRead;
   size_t bytesWritten = 0, totalBytesRead = 0;
 
@@ -233,7 +212,7 @@ void serveFile(int sockFd, std::string filename) {
       }
       bytesWritten += 1;
     }
-    bzero(buffer, MAX_LEN);
+    memset(buffer, 0, MAX_LEN);
     DEBUG << std::endl << "Total bytes written: " << bytesWritten << ENDL;
   }
 
@@ -251,12 +230,10 @@ void serveFile(int sockFd, std::string filename) {
   file.close();
 }
 
-
 // **************************************************************************************
 // * main()
 // * - Sets up the sockets and accepts new connection until processConnection() returns 1
 // **************************************************************************************
-
 int main (int argc, char *argv[]) {
 
   // ********************************************************************

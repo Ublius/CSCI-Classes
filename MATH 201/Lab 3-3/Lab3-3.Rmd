@@ -1,0 +1,278 @@
+---
+title: "Lab 3-2: A closer look at hypothesis testing"
+output: html_notebook
+---
+
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# your code will be included in the html for this assignment
+knitr::opts_chunk$set(echo=TRUE) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+data <- read.csv(file.choose())
+
+```
+
+### Objectives:
+
+For this lab you should...
+
+  - Interpret Type I and Type II errors in hypothesis tests
+  - Recognize a significance level as measuring the tolerable chance of making a Type I error
+  - Explain the potential problem with significant results when doing multiple tests
+  - Recognize the value of replicating a study that shows significant results
+  - Recognize that statistical significance is not always the same as practical significance
+  - Recognize that larger sample sizes make it easier to achieve statistical significance if the alternative hypothesis is true
+  - Determine the decision for a two-tailed hypothesis test from an appropriately constructed confidence interval
+  - Demonstrate an understanding of estimation and testing and how they fit together
+
+# Part 1: Did people's beliefs about whether they are likely to have children changed between 2018 and 2021? 
+
+We have data from Pew Research Center studies from 2018 and from 2021 that we can use to answer this question. 
+
+**TASK 1.1** What are the explanatory and response variables needed to answer this research question?
+
+    **Response**
+
+**TASK 1.2** Write the null and alternative hypotheses, defining any parameters you use.
+
+    **Response**
+
+**TASK 1.3**  The data from two polls are summarized below in a two-way table.  
+
+|      |  Children likely | Children not likely |
+|:----:|:----------------:|:-------------------:|
+| 2021 |      712         |     905             |
+| 2018 |      526         |     895             |
+
+Calculate the sample statistic.
+
+    **Response**
+
+**TASK 1.4** Using StatKey, generate a randomization distribution using at least 3000 randomization samples.  Now use your randomization distribution to calculate the p-value and use it to make your generic conclusion.
+
+    **Response**
+
+**TASK 1.5** Make your conclusion in context.
+
+    **Response**
+
+
+# Part 2 Reproducing the results of a psychology study
+
+A psychology experiment in 2008 showed that young adults demonstrated an increased preference for their parents after completing an exercise about death as compared to an exercise about dental pain.   In the study, participants were asked to allocate phone minutes to talk to a parent after completing a randomly assigned activity about either death or dental pain.  A statistical test was performed, and the results were significant with a p-value of 0.03.
+
+
+Another group of researchers replicated the experiment to see if the results could be reproduced.  
+
+In this activity we analyze a simplified version of their data.   Assume our goal is to show that young adults want to spend more minutes talking with their parents when they are thinking about mortality as opposed to dental pain.
+
+**TASK 2.1** What are the correct null and alternative hypotheses? Make sure you define the parameters you use.
+
+    **Response**
+
+
+**TASK 2.2**  The data set (PreferenceForParents.csv) is available on Canvas.  You will need to load this dataset into StatKey for analysis.  After choosing the correct parameter option for creating a randomization distribution, select the 'Upload File' option and follow the directions.
+
+What is the value of the sample statistic from this experiment? 
+
+    **Response**
+    
+```{r}
+
+mean(MinParent ~ Treatment, data=data)
+#tally(MinParent~Treatment, data=data)
+
+# Calculate the observed difference in means
+observed_diff <- mean(data$MinParent[data$Treatment == "mortality"]) - 
+                 mean(data$MinParent[data$Treatment == "dental pain"])
+
+# Set number of randomization samples
+NumberRandomizationSamples <- 4000
+
+# Initialize a vector to hold the randomization statistics
+RandomizationDiffs <- rep(NA, NumberRandomizationSamples)
+
+# Randomization loop
+for(i in 1:NumberRandomizationSamples) {
+  
+  # Generate a randomization sample by shuffling the treatment assignments
+  shuffled_treatment <- sample(data$Treatment)
+  
+  # Calculate the means for the shuffled groups
+  mean_mortality <- mean(data$MinParent[shuffled_treatment == "mortality"])
+  mean_dental <- mean(data$MinParent[shuffled_treatment == "dental pain"])
+  
+  # Store the difference in means for this randomization sample
+  RandomizationDiffs[i] <- mean_mortality - mean_dental
+}
+
+# Calculate the p-value: proportion of randomization samples as extreme as observed
+p_value <- mean(abs(RandomizationDiffs) >= abs(observed_diff))
+
+# Print the results
+cat("Observed Difference in Means:", observed_diff, "\n")
+cat("P-value:", p_value, "\n")
+
+
+```
+
+    
+**TASK 2.3** Create a randomization distribution with at least 4000 randomization samples and calculate the p-value.
+
+    **Response**
+    
+**TASK 2.4** What is the generic conclusion for this test, using a significance level of 0.05?
+
+    **Response**
+
+**TASK 2.5** What is the conclusion in context?
+
+    **Response**
+
+
+**TASK 2.6** If young adults really do want to talk more with their parents after thinking about mortality, did our analysis make a Type I error, a Type II error, or no error at all?  
+
+    **Response**
+
+**TASK 2.7** If young adults really have no preference related to their parents after thinking about mortality, which experiment (the original or ours) made an error, and what type was it?
+
+    **Response**
+
+
+
+# Part 3: Intuition about significance
+
+If we are flipping a coin, how large of a  proportion of heads is needed to conclude the coin is biased?  If the coin is fair, the proportion of heads should be 0.5, so our null and alternative hypotheses are:
+
+$H_0: p = 0.5$ vs $H_a: p > 0.5$
+
+**TASK 3.1** For each situation below, make a guess about whether or not you think the sample outcome would sufficient to reject the null. It's ok if your guess turns out to be wrong!
+
+|          Situation         | Your Guess |
+|:--------------------------:|:----------:|
+|   12 Heads in 20 flips     |     ???    |
+|   30 Heads in 50 flips     |     ???    |
+|   60 Heads in 100 flips    |     ???    |
+|   35 Heads in 50 flips     |     ???    |
+|   53 Heads in 100 flips    |     ???    |
+|   530 Heads in 1000 flips  |     ???    |
+|   510 Heads in 1000 flips  |     ???    |
+
+**TASK 3.2** The table below presents the standard error for each sample proportion.  Use the standard error to find the standardized test statistic for each situation.  Next, use the standard normal distribution to find the p-value for each case above and indicate, at a 5% level, if there is statistically significant evidence that the coin is biased.  
+
+
+|          Situation         |    SE      |  z-score   | p-value  | conclusion |
+|:--------------------------:|:----------:|:----------:|:----------:|:----------:|
+|   12 Heads in 20 flips     |  0.112     |     ???    |     ???    |     ???    | 
+|   30 Heads in 50 flips     |  0.071     |     ???    |     ???    |     ???    |
+|   60 Heads in 100 flips    |  0.050     |     ???    |     ???    |     ???    |
+|   35 Heads in 50 flips     |  0.071     |     ???    |     ???    |     ???    |
+|   53 Heads in 100 flips    |  0.050     |     ???    |     ???    |     ???    |
+|   530 Heads in 1000 flips  |  0.016     |     ???    |     ???    |     ???    |
+|   510 Heads in 1000 flips  |  0.016     |     ???    |     ???    |     ???    |
+
+```{r}
+# Define the situations and their respective sample proportions and standard errors
+situations <- data.frame(
+  Heads = c(12, 30, 60, 35, 53, 530, 510),
+  Flips = c(20, 50, 100, 50, 100, 1000, 1000),
+  SE = c(0.112, 0.071, 0.050, 0.071, 0.050, 0.016, 0.016)
+)
+
+# Hypothesized population proportion
+p0 <- 0.5
+
+# Initialize vectors to store z-scores and p-values
+z_scores <- numeric(nrow(situations))
+p_values <- numeric(nrow(situations))
+conclusions <- character(nrow(situations))
+
+# Calculate z-scores and p-values
+for (i in 1:nrow(situations)) {
+  # Sample proportion
+  p_hat <- situations$Heads[i] / situations$Flips[i]
+  
+  # Calculate z-score
+  z_scores[i] <- (p_hat - p0) / situations$SE[i]
+  
+  # Calculate p-value (one-tailed test)
+  p_values[i] <- 1 - pnorm(z_scores[i])  # Using the cumulative normal distribution
+  
+  # Determine conclusion based on significance level of 0.05
+  if (p_values[i] < 0.05) {
+    conclusions[i] <- "Reject H0 (significant evidence of bias)"
+  } else {
+    conclusions[i] <- "Fail to reject H0 (no significant evidence of bias)"
+  }
+}
+
+# Add z-scores, p-values, and conclusions to the dataframe
+situations$z_score <- z_scores
+situations$p_value <- round(p_values, 3)
+situations$conclusion <- conclusions
+
+# Print the final table
+print(situations)
+```
+
+
+**TASK 3.3** Examine the results from the p-values.  Consider each of the factors below and decide what impact it has, if any, on whether a sample shows significance.
+
+  a.	Increasing the sample size  
+
+    **Response**
+    
+  b.  Increasing the sample proportion 
+
+    **Response**
+    
+  c.	Increasing the number of simulated samples in the randomization distribution 
+
+    **Response**
+
+
+# Part 4: Confidence intervals and hypothesis tests
+
+A survey was administered in Atlanta, GA to learn about commuting habits.  500 respondents answered the question: how long is your daily commute in minutes?  The data is on StatKey under bootstrap confidence intervals for a single mean.  Make sure you select the data set named 'Atlanta Commute (Time)' dataset in StatKey.
+
+**TASK 4.1** Use StatKey to calculate a 98% confidence interval using the percentile method.  Make sure you generate at least 3000 bootstrap samples.
+
+    **Response**
+
+**TASK 4.2** If we planned to use this confidence interval to determine the decision for a two-sided hypothesis test, what significance level would we use for the hypothesis test? 
+
+    **Response**
+
+**TASK 4.3** Using your interval from 4.1 and the significance level you chose in 4.2, which of the below null value(s) would be rejected in a two-sided test?
+
+  a. 30
+  b. 26
+  c. 32
+  d. 31
+  e. 28
+
+Assume a different researcher collected 500 commute times in Philadelphia with the intent of testing the below hypotheses: 
+
+$H_0: \mu = 20$ vs $H_a:\mu > 20$
+
+The p-value for her test was 0.006.
+
+**TASK 4.4** Based on the same sample, she calculates a 95% confidence interval.  Which of the statements below must be true?
+
+  a. 20 is a value in the confidence interval
+  b. The confidence interval is entirely larger than 20, for example (22, 28).
+  c. The confidence interval is entirely lower than 20, for example (14, 19).
+
+
+# Data Sources:
+
+ - Part 1: https://www.pewresearch.org/fact-tank/2021/11/19/growing-share-of-childless-adults-in-u-s-dont-expect-to-ever-have-children/
+ - Part 2: Cox, C.R., Arndt, J., Pyszczynski, T., Greenberg, J., Abdollahi, A., & Solomon, S. (2008). Terror management and adults' attachment to their parents: The safe haven remains. Journal of Personality and Social Psychology, 94(4), 696-717.

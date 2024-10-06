@@ -1,0 +1,265 @@
+---
+title: "Lab 3-2: Hypothesis testing from start to finish"
+output: html_notebook
+---
+
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# your code will be included in the html for this assignment
+knitr::opts_chunk$set(echo=TRUE) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+### Objectives:
+
+For this lab you should...
+
+  - Recognize that a randomization distribution shows what is likely to happen by random chance if the null hypothesis is true
+  - Use technology to create a randomization distribution
+  - Interpret a p-value as the proportion of samples that would give a statistic as extreme as the observed sample, if the null hypothesis is true
+  - Distinguish between one-tailed and two-tailed tests in finding p-values
+  - Find a p-value from a randomization distribution
+  - Demonstrate an understanding of the concept of statistical significance
+  - Make a formal decision in a hypothesis test by comparing a p-value to the significance level
+  - State the conclusion to a hypothesis test in context
+  - Make a less formal decision that reflects the strength of evidence in a p-value
+  - Conduct a hypothesis test for a variety of situations
+
+
+# Part 1: Are Stormy Marmot's predictions better than a random 50-50 chance?
+
+Every year in Aurora, Colorado a yellow-bellied marmot by the name of Stormy makes a prediction about the end of winter.  If he comes out of his burrow and sees his shadow he predicts six more weeks of winter.  If he does not see his shadow, his prediction is an early spring.  In the ten years from 2013 to 2022 he has made the below predictions:
+
+| Year |	Prediction   |	March Temperature |	Prediction accuracy |
+|:----:|:-------------:|:------------------:|:-------------------:|
+| 2023 | More winter   |  Below normal	    |    Correct          |
+| 2022 | Early spring  |  Below normal      |    Incorrect        |
+| 2021 | More winter   |  Below normal      |    Correct          |
+| 2020 | More winter   |  Above normal      |    Incorrect        |
+| 2019 | More winter   |  Below normal      |    Correct          |
+| 2018 | Early spring  |  Above normal      |    Correct          |
+| 2017 | Early spring  |  Above normal      |    Correct          |
+| 2016 | Early spring  |  Above normal    	|    Correct          |
+| 2015 | Early spring  |  Above normal    	|    Correct          |
+| 2014 | More winter   |  Above normal	    |    Incorrect        |
+
+
+
+**TASK 1.1**	What are the correct null and alternative hypotheses to answer the research question posed in the section title?  Hint – what is p if his predictions are random?
+
+    **Response**
+  $H_0$:					
+  $H_a$:
+
+**TASK 1.2** What is $\hat{p}$ when considering this example?
+
+    **Response**
+
+
+**TASK 1.3**.	To create a randomization distribution, we must determine what the distribution of p-hat is if his prediction is random.  We will use virtual coins, which have a true 50% chance of being heads.  Go to justflipacoin.com.   
+
+How many times will you need to flip this penny to create one sample statistic for the randomization distribution?
+  
+    **Response**
+
+
+**TASK 1.4** Now flip the penny that many times.  Pretend that getting a heads with the coin is equivalent to Stormy making a correct prediction.   What was your p-hat? 
+
+    **Response**
+
+**TASK 1.5** Did your sample make as many correct predictions as Stormy Marmot? 
+
+    **Response**
+
+**TASK 1.6** Now we will go big and have R create many many more statistics for our randomization distribution. Modify and run the code below to correctly generate 2000 randomization samples and save the sample proportion from each.
+
+What do you expect the center of the randomization to be?
+
+  **Response**
+
+```{r}
+# save space for the randomization statistics
+RandomizationProps <- rep(NA, 2000) # modify NumberRandomizationSamples
+
+for(i in 1:2000){ # modify NumberRandomizationSamples
+  
+  # generate a randomization sample assuming the null is true
+  TempSample <- sample(c("Correct","Incorrect"), 
+                       prob = c(0.5, 0.5), # modify null proportions of correct/incorrect
+                       size = 10, # modify n, sample size
+                       replace = T) 
+  
+  # save the proportion of correct from the randomization sample
+  RandomizationProps[i] <- sum(TempSample == "Correct")/10 # modify n, the sample size
+}
+
+# write code here to visualize your randomization distribution
+mean(RandomizationProps >= 0.7)
+
+```
+
+
+
+**TASK 1.7** Use your randomization distribution to find the p-value. Remember that the p-value is defined to be the proportion of statistics under the null that are as extreme or more extreme than the observed sample statistic.
+
+    **Response**
+
+```{r}
+# in place of ? in the code below, use one of the following, depending on your alternative hypothesis: >=, <=.
+# also modify SampleStatistic and NumberRandomizationSamples
+
+sum(RandomizationProps ? SampleStatistic)/NumberRandomizationSamples
+```
+
+**TASK 1.8** Interpret the p-value in context by completing the sentence below:
+
+    **Response** If the marmot is choosing randomly, the chance that he would correctly predict the end of winter ___ times out of ___ , or more, is ________.
+
+
+**TASK 1.9** Let’s say that in 2023 Stormy makes a correct prediction, bringing his record to 8 correct of 11.  Modify and use the code below to generate a new randomization distribution for this scenario and visualize it:
+
+```{r}
+# save space for the randomization statistics
+RandomizationProps2 <- rep(NA, 2000) # modify NumberRandomizationSamples
+
+for(i in 1:2000){ # modify NumberRandomizationSamples
+  
+  # generate a randomization sample assuming the null is true
+  TempSample <- sample(c("Correct","Incorrect"), 
+                       prob = c(0.5, 0.5), # modify null proportions of correct/incorrect
+                       size = 11, # modify n, sample size
+                       replace = T) 
+  
+  # save the proportion of correct from the randomization sample
+  RandomizationProps2[i] <- sum(TempSample == "Correct")/11 # modify n, the sample size
+}
+
+# write code to visualize your new randomization distribution
+
+gf_histogram(~ RandomizationProps2)
+
+
+```
+
+ 
+**TASK 1.10** Using the new data and the visualization of the randomization distribution, what is our sample $\hat{p}$ and the approximate p-value for testing the same hypothesis we wrote in question 1?
+
+    **Response**
+
+```{r}
+mean(RandomizationProps2 >= (8/11))
+```
+
+# Part 2: Pose your own research questions.
+
+For this part, you must pose two research questions you can answer using data you collect yourself:
+
+  - one hypothesis test about a difference in proportions
+  - one hypothesis test about a single proportion
+  
+First, think of two questions you can ask people in your life that will each have two possible answers.  Examples:  Do you live on campus?  Can you ride a unicycle? Do you have an iguana? (please do not choose exactly these questions, come up with your own!) Each question should have exactly two options for the answer, and you should choose questions that you think people will not all answer the same (very few people have iguanas, for example).
+
+Please do not ask sensitive questions that people may not be comfortable asking, for example questions about illegal drug use, gender or grades.
+
+**TASK 2.1** What two questions are you going to ask, and who are you going to ask?
+
+    **Response**
+    
+**TASK 2.2**  Choose one of the questions.  What is a research question you could pose and then answer based on the class' responses to only that question?
+
+    **Response**
+    
+**TASK 2.3** Translate that research question into a set of hypotheses, using correct notation.
+
+  **Response: $H_0$**
+  
+  **Response: $H_a$**
+
+
+    
+**TASK 2.4**  Now consider both of the questions together.  What is a research question you pose then answer based on the class' responses?
+
+    **Response**
+    
+**TASK 2.5** Translate that research question into a set of hypotheses, using correct notation.
+
+  **Response: $H_0$**
+  
+  **Response: $H_a$**
+  
+# Part 3: Collect data
+  
+**TASK 3.1** Collect the data by walking around the room and and organize it using a two-way table, letting your first question be on the rows and your second be on the columns.  Each cell should contain the number of people that gave that combination of answers.  For example, if I asked "do you live on campus?" and "Did you drive to class today", my table would look like this:
+
+|                   | Drove  | Not Drove |
+|:-----------------:|:------:|:---------:|
+| Live on campus    |  3     |     10    |
+| Not live on campus|  14    |     5     |
+
+    **Response** Summarize your data here
+
+|             | Q2Answer1  | Q2Answer2 |
+|:-----------:|:----------:|:---------:|
+| Q1Answer1   |     ?      |    ?      |
+| Q1Answer2   |     ?      |    ?      |
+
+# Part 4: Answer your first research question
+
+**TASK 4.1** Repeat your first research question from 2.3 and the corresponding hypotheses here:
+
+    **Response**
+
+**TASK 4.2** Using your class data, what is the corresponding sample statistic?  Include proper notation.
+
+    **Response**
+    
+**TASK 4.3** Use StatKey to calculate the p-value for your hypothesis test.
+
+    **Response**
+    
+**TASK 4.4** Interpret the p-value.
+
+    **Response** If the true population proportion is ____, then the chance of observing a sample proportion of ____ or any value ______ is _______.
+  
+**TASK 4.5** Based on your p-value, make a generic conclusion.
+
+    **Response**
+    
+**TASK 4.6** Make your conclusion in context.
+
+    **Response**
+
+# Part 5: Answer your second research question  
+
+**TASK 5.1** Repeat your second research question from 2.5 and the corresponding hypotheses here:
+
+    **Response**
+
+**TASK 5.2** Using your class data, what is the corresponding sample statistic?  Include proper notation.
+
+    **Response**
+    
+**TASK 5.3** Use StatKey to calculate the p-value for your hypothesis test.
+
+    **Response**
+    
+**TASK 5.4** Interpret the p-value.
+
+    **Response** 
+    
+  
+**TASK 5.5** Based on your p-value, make a generic conclusion.
+
+    **Response**
+    
+**TASK 5.6** Make your conclusion in context.
+
+    **Response**

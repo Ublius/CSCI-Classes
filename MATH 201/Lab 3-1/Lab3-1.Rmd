@@ -1,0 +1,230 @@
+---
+title: 'Lab 3-1: Introduction to hypothesis tests'
+output: html_notebook
+---
+
+```{r, echo = F, message = F}
+# Run this code chunk before you do anything else!
+
+# Clear Workspace
+rm(list = ls()) 
+
+# load packages we typically use for this class.
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data)
+
+```
+
+### Objectives:
+
+For this lab you should...
+
+  - specify null and alternative hypotheses based on a question of interest, defining relevant parameters.
+  - recognize that hypothesis tests examine whether sample data provide sufficient evidence to refute the null and support the alternative.
+  - compare the strength of evidence that different samples have about the same hypothesis.  
+ 
+
+# Part 1: Get the data ready
+
+Read the information about the dataset PASeniors in the Canvas quiz, then load the data here and remove incomplete observations using the cod chunk below.
+
+```{r}
+data(PASeniors)
+
+PASeniors <- PASeniors |>
+   na.omit()
+```
+
+# Part 2: Investigate research questions.
+
+
+### A:  
+
+On average, do students spend more than 10 hours per week watching TV?
+
+**TASK 2.A.1** Translate this research question into the correct set of hypotheses.
+
+  **Response**
+  
+**TASK 2.A.2** Generate an appropriate visualization to explore the data as they relate to your hypotheses.  You will need to copy-paste this visualization into Canvas.
+
+  **Response**
+  
+```{r}
+gf_boxplot(~ TVHours, data = PASeniors)
+```
+
+  
+**TASK 2.A.3** Calculate the relevant sample statistic from the data.
+
+  **Response**
+  
+```{r}
+mean(~ TVHours, data=PASeniors)
+```
+
+**TASK 2.A.4** Does your sample appear consistent with the alternative hypothesis?
+
+  A. Yes, this sample could be consistent with the alternative.
+  B. No, this sample could not be consistent with the alternative
+
+
+
+### B:  
+
+Do more than 20% of PA high school students take the bus to school?
+
+**TASK 2.B.1** Translate this research question into the correct set of hypotheses.
+
+  **Response**
+  
+**TASK 2.B.2** Generate an appropriate visualization to explore the data as they relate to your hypotheses.  You will need to copy-paste this visualization into Canvas.
+
+  **Response**
+  
+```{r}
+gf_bar(~ GetToSchool, data= PASeniors)
+tally(~GetToSchool, data=PASeniors)
+```
+
+  
+**TASK 2.B.3** Calculate the relevant sample statistic from the data.
+
+  **Response**
+  
+```{r}
+
+```
+
+**TASK 2.B.4** Does your sample appear consistent with the alternative hypothesis?
+
+  A. Yes, this sample could be consistent with the alternative.
+  B. No, this sample could not be consistent with the alternative
+  
+
+
+
+
+### C:  
+
+ Do vegetarians get more sleep on the weekends, compared to non-vegetarians?
+
+**TASK 2.C.1** Translate this research question into the correct set of hypotheses.
+
+  **Response**
+  
+**TASK 2.C.2** Generate an appropriate visualization to explore the data as they relate to your hypotheses.  You will need to copy-paste this visualization into Canvas.
+
+  **Response**
+  
+```{r}
+gf_boxplot(Sleep2 ~ Vegetarian, data = PASeniors)
+```
+
+  
+**TASK 2.C.3** Calculate the relevant sample statistic from the data.
+
+  **Response**
+  
+```{r}
+favstats(Sleep2 ~ Vegetarian, data = PASeniors)
+9.054315-9.083333
+```
+
+**TASK 2.C.4** Does your sample appear consistent with the alternative hypothesis?
+
+  A. Yes, this sample could be consistent with the alternative.
+  B. No, this sample could not be consistent with the alternative
+  
+
+
+
+### D:  
+
+Research Question: Are vegetarians more likely to have allergies?
+
+
+**TASK 2.D.1** Translate this research question into the correct set of hypotheses.
+
+  **Response**
+  
+**TASK 2.D.2** Generate an appropriate visualization to explore the data as they relate to your hypotheses.  You will need to copy-paste this visualization into Canvas.
+
+  **Response**
+  
+```{r}
+gf_bar(Allergies~Vegetarian,data=PASeniors)
+gf_bar( ~ Allergies, fill = ~ Vegetarian, data = PASeniors, position = position_dodge()) 
+```
+
+  
+**TASK 2.D.3** Calculate the relevant sample statistic from the data.
+
+  **Response**
+  
+```{r}
+tally(Vegetarian~Allergies, data = PASeniors)
+
+```
+
+**TASK 2.D.4** Does your sample appear consistent with the alternative hypothesis?
+
+  A. Yes, this sample could be consistent with the alternative.
+  B. No, this sample could not be consistent with the alternative
+  
+
+### E:
+
+Research Question: Is there a correlation between the number of hours that students spend hanging out with friends and the number of hours they spend doing homework?
+
+**TASK 2.E.1** Translate this research question into the correct set of hypotheses.
+
+  **Response**
+  
+**TASK 2.E.2** Generate an appropriate visualization to explore the data as they relate to your hypotheses.  You will need to copy-paste this visualization into Canvas.
+
+  **Response**
+  
+```{r}
+gf_point(HWHours~HangHours, data=PASeniors)
+gf_point(HangHours~HWHours, data=PASeniors)
+```
+
+  
+**TASK 2.E.3** Calculate the relevant sample statistic from the data.
+
+  **Response**
+  
+```{r}
+cor(HangHours~HWHours, data=PASeniors)
+```
+
+**TASK 2.E.4** Does your sample appear consistent with the alternative hypothesis?
+
+  A. Yes, this sample could be consistent with the alternative.
+  B. No, this sample could not be consistent with the alternative
+  
+
+# Part 3: Translate more research questions.
+
+For each of the following, simply translate the research questions into appropriate sets of hypotheses.
+
+**TASK 3.1** Is the proportion of high school seniors that are female different from 50%?
+
+**TASK 3.2** Do right-handed people have a different reaction time than left-handed people?
+
+**TASK 3.3** Do people with allergies spend less time playing sports compared to people who don't have allergies?
+
+**TASK 3.4** Is the average number of texts sent in a day less than 100?
+
+
+# Part 4: 
+
+The next three questions ask you to go the other direction:  provided a parameter of interest, pose a research question that could be answered using these data.  Be thorough and specific for full credit.
+
+**TASK 4.1** Write a research question that can be answered by performing a hypothesis test for a population mean using the PASeniors dataset.
+
+**TASK 4.2** Write a research question that can be answered by performing a hypothesis test for a difference in population proportions using the PASeniors dataset.
+
+**TASK 4.3** Write a research question that can be answered by performing a hypothesis test for a difference in population means using the PASeniors dataset.

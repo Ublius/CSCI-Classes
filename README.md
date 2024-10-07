@@ -9,3 +9,6 @@
      - CSCI 341
      - CSCI 406
      - CSCI 471
+# MATH CLasses
+Labs for all Math Classes
+     - MATH 201

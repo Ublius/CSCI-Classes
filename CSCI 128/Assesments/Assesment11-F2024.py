@@ -23,7 +23,11 @@ def create_amino_hist(plot_name, aminos):
     plt.savefig(plot_fileName)
 
 def create_gc_scatter(plot_name, gc_ratios, sequence_lengths):
-    pass
+    plt.scatter(gcs, lengths)
+    plt.title("Scatterplot of Sequence Length vs GC Content")
+    plt.xlabel("GC Content Ratio")
+    plt.ylabel("Sequence Length")
+    plt.savefig(plot_filename)
 
 def create_base_lineplot(plot_name, sequence):
     pass

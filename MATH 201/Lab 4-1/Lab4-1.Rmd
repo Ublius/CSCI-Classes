@@ -1,0 +1,433 @@
+---
+title: "Lab 4-1: Approximating with a distribution for proportions"
+output: html_notebook
+---
+
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# your code will be included in the html for this assignment
+knitr::opts_chunk$set(echo=TRUE) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+### Objectives:
+
+For this lab you should...
+
+  - Recognize the shape of a normal distribution, and how the mean and standard deviation relate to the center and spread of a normal distribution
+  - Recognize how the normal distribution can be used to approximate a bootstrap or randomization distribution for a proportion or a difference in proportions
+  - Find exact areas in a normal distribution using R
+  - Compute a p-value or confidence interval for a proportion or a difference in proportions using a normal distribution
+  - Find endpoints on a normal distribution and recognize how they can be used to find the multiplier for the confidence interval for a proportion or a difference in proportion at an arbitrary confidence level
+  - Recognize when a normal distribution is an appropriate model for a proportion or a difference in proportions
+  - If appropriate, compute a confidence interval for any confidence level or perform a hypothesis test for a proportion or a difference in proportions using prop.test.
+
+# Part 0: Short guide for normal distributions in R
+
+In addition to the (very) short guide below, please use your 4-1 Lecture Slides.
+
+  - To calculate the area under the N(mu, sigma) curve to the left of a value 'x': pnorm(x, mean = mu, sd = sigma)
+  - To calculate the area under the N(mu, sigma) curve to the right of a value 'x': pnorm(x, mean = mu, sd = sigma, lower.tail = F)
+  - To find the percentile (x-value) that has p% of the area under the N(mu, sigma) curve to the left: qnorm(p, mean = mu, sd = sigma)
+  
+### ALL RESPONSES SHOULD BE ROUNDED TO THREE DECIMAL PLACES
+
+
+# Part 1: Getting comfortable with the normal distribution
+
+Consider the situation below:
+
+  - The typical amount of sleep per day for very young babies follows a N(18, 1) distribution.
+  
+*For each of the tasks in this section, use R to calculate the values to three decimal places*
+
+**TASK 1.1** What proportion of very young babies sleep less than 16.5 hours per day?
+
+    **Response**
+    
+```{r}
+pnorm(16.5,mean=18,sd=1)
+```
+
+**TASK 1.2** What proportion of very young babies sleep more than than 15.5 hours per day?
+
+    **Response**
+    
+```{r}
+pnorm(15.5,mean=18,sd=1,lower.tail=F)
+```
+
+**TASK 1.3**  What proportion of very young babies sleep between 17 and 19 hours per day?
+
+    **Response**
+    
+```{r}
+pnorm(19,mean=18,sd=1)
+pnorm(17,mean=18,sd=1)
+0.8413447-0.1586553
+```
+  
+
+**TASK 1.4** 31% of babies sleep less than X hours per day.  Find X
+
+    **Response**
+
+```{r}
+qnorm(0.31,mean=18,sd=1)
+```
+
+**TASK 1.5** Use R to find the 45th percentil for a N(16,4) distribution.
+
+    **Response**
+
+```{r}
+qnorm(0.45, mean = 16, sd = 4)
+```
+
+
+**TASK 1.6** Use R to find the Z-multiplier for a 92% confidence interval
+
+    **Response**
+
+```{r}
+qnorm(0.98)
+```
+
+**TASK 1.7** Use R to find the Z-muliplier for a 70% confidence interval.
+
+
+    **Response**
+
+```{r}
+qnorm(0.85)
+```
+
+# Part 2: Using the normal distribution for a single proportion
+
+Gallup administered a poll to a random sample of 1,028 US adults. Each participant was asked “if you were taking a new job and had your choice of a boss, would you prefer to work for a man or a woman?” The null and alternative hypotheses are
+
+  $H_0:  p = 0.5$ vs $H_a: p > 0.5$
+
+were p = proportion of American adults with no preference.  Assume the sample statistic, $\hat{p}= 0.55$, has a standard error of 0.016.
+
+**TASK 2.1**  What normal distribution should you use to approximate the randomization distribution?
+
+    **Response**
+    
+**TASK 2.2**  Use that distribution to calculate the p-value.  Report your answer to three decimal places.
+
+    **Response**
+
+```{r}
+# Given values
+p_hat <- 0.55  # Sample proportion
+p_0 <- 0.5     # Null hypothesis proportion
+SE <- 0.016    # Standard error
+
+# Calculate the Z-score
+Z <- (p_hat - p_0) / SE
+
+# Calculate the p-value for a one-tailed test (Ha: p > 0.5)
+p_value <- 1 - pnorm(Z)
+
+# Output the p-value
+p_value
+```
+
+**TASK 2.3** Find the standardized test statistic for this hypothesis test.
+
+    **Response**
+    
+```{r}
+# Given values
+p_hat <- 0.55  # Sample proportion
+p_0 <- 0.5     # Null hypothesis proportion
+SE <- 0.016    # Standard error
+
+# Calculate the Z-score
+Z <- (p_hat - p_0) / SE
+Z
+```
+
+**TASK 2.4** Use the normal approximation of the bootstrap distribution to find a 98% confidence interval for the proportion of US adults who have no preference.
+
+Enter the lower bound here.
+
+    **Response**
+    
+```{r}
+# Given values
+p_hat <- 0.55  # Sample proportion
+SE <- 0.016    # Standard error
+
+# Calculate the Z-multiplier for a 98% confidence interval
+Z <- qnorm(0.99)
+
+# Calculate the confidence interval
+lower_bound <- p_hat - Z * SE
+upper_bound <- p_hat + Z * SE
+
+# Output the confidence interval
+confidence_interval <- c(lower_bound, upper_bound)
+confidence_interval
+```
+
+
+**TASK 2.5** Using the same sample, the difference in sample proportions saying they had no preference was 0.24 when comparing men and women. The standard error of this difference is 0.030. Use the normal distribution to find a 90% confidence interval for the difference in proportions between the two groups.
+
+    **Response**
+
+```{r}
+# Given values
+diff_proportions <- 0.24  # Difference in sample proportions
+SE <- 0.030                # Standard error
+
+# Calculate the Z-multiplier for a 90% confidence interval
+Z <- qnorm(0.95)
+
+# Calculate the confidence interval
+lower_bound <- diff_proportions - Z * SE
+upper_bound <- diff_proportions + Z * SE
+
+# Output the confidence interval
+confidence_interval <- c(lower_bound, upper_bound)
+confidence_interval
+```
+
+
+
+# Part 3: Inference for proportions using summarized data
+The table below gives flight arrival numbers from a random sample of flights for two airlines.  
+
+|          | Early | On-time | Late | Total |
+|:--------:|:-----:|:-------:|:----:|:-----:|
+|Airline A | 133   |  416    | 151  | 700   |
+|Airline B |  58   |  355    | 87   | 500   | 
+|Total     | 191   | 771     | 238  | 1200  |
+
+**TASK 3.1**  Use R (prop.test) to create a 95% confidence interval for the proportion of 'Early' flights when considering both airlines together. Do not use StatKey.
+
+    **Response**
+    
+```{r}
+# Number of early flights from both airlines
+early_flights <- 191
+
+# Total number of flights from both airlines
+total_flights <- 1200
+
+# Perform the proportion test and calculate the confidence interval
+result <- prop.test(early_flights, total_flights, conf.level = 0.95)
+
+# Output the confidence interval
+confidence_interval <- result$conf.int
+confidence_interval
+
+
+```
+
+**TASK 3.2**  What is the p-value for testing if more than 20% of flights are 'Late' when considering both airlines together?  Use prop.test(), not StatKey.
+
+    **Response**
+    
+```{r}
+# Number of late flights from both airlines
+late_flights <- 238
+
+# Total number of flights from both airlines
+total_flights <- 1200
+
+# Perform the proportion test
+result <- prop.test(late_flights, total_flights, p = 0.20, alternative = "greater")
+
+# Output the p-value
+p_value <- result$p.value
+p_value
+
+```
+
+**TASK 3.3**  Is there evidence (at a 0.01 level) that Airline A is more likely to be late compared to Airline B?  Report your p-value.  Use the R code you learned in class; not StatKey.
+
+    **Response**
+    
+```{r}
+# Number of late flights
+late_A <- 151
+late_B <- 87
+
+# Total number of flights
+total_A <- 700
+total_B <- 500
+
+# Perform the proportion test
+result <- prop.test(c(late_A, late_B), c(total_A, total_B), alternative = "greater")
+
+# Output the p-value
+p_value <- result$p.value
+p_value
+
+```
+
+**TASK 3.3** Based on your p-value from 3.2, and a significance level of 0.01. what is your generic  conclusion?
+
+    **Response**
+    
+
+# Part 4: Inference for proportions using a data frame
+
+Use the ClassData.csv dataset available in Canvas.
+
+We will make the (dubious) assumption that your class data is representative of all Mines students.
+
+**TASK 4.0** Import the data:
+
+```{r}
+ClassData <- read.csv(file.choose())
+
+```
+
+### Research Question 1: 
+
+Do less than 40% of Mines students drink coffee in the morning?
+
+**TASK 4.1** Carefully think to yourself, what hypotheses are we testing?  Write a line of R code to generate the p-value for this test and report the sample statistic and the p-value.
+
+    **Response**
+    
+```{r}
+# Assuming 'Coffee' is the column indicating whether students drink coffee (1 = Yes, 0 = No)
+total_students <- 124                    # Total number of students
+coffee_drinkers <- 28       # Number of students who drink coffee
+#tally(ClassData$Coffee)
+
+# Sample statistic (proportion of coffee drinkers)
+sample_statistic <- coffee_drinkers / total_students
+sample_statistic
+
+# Perform the proportion test
+result <- prop.test(coffee_drinkers, total_students, p = 0.40, alternative = "less")
+
+# Output the p-value
+p_value <- result$p.value
+p_value
+
+```
+
+**TASK 4.2** What is your conclusion in context for the first research question?
+
+    **Response**
+    
+**TASK 4.3** What is a 95% confidence interval for the proportion of Mines students that drink coffee in the morning?
+
+    **Response**
+
+```{r}
+# Perform the proportion test and get the confidence interval
+result <- prop.test(coffee_drinkers, total_students, conf.level = 0.95)
+
+# Output the confidence interval
+confidence_interval <- result$conf.int
+confidence_interval
+
+```
+
+    
+### Research Question 2: 
+
+Is the proportion of students that drink coffee in the morning different for students that live on campus compared to those who do not?
+
+**TASK 4.4** Again, think carefully about what the hypotheses should be and write the R code to calculate the p-value using prop.test().  
+
+Report your p-value and your conclusion in context:
+
+    **Response**
+    
+```{r}
+# Count coffee drinkers living on campus
+coffee_drinkers_on_campus <- sum(ClassData$Coffee == "Yes" & ClassData$OnCampus == "Yes")
+total_students_on_campus <- sum(ClassData$OnCampus == "Yes")
+
+# Count coffee drinkers not living on campus
+coffee_drinkers_off_campus <- sum(ClassData$Coffee == "Yes" & ClassData$OnCampus == "No")
+total_students_off_campus <- sum(ClassData$OnCampus == "No")
+
+# Perform the proportion test
+result <- prop.test(c(coffee_drinkers_on_campus, coffee_drinkers_off_campus), 
+                    c(total_students_on_campus, total_students_off_campus), 
+                    alternative = "two.sided")
+
+# Output the p-value
+p_value <- result$p.value
+p_value
+
+```
+
+### Research Question 3:
+
+Are students who live on campus more likely to choose 'Grey's anatomy' as the show they are most interested in, compared to students that do not live on campuss?
+
+
+**TASK 4.5** Use 'tally()' to calculate the difference of sample proportions for this example. Use (yes) - (no) as the order for your difference. This is the sample statistic relevant for this research question.
+
+    **Response**
+    
+```{r}
+# Step 1: Filter and count the responses
+grey_count_oncampus <- ClassData %>%
+  filter(OnCampus == "Yes" & TVShow == "Grey's anatomy") %>%
+  tally()
+
+grey_count_offcampus <- ClassData %>%
+  filter(OnCampus == "No" & TVShow == "Grey's anatomy") %>%
+  tally()
+
+# Step 2: Count total students in each group
+total_oncampus <- ClassData %>%
+  filter(OnCampus == "Yes") %>%
+  tally()
+
+total_offcampus <- ClassData %>%
+  filter(OnCampus == "No") %>%
+  tally()
+
+# Step 3: Calculate proportions
+prop_oncampus <- grey_count_oncampus / total_oncampus
+prop_offcampus <- grey_count_offcampus / total_offcampus
+
+# Step 4: Calculate the difference
+difference <- prop_oncampus - prop_offcampus
+
+# Display the result
+difference
+
+```
+
+
+**TASK 4.6 ** Use prop.test() to find the p-value that will help answer research question 3.  If you get a p-value that doesn't make sense given your answer for 4.5, use this opportunity to think carefully about what order prop.test(Y~X, data = DataSetName) is using for group 1 and group 2.  
+
+    **Response**
+    
+```{r}
+# Count the number of students who chose 'Grey's Anatomy' and those who didn't for each group
+on_campus_count <- sum(ClassData$OnCampus == "Yes" & ClassData$TVShow == "Grey's anatomy")
+off_campus_count <- sum(ClassData$OnCampus == "No" & ClassData$TVShow == "Grey's anatomy")
+
+# Count the total number of students in each group
+on_campus_total <- sum(ClassData$OnCampus == "Yes")
+off_campus_total <- sum(ClassData$OnCampus == "No")
+
+# Conduct the proportion test
+prop_test_result <- prop.test(c(on_campus_count, off_campus_count), c(on_campus_total, off_campus_total))
+
+print(prop_test_result)
+
+
+```

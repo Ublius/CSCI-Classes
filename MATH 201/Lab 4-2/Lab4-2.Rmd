@@ -1,0 +1,176 @@
+---
+title: "Lab 4-2: Inference using R"
+output: html_notebook
+---
+
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+
+### Objectives:
+
+For this lab you should...
+
+  - Recognize when the t-distribution is appropriate for inference about a mean or a difference in means, and correctly determine which t-distribution should be used
+  - Find endpoints on a t-distribution and recognize how they can be used to find the multiplier for the confidence interval for a mean or difference in means at arbitrary confidence level
+  - Use R to perform a hypothesis test and construct a confidence interval for a mean or a difference in means
+  
+
+# Part 1: The t-distribution
+
+When is it appropriate to use the t-distribution?  You (hopefully) listened in class when we said it's only ok if the data is well-behaved or the sample size is large.  
+
+This activity is meant to help you understand these criteria.  
+
+
+**TASK 1.1** Download the dataset from the Canvas Lab assignment.  Open StatKey and select ‘Confidence Interval for a Mean, Median, Std. Dev.’  Upload the data set ‘4-2Data.csv’.  Use the four columns of this dataset to create four different bootstrap distributions and fill the table below.  For both 'data shape' and 'bootstrap dist. shape' you should be looking at skewness and symmetry.
+
+|Variable|  n  | data shape | bootstrap dist. shape | ok to use t? | 
+|:------:|:---:|:----------:|:---------------------:|:------------:|
+|   A    |  ?  |     ?      |          ?            |     ?        | 
+|   B    |  ?  |     ?      |          ?            |     ?        | 
+|   C    |  ?  |     ?      |          ?            |     ?        | 
+|   D    |  ?  |     ?      |          ?            |     ?        |  
+
+
+**TASK 1.2** Use R to calculate the the area under the curve to the right of 1.2 when considering a t-distribution with 19 degrees of freedom.
+
+    **Response**
+    
+```{r}
+# Degrees of freedom
+df <- 19
+
+# Value to the right of which we want the area
+x <- 1.2
+
+# Calculate the area to the right of 1.2
+area_right <- 1 - pt(x, df)
+area_right
+
+pt(x, df, lower.tail = F)
+```
+
+**TASK 1.3**  What is the t-multiplier for a 95% confidence interval for a population mean, using a well-behaved sample of size 14?
+
+    **Response**
+    
+```{r}
+# Degrees of freedom
+df <- 13
+
+# 95% confidence level, so we use the 97.5th percentile for the upper tail
+t_multiplier <- qt(0.975, df)
+t_multiplier
+
+```
+
+**TASK 1.4**  What is the t-multiplier for a 86% confidence interval for a population mean, using a well-behaved sample of size 72?
+
+    **Response**
+    
+```{r}
+# Degrees of freedom
+df <- 71
+
+# 86% confidence level, so we use the 93rd percentile (100% - 7%) for the upper tail
+t_multiplier <- qt(0.93, df)
+t_multiplier
+
+```
+
+
+# Part 2:  Grandchildren
+
+In the 1970s and 1980s women in the US had approximately 2.3 children (on average).  In the early 2000s, women in the US had approximately 2.00 children.  This means that for your age group, your grandmothers should have approximately 4.6 grandchildren.  
+
+Does our class data provide evidence that the average number of grandchildren per grandmother is different than 4.6 for Mines students? 
+
+**TASK 2.1** Create an appropriate visualization for this research question using the class data.  You will copy-paste it into the Canvas Quiz.
+
+```{r}
+#ClassData <- read.csv(file.choose())
+
+# Boxplot of Grandchildren
+
+gf_histogram(~Grandchildren, data = ClassData)
+
+```
+
+
+**TASK 2.2**  Use R - t.test() -  to answer this question quickly with a significance level of 0.05.  Report your p-value.
+
+    **Response**
+    
+```{r}
+t.test(~Grandchildren, mu = 4.6, data = ClassData)
+```
+
+**TASK 2.3**  What is your generic conclusion?
+
+    **Response**
+
+**TASK 2.4** Interpret the 95% confidence interval that was calculated in 2.2, in context.
+
+    **Response**
+    
+
+# Part 3: Answer research questions with R
+
+Use R to answer the following research questions.  For each:
+
+  - generate a visualization that explores the research question.  
+  - Then, use R (t.test() *or* prop.test()) to calculate the p-value
+  - report the generic conclusion based on your p-value
+
+NOTE: for questions like these that involve comparing two groups, R chooses the ordering of the groups based on alphabetical order. If you are trying to show (yes) - (no) > 0, for example, R will need to be told to test (no) - (yes) < 0, since 'n' comes before 'y' in the alphabet. Be careful with your alternatives if they are one-sided and be prepared to adjust.
+
+
+**TASK 3.0** Load the class data
+
+```{r}
+ClassData <- read.csv(file.choose())
+```
+
+
+
+**TASK 3.1** Do students who drink coffee in the morning spend *less* time exercising, on average?
+
+    **Response**
+    
+```{r}
+gf_boxplot(ExerciseMinutes~Coffee, data=ClassData)
+t.test(ExerciseMinutes ~ Coffee, data = ClassData, alternative = "greater")
+```
+
+**TASK 3.2** Do students that live on campus spend *more* time exercising, on average?
+
+    **Response**
+    
+```{r}
+gf_boxplot(ExerciseMinutes~OnCampus, data=ClassData)
+
+t.test(ExerciseMinutes ~ OnCampus, data = ClassData, alternative = "greater")
+```
+
+**TASK 3.3** Are students that live on campus not equally likely to drink coffee in the morning, compared to students that live off campus?
+
+    **Response**
+    
+```{r}
+gf_bar( ~ Coffee, fill = ~ OnCampus, data = ClassData, position = position_dodge()) 
+
+#t.test(Coffee~OnCampus, data=ClassData, alternative="two.sided")
+prop.test(OnCampus~Coffee, data=ClassData, alternative="two.sided")
+prop.test(Coffee~OnCampus, data=ClassData, alternative="two.sided")
+```
+

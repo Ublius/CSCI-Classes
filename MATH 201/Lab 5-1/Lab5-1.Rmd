@@ -1,0 +1,244 @@
+---
+title: "Lab 5-1: Inference for paired means"
+output: html_notebook
+---
+
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+
+### Objectives:
+
+For this lab you should...
+
+  - Perform a hypothesis test and construct a confidence interval for a paired mean using both the formulas and R.
+  - Identify when an experiment is matched-pairs vs randomized comparative.
+  
+# Part 1: Story Spoilers
+
+A story spoiler gives away the ending early.  Does having a story spoiled in the way diminish suspense and hurt enjoyment?  A study investigated this question. 
+
+For 12 different short stories, the study’s authors created a second version in which a spoiler paragraph at the beginning discussed the story and revealed the outcome. Each version of the 12 stories was read by at least 30 people and rated on a 1 to 10 scale to create an overall rating for the story, with higher ratings indicating greater enjoyment of the story.
+
+**TASK 1.0** The data is included in the dataset StorySpoilers.  Use the code below to load the dataframe into your workspace.  Use glimpse or head to explore the data frame.
+
+```{r}
+data(StorySpoilers)
+
+```
+
+
+**TASK 1.1** Compare the ratings for the spoiler versions and the original versions.  Which group has a higher median?
+
+    **Response:**
+
+```{r}
+favstats(StorySpoilers$Original)
+favstats(StorySpoilers$Spoiler)
+t.test(StorySpoilers$Spoiler, StorySpoilers$Original, data=StorySpoilers)
+```
+
+
+**TASK 1.2**  A two-sample t-test should not be performed; these are paired data.  Use the code below to create a new variable of the differences, named 'Difference'.
+
+Write your own code to visualize this vector of differences.  Do you think it's appropriate to perform a paired t-test with these data?  Explain your answer with a sentence.
+
+    **Response** 
+  
+```{r}
+StorySpoilers$Difference <- StorySpoilers$Spoiler - StorySpoilers$Original
+
+# write code to visualize the new vector
+gf_dotplot(~StorySpoilers$Difference)
+qqnorm(StorySpoilers$Difference)
+qqline(StorySpoilers$Difference, col = "red")
+```
+
+
+**TASK 1.3**  Use R to perform a paired t-test to see if there is evidence that reading a spoiler is associated with higher ratings.  Include the p-value and your conclusion in context.
+
+    **Response**
+    
+```{r}
+t.test(~Difference, data = StorySpoilers)
+
+```
+
+# Part 2: Wetsuits
+
+The 2008 Olympics were full of controversy about new swimsuits possibly providing unfair advantages to swimmers, leading to new international rules that came into effect January 1, 2010, regarding swimsuit coverage and material. Can a certain swimsuit really make a swimmer faster?
+
+A study tested whether wearing wetsuits influences swimming velocity. Twelve competitive swimmers and triathletes swam 1500 m at maximum speed twice each, once wearing a wetsuit and once wearing a regular bathing suit. The order of the trials was randomized. Each time, the maximum velocity in meters/sec of the swimmer (among other quantities) was recorded. These data are available in Wetsuits and shown in Canvas.
+
+**TASK 4.1** Look at the raw data and compare the times for each swimmer with and without the wetsuit (no calculations needed).  What is your observation and what does it tell you about what the answer to the research question might be?
+
+    **Response**
+
+Hint:  Look on Canvas or run the code below
+
+```{r}
+data("Wetsuits")
+Wetsuits
+```
+
+
+*Naive inference assuming independent samples*
+
+For the sake of illustration, test whether the average maximum velocity for competitive swimmers is different when wearing wetsuits vs not wearing wetsuits by using a two-sample t-test.
+
+Remember that a two-sample t-test is testing a difference in means, and you learned about it in module 4.
+
+What is the standard error for this hypothesis test?
+
+
+**Task 4.2**
+
+What is the standard error of $\bar{x}_1 - \bar{x}_2$?
+
+    **Response**
+
+Hint: You will need the sample standard deviations for both samples.
+
+```{r}
+length(Wetsuits$Wetsuit)
+length(Wetsuits$NoWetsuit)
+sd(Wetsuits$Wetsuit)
+sd(Wetsuits$NoWetsuit)
+sd(sd(Wetsuits$Wetsuit)-sd(Wetsuits$NoWetsuit))
+sqrt((sd(Wetsuits$Wetsuit)^2 / 12) + (sd(Wetsuits$NoWetsuit)^2/12))
+```
+
+**Task 4.3**
+
+What is the standardized test statistic?
+
+    **Response**
+
+```{r}
+mean_wetsuit <- mean(Wetsuits$Wetsuit)
+mean_no_wetsuit <- mean(Wetsuits$NoWetsuit)
+
+SE_difference <- sqrt((sd(Wetsuits$Wetsuit)^2 / 12) + (sd(Wetsuits$NoWetsuit)^2/12))
+# Calculate the standardized test statistic
+t_statistic <- (mean_wetsuit - mean_no_wetsuit) / SE_difference
+t_statistic
+
+# Calculate the p-value for the two-tailed test
+p_value <- 2 * (1 - pt(t_statistic, df = 22))
+
+# Print the p-value
+p_value
+
+```
+
+**Task 4.4**
+
+Based on your standardized test statistic, would the corresponding p-value be significant?
+
+    **Response**
+    
+    
+
+**Correct approach for inference - a paired t-test**
+
+Clearly these are paired data.  We must perform a paired t-test.  
+
+
+
+**Task 4.5** What are the correct null and alternative hypotheses for a paired t-test.
+
+    **Response**
+
+
+**Task 4.6** Use the code below to create a new variable of the differences.  Then write new code to create a dotplot of this variable, copy-paste it into Canvas, and comment on whether you think it will be ok to use the t-distribution for inference.
+
+    **Response**
+
+```{r}
+Wetsuits$Difference <- Wetsuits$Wetsuit - Wetsuits$NoWetsuit
+
+gf_dotplot(~Wetsuits$Difference)
+```
+
+**Task 4.7**
+
+What is the standard error of $\bar{x}_d$?
+
+    **Response**
+
+```{r}
+# Calculate differences
+differences <- Wetsuits$Wetsuit - Wetsuits$NoWetsuit
+
+# Calculate the standard deviation of the differences
+s_d <- sd(differences)
+
+# Number of pairs (swimmers)
+n <- length(differences)
+
+# Calculate the standard error of the mean difference
+SE_mean_difference <- s_d / sqrt(n)
+
+# Print the result
+SE_mean_difference
+
+```
+
+**Task 4.8**
+
+What is the standardized test statistic for the paired t-test?
+
+    **Response**
+
+```{r}
+# Calculate differences
+differences <- Wetsuits$Wetsuit - Wetsuits$NoWetsuit
+
+# Calculate the standard deviation of the differences
+s_d <- sd(differences)
+
+# Number of pairs (swimmers)
+n <- length(differences)
+
+# Calculate the standard error of the mean difference
+SE_mean_difference <- s_d / sqrt(n)
+
+# Calculate the mean of the differences
+mean_difference <- mean(differences)
+
+# Calculate the standardized test statistic
+t_statistic <- mean_difference / SE_mean_difference
+
+# Print the result
+# t_statistic
+
+t.test(~Difference, data=Wetsuits)
+
+# Calculate the p-value for the two-tailed test
+p_value <- 2 * (1 - pt(abs(t_statistic), df = 11))
+
+# Print the p-value
+p_value
+t.test(Wetsuits$Wetsuit, Wetsuits$NoWetsuit, paired = T)
+```
+
+
+**Task 4.9**
+
+Based on the standardized test statistic in 4.8, would the corresponding p-value be significant?
+
+    **Response**
+
+
+**Task 4.10** Write the conclusion in context based on the correct analysis.
+
+    **Response**

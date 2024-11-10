@@ -1,0 +1,216 @@
+---
+title: 'Lab 5-2: Linear Regression and paired testing'
+output:   html_notebook
+---
+
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+### Objectives:
+
+For this lab you should...
+
+  - visualize the relationship between two quantitative variables and discuss whether their association is positive, negative, or none.
+  - calculate correlation between variables and perform a hypothesis test to determine if there's evidence a correlation is non-zero.
+  - Fit a regression line and use it to make predictions
+  - Interpret the coefficients of a regression equation
+  - Perform inference for  the slope of a linear regression line
+  - assess the conditions of a simple linear regression
+  
+# Part 0: R commands you will need
+
+  - cor(Y ~ X, data = DataSetName) will find the correlation between X and Y.
+  - cor.test(Y ~ X, data = DataSetName) will perform a t-test for correlation between X and Y.
+  - lm(Y ~ X, data = DataSetName)) will fit the linear model that uses X to predict Y. You should name the model object.
+  - summary(mymodel) will generate summaries of your linear model object.
+  - plot(mymodel, which = 1) will generate a fitted vs residuals plots
+  - plot(mymodel, which = 2) will generate a qqplot of the residuals
+
+# Part 1: Median income
+
+In this lab we will explore a related dataset neighborhood characteristics for Denver neighborhoods. These data come from the 2017-2021 community service, and are the most recent data available. The variables are summarized in Canvas.
+
+**TASK 1.0** Run the code below to read in the dataset 'DenverNeighborhoods.csv', available in the Files section of our Canvas course.
+
+```{r, echo = F}
+nbrhds <- read.csv(file.choose())
+```
+
+**TASK 1.1** Create a scatterplot to explore the relationship between median_earn as the response variable (which is the median income of people in each neighborhood) and median_home_value.  You will need to copy-paste the figure into Canvas.
+
+How would you describe the association between these two variables? Positive, none, negative? linear, non-linear?
+
+    **Response** 
+
+```{r, echo = F}
+gf_point(median_earn ~ median_home_value, data = nbrhds)
+```
+
+**TASK 1.2** Calculate the correlation between median_earn and median_earn using the complete dataset.
+
+    **Response**
+
+```{r}
+
+cor(median_earn ~ median_home_value, data = nbrhds)
+```
+
+**TASK 1.3** Using R, perform the hypothesis test to determine if the population correlation coefficient between these two variables is non-zero. Report your p-value and your generic conclusion.
+
+    **Response** 
+
+```{r}
+
+cor.test(median_earn ~ median_home_value, data = nbrhds)
+```
+
+
+**TASK 1.4** Fit a regression line to predict median_earn from median_home_value using the data.  
+
+Report your fitted regression equation here using proper notation.
+
+    **Response** 
+
+```{r}
+model <- lm(formula = median_earn ~ median_home_value, data = nbrhds)
+summary(lm(formula = median_earn ~ median_home_value, data = nbrhds))
+```
+
+
+**TASK 1.5** Using your model from 1.4, interpret the R-squared value in context.
+
+    **Response** 
+    
+**TASK 1.6** Interpret the slope of your model from 1.4 in context.
+
+    **Response**
+
+**TASK 1.7** Plot the residuals vs fitted and the qq-plot for the residuals and comment on whether you think the L-N-E (linearity/normality/equal variance) conditions for regression are met
+
+    **Response** 
+
+```{r, echo = F}
+  plot(model, which = 1)
+  plot(model, which = 2) 
+
+```
+
+
+
+**TASK 1.8** Use your fitted model to predict the median earnings in a neighborhood who's median home value is $500,000.
+
+    **Response** 
+
+```{r, echo = F}
+8.049e-02 + 1.177e+04 * 500000
+```
+
+# Part 2: More about median earnings
+
+Consider the two variables: median_earn_female and median_earn_male. We could use these variables in several ways. We will start with plotting them in a scatterplot.
+
+
+
+**TASK 2.1** Plot the two variables, letting median_earn_female be the explanatory variable. How would you describe the association between these two variables? Positive, none, negative? linear, non-linear?
+
+    **Response** 
+
+```{r}
+gf_point(median_earn_female ~ median_earn_male, data = nbrhds)
+
+```
+
+**TASK 2.2** Fit a linear regression to predict median male earnings from median female earnings. Report the estimated slope, rounded to three decimal places.
+
+    **Response** 
+
+```{r}
+
+lm(median_earn_female ~ median_earn_male, data = nbrhds)
+
+```
+
+**TASK 2.3** Interpret your slope in context.
+
+    **Response** 
+
+**TASK 2.4** There are in fact a number of issues with the conditions of linear regression in this example, so we must pivot to a different type of analysis. We have clearly paired data here, so we answer the question 'how different is the mean difference in median earnings between females and males for Denver?' using inference for the paired mean.
+
+Create a new variable that is defined to be the difference between the median female earnings and the median male earnings (female - male) for each neighborhood using the code below.
+
+Report the mean of this new variable.
+
+    **Response** 
+
+```{r}
+nbrhds$median_earn_diff <- nbrhds$median_earn_female - nbrhds$median_earn_male
+mean(nbrhds$median_earn_diff)
+
+```
+
+**TASK 2.5** Make a dotplot of this new variable, copy-paste it in the Canvas quiz, and determine whether the conditions are met to use the t-distribution for inference.
+
+    **Response** 
+
+```{r}
+
+gf_dotplot(~median_earn_diff, data = nbrhds)
+
+```
+
+**TASK 2.6** Regardless of your answer to 2.5, use R to create a 95% confidence interval for the mean difference in median pay. Interpret the interval in context.
+
+    **Response** 
+
+```{r}
+t.test(~median_earn_diff, data = nbrhds, conf.level = 0.95)
+
+```
+
+# Part 3:  Pose your own research questions
+
+**TASK 3.0** Use glimpse() to explore the variables in the dataset.
+
+```{r}
+glimpse(nbrhds)
+```
+
+
+**TASK 3.1** Use your curiosity to ask a question related to diversity and equity that can be answered using simple linear regression from this dataset.
+
+    **Response**
+  
+**TASK 3.2** Create a data visualization to explore your research question.  Summarize what you learned from it.
+
+    **Response**
+
+```{r}
+gf_point(median_home_value ~  median_rent, data = nbrhds)
+```
+
+**TASK 3.3** Fit a linear regression, observe the summary, and explain what the results mean with respect to the research question you posed in task 4.1.
+
+    **Response**
+    
+```{r}
+lm(median_home_value ~  median_rent, data = nbrhds)
+```
+
+**TASK 3.4** Assess the L-N-E conditions and discuss what you find. 
+
+    **Response**
+
+```{r}
+model2 <- lm(median_home_value ~  median_rent, data = nbrhds)
+plot(model2, which = 1)
+plot(model2, which = 2) 
+```

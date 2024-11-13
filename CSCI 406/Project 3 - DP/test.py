@@ -4,7 +4,7 @@ def H(n, g, points, hours):
 
     # Base case: zero points require zero hours and no tasks
     for i in range(n + 1):
-        H[i][0] = (0, -1)
+        H[i][0] = (0, 0)
     
     # Fill the DP table based on the algorithm you provided
     for i in range(1, n + 1):
@@ -38,26 +38,28 @@ def H(n, g, points, hours):
                     if len(H[i-1][j]) > 1:
                         H[i][j] = (H[i][j][0], H[i-1][j][1])
 
-    # Perform traceback to get the selected tasks
-    tasks = []
+
+    # # Perform traceback to get the selected tasks (parents)
+    parents = []
     i, j = n, g
     while j > 0 and i > 0:
         parent = H[i][j][1]
-        print(parent)
+        print(f"Current (i={i}, j={j}) => Parent: {parent}")
         if parent != -1:  # If a parent exists
             if parent != i - 1:  # Task i was selected
-                tasks.append(i)
-                j -= points[i-1]  # Subtract the points of the task we just included
+                parents.append(parent)  # Append the parent number
+                print(f"Selected Parent: {parent}")
+                j -= points[parent - 1]  # Subtract the points of the task we just included
+                # print(points[parent - 1])
+                # print(j)
             else:
                 i -= 1  # Move to the parent if no task was selected
         else:
             break  # No parent found, end of traceback
 
-    tasks.reverse()  # Reverse tasks to get them in the correct order
-    return H[n][g][0], tasks
-
-
-
+    parents.reverse()  # Reverse the parent list to get them in the correct order
+    
+    return H[n][g][0], parents
 
 
 if __name__ == "__main__":

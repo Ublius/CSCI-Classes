@@ -44,7 +44,7 @@ if __name__ == "__main__":
     if min_hours[0] != float('inf'):
         print(min_hours[0])
         print(len(min_hours[1]))
-        print(" ".join(map(str, min_hours[1])))
+        print(" ".join(min_hours[1]))
     elif sum(points) < g:
         print(-1)
     else:

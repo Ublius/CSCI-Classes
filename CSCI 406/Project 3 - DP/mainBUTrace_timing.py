@@ -1,41 +1,33 @@
-import time
-
 def H(n, g, points, hours):
-    H = [[(float('inf'), ())] * (g + 1) for _ in range(n + 1)]
+    H = [[(float('inf'), False)] * (g + 1) for _ in range(n + 1)]
+    H[0][0] = (0, False)
 
-    for i in range(n + 1):
-        H[i][0] = (0, ())
-    
     for i in range(1, n + 1):
-        p = points[i - 1]
-        h = hours[i - 1]
-        for j in range(1, g + 1):
-            H[i][j] = (float('inf'), ())
-
+        for j in range(g + 1):
+            p = points[i - 1]
+            h = hours[i - 1]
             if j >= p:
-                min_value = min(H[i-1][j-p][0] + h, H[i-1][j][0])
-                H[i][j] = (min_value, H[i][j][1])
-
-                if H[i-1][j-p][0] + h == H[i-1][j][0]:
-                    if len(H[i - 1][j]) > 1:
-                        H[i][j] = (H[i][j][0], H[i][j][1] + H[i - 1][j][1])
-                elif H[i][j][0] == H[i-1][j-p][0] + h:
-                    if len(H[i - 1][j - p]) > 1:
-                        H[i][j] = (H[i][j][0], H[i][j][1] + H[i - 1][j - p][1])
-                    H[i][j] = (H[i][j][0], H[i][j][1] + (i,))
-                else:
-                    if len(H[i-1][j]) > 1:
-                        H[i][j] = (H[i][j][0], H[i][j][1] + H[i-1][j][1])
+                a = H[i - 1][j - p][0] + h
+                b = H[i - 1][j][0]
             else:
-                H[i][j] = (min(h, H[i-1][j][0]), H[i][j][1])
+                a = h
+                b = H[i - 1][j][0]
+            min_val = min(a, b)
+            if a == b or min_val == b:
+                H[i][j] = (min_val, False)
+            else:
+                H[i][j] = (min_val, True)
+        
+    traceback = []
+    i, j = n, g
+    while i > 0 and j > 0:
+        if H[i][j][1]:
+            traceback.append(i)
+            j -= points[i - 1]
+        i -= 1
 
-                if H[i][j][0] == h:
-                    H[i][j] = (H[i][j][0], H[i][j][1] + (i,))
-                else:
-                    if len(H[i-1][j]) > 1:
-                        H[i][j] = (H[i][j][0], H[i][j][1] + H[i-1][j][1])
-
-    return H[n][g]
+    traceback.reverse()
+    return H[n][g][0], traceback
 
 if __name__ == "__main__":
     # i, j = input().split()

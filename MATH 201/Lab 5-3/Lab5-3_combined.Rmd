@@ -1,0 +1,402 @@
+---
+title: "Lab 5-3: Chi-square tests & Data Wrangling"
+output: html_notebook
+---
+
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# your code will be included in the html for this assignment
+knitr::opts_chunk$set(echo=TRUE) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+
+### Objectives:
+
+For this lab that combines modules 5-3 and 6-1 you should...
+
+  - Use R to perform a chi-square goodness of fit test
+  - Use R to perform a chi-square test of independence
+  
+  AND
+  
+  - Use R to perform basic data wrangling tasks like filtering rows and creating new variables.
+  - Explore datasets with relevant visualizations
+  - Answer research questions using R, paying attention to all the details.
+  
+  
+# Part 1: Chi-square testing using the PASeniors dataset
+
+The tasks in this section refer to a survey that was given to a sample of high school seniors in Pennsylvania between 2010 and 2019.  The data is in PASeniors, and included in the Lock5Data package.
+
+**TASK 1.1**  Load the data set, run the lines that filter incomplete observations, and use the glimpse command to view the variable names and types.  
+
+How many variables and cases are there after removing those observations?
+
+    **Response**
+    
+```{r}
+data(PASeniors)
+PASeniors <- droplevels(PASeniors |>
+  filter(Preference == "Happy" |  Preference == "Healthy" |  Preference == "Famous" | Preference == "Rich") |>
+  filter(Superpower == "Fly" | Superpower == "Freeze time" | Superpower == "Invisibility" | Superpower == "Super strength" | Superpower == "Telepathy")  )
+
+glimpse(PASeniors)
+```
+
+**TASK 1.2** One of the variables in the survey asked the students to indicate which of a list of five superpowers they would most want to have.  Visualize the answers from the survey.  hint:  gf_bar(~Y, data = )
+
+    **Response**
+
+```{r}
+gf_bar(~ Superpower, data=PASeniors)
+
+```
+
+**TASK 1.3**  Which of the superpowers was the most popular?  How many seniors chose that superpower? 
+
+    **Response** 
+
+```{r}
+tally(~ Superpower, data=PASeniors)
+```
+
+**TASK 1.4** Test to see if the five superpowers are equally popular among Pennsylvania seniors.  Report your chi-square statistic and your conclusion in context.
+
+    **Response**
+
+```{r}
+superpower_counts <- table(PASeniors$Superpower)
+
+# Perform a chi-square test to see if the five superpowers are equally popular
+chi_square_test <- chisq.test(superpower_counts)
+
+# Print the chi-square statistic and the p-value
+chi_square_test$statistic  # Chi-square statistic
+chi_square_test$p.value    # p-value
+```
+
+**TASK 1.5**  One of the variables in the survey asked the students to indicate, if they had to only pick one, whether they were prefer to be Famous, Happy, Healthy, or Rich.  This variable is called *Preference* in the PASeniors dataset.  
+
+Create a bar chart of this variable.
+
+```{r}
+gf_bar(~Preference, data=PASeniors)
+```
+
+**TASK 1.6**  Past preferences lead us to assume that 70% will choose happy, with 10% each choosing each of the other three. Test to see if the data in this sample lead us to reject these assumed proportions.  Carefully consider the order that R considers the different options as you write your code.
+
+Report your chi-square statistic and your generic conclusion.
+
+    **Response**
+
+```{r}
+observed_counts <- table(PASeniors$Preference)
+
+# Define the expected proportions: 70% for "Happy", 10% for each of the other three options
+expected_proportions <- c(0.70, 0.10, 0.10, 0.10)
+observed_counts <- observed_counts[c("Happy", "Famous", "Healthy", "Rich")]
+
+# Perform the chi-square test
+chi_square_test <- chisq.test(observed_counts, p = expected_proportions, rescale.p = TRUE)
+
+# Print the chi-square statistic and p-value
+chi_square_test$statistic  # Chi-square statistic
+chi_square_test$p.value    # p-value
+
+```
+
+**TASK 1.7** Determine which of the preferences had more students select them than you would expect from the null proportions in 1.6.  Hint:  Look at observed vs expected counts.
+
+    **Response**
+```{r}
+  observed_counts <- table(PASeniors$Preference)
+
+# Define the expected proportions: 70% for "Happy", 10% for each of the other three options
+expected_proportions <- c(0.70, 0.10, 0.10, 0.10)
+
+# Ensure the observed counts are in the same order as the expected proportions
+# Assuming the options are "Happy", "Other1", "Other2", and "Other3"
+observed_counts <- observed_counts[c("Happy", "Famous", "Healthy", "Rich")]
+
+# Calculate the expected counts based on the total sample size
+total_count <- sum(observed_counts)
+expected_counts <- expected_proportions * total_count
+
+# Compare observed vs expected counts
+comparison <- data.frame(
+  Preference = names(observed_counts),
+  Observed = observed_counts,
+  Expected = expected_counts,
+  Difference = observed_counts - expected_counts
+)
+
+# Identify preferences with more students than expected
+comparison[comparison$Difference > 0,]
+```
+    
+
+**TASK 1.8** Is a student's preference for happy/healthy/famous/rich related to whether they have allergies?  Write the correct null and alternative hypotheses for answering this research question:
+
+    **Response**
+    
+**TASK 1.9** Visualize the sample as it relates to these two variables by creating a segmented bar chart.  hint:  gf_bar(X~Y, fill = ~Y, position = "fill").  
+    
+Observe the visualize and describe whether you think you will have  significant hypothesis test, and why.
+
+    **Response**
+    
+```{r}
+gf_bar(Preference ~ Allergies, data = PASeniors, fill = ~Allergies, position = "fill")
+```
+
+**TASK 1.10** Perform the chi-squared test for independence to answer the research question in Task 1.8.  Report the p-value and your conclusion in context.
+
+    **Response**
+    
+```{r}
+contingency_table <- table(PASeniors$Preference, PASeniors$Allergies)
+
+# Perform the chi-square test for independence
+chi_square_test <- chisq.test(contingency_table)
+
+# Report the chi-square statistic and p-value
+chi_square_test$statistic  # Chi-square statistic
+chi_square_test$p.value    # p-value
+```
+
+    
+
+
+# Part 2: Testing for association of Mines students, Sports events, and Stranger Things.
+
+Is there a relationship between how much students attend sporting events and how much they have watched of Stranger Things?
+
+**TASK 2.0** Load the class data
+
+```{r}
+ClassData <- read.csv(file.choose())
+```
+
+**TASK 2.1** Write the null and alternative hypotheses.  Remember, these should be sentences.  
+
+    **Response**
+    
+**TASK 2.2** Create an appropriate visualization of the relevant variables.  You will copy-paste it to canvas along with a sentence about what you see in the figure that makes you think you will or not have a significant result.
+
+    **Response**
+    
+```{r}
+gf_bar(SportsEvents ~ StrangerThings, data = ClassData, fill = ~StrangerThings, position = "fill")
+```
+
+**TASK 2.3** Perform the chi-square test of independence in R.  What is the chi-squared statistic and the corresponding p-value?  What combination of levels is the largest contributer to the chi-squared statistic?  
+
+    **Response**
+    
+```{r}
+# Create the contingency table for Sporting Event Attendance and Stranger Things Viewing
+contingency_table <- table(ClassData$SportsEvents, ClassData$StrangerThings)
+
+# Perform the chi-square test for independence
+chi_square_test <- chisq.test(contingency_table)
+
+# Report the chi-square statistic and p-value
+chi_square_test$statistic  # Chi-square statistic
+chi_square_test$p.value    # p-value
+
+# Find the largest contributor to the chi-squared statistic
+chi_square_test$observed - chi_square_test$expected  # Differences between observed and expected
+
+```
+
+**TASK 2.4** What is your conclusion?  
+
+    **Response**
+    
+    
+    
+# Part 3: Wrangle class data
+
+We will again use your class data for this section.
+
+**TASK 3.0** Upload the class data into your workspace - then write and run code to remove any incomplete observations in the entire dataset.
+
+```{r}
+ClassDataRaw <- read.csv(file.choose())
+
+# WRITE CODE TO REMOVE INCOMPLETE OBSERVATIONS BELOW
+ClassDataClean <- na.omit(ClassDataRaw)
+
+# View the cleaned data (optional)
+glimpse(ClassDataClean)
+
+```
+
+**TASK 3.1** Answer the questions below:
+  
+  a. How many observations are there in the raw dataset, after removing observations with NA?
+  
+    **Response** 
+  
+  b. Complete the table below to communicate the variable type for each of the listed variables.  The first row should be Categorical/Quantitative (C/Q), and the second should indicate the number of levels for categorical variables.  Write "NA" in the second row for quantitative variables.
+  
+|               | PhoneTime | SportsEvents| GrandChildren | Coffee |   OnCampus   |
+|:-------------:|:---------:|:-----------:|:-------------:|:------:|:------------:|
+| Variable Type |    ??     |     ??      |      ??       |   ??   |      ??      |
+| Number Levels |    ??     |     ??      |      ??       |   ??   |      ??      |    
+
+
+```{r}
+
+# Example for a single variable
+nlevels(as.factor(ClassDataClean$SportsEvents))  # Replace 'SportsEvents' with your variable name
+
+# Count levels for all variables in the dataset
+sapply(ClassDataClean, function(x) if (is.factor(x)) nlevels(x) else if (is.character(x)) nlevels(as.factor(x)) else NA)
+
+
+
+```
+
+
+## Research Question: What is the average daily phone time for students living off campus?
+
+To answer this question  you must consider only students that responded "No" to the question of whether they live on campus.  
+
+**TASK 3.2** Create a new dataset that includes only those observations.  How many observations are there?
+
+    **Response** 
+
+```{r}
+# Filter the dataset for students who live off campus (OnCampus == "No")
+OffCampusData <- subset(ClassDataClean, OnCampus == "No")
+
+# Check the number of observations
+nrow(OffCampusData)
+
+
+```
+
+**TASK 3.3** Visualize the phone time variable for your off-campus-only dataset using a boxplot.  You should notice something very obvious.  How many extreme observations (PhoneTime>24) do you observe? 
+
+    **Response**
+
+```{r}
+gf_boxplot(~OffCampusData$PhoneTime)
+sum(OffCampusData$PhoneTime > 24, na.rm = TRUE)
+
+```
+
+**TASK 3.4**  Write a line of code that creates a dataset that keeps only the observations from off-campus students that have a reasonable value for PhoneTime.  Define 'reasonable' as under 24 hours.  Using these data without the unreasonable observations, what is the sample mean?
+
+    **Response**
+    
+```{r}
+# Create a dataset with reasonable PhoneTime values (less than 24 hours)
+OffCampusReasonable <- subset(OffCampusData, PhoneTime < 24)
+
+# Calculate the sample mean of PhoneTime for this dataset
+mean_phone_time <- mean(OffCampusReasonable$PhoneTime, na.rm = TRUE)
+
+# Display the mean
+mean_phone_time
+
+```
+
+    
+    
+# Part 4: Are students that live on campus more likely to be a 'high' phone user?
+
+**TASK 4.1** Write code that starts with the data that has no NA values, then removes the PhoneTime observations that are more than 24, then creates a new variable, HiLoPhone, that is defined to be "High" if PhoneTime is greater than 6, and "Low" otherwise.
+
+```{r}
+CleanData <- ClassDataRaw |>
+  na.omit() |>
+  subset(PhoneTime <= 24) |>
+  transform(HiLoPhone = ifelse(PhoneTime > 6, "High", "Low"))
+# View the first few rows of the updated dataset (optional)
+head(CleanData)
+
+```
+
+
+**TASK 4.2** Use tally(), and some arithmetic, to calculate the sample difference in proportions of high phone users for students that live on-campus compared to students that live off-campus. The difference order should be 'On-campus' - 'off-campus'.
+
+    **Response**
+    
+```{r}
+
+
+# Create HiLoPhone variable if not already present
+CleanData <- ClassDataRaw |>
+  mutate(HiLoPhone = case_when(
+    PhoneTime > 6 ~ "High",
+    TRUE ~ "Low"
+  ))
+
+# Calculate the number of high phone users for on-campus and off-campus
+proportions <- CleanData |>
+  filter(!is.na(HiLoPhone)) |>  # Remove any NA values
+  group_by(OnCampus, HiLoPhone) |>
+  summarize(count = n()) |>  # Count the number of observations in each group
+  ungroup()
+
+# Calculate the total number of on-campus and off-campus students
+total_on_campus <- proportions |> filter(OnCampus == "Yes") |> summarize(total = sum(count)) |> pull(total)
+total_off_campus <- proportions |> filter(OnCampus == "No") |> summarize(total = sum(count)) |> pull(total)
+
+# Calculate the proportion of high phone users for on-campus and off-campus
+on_campus_high <- proportions |> filter(OnCampus == "Yes", HiLoPhone == "High") |> summarize(count = sum(count)) |> pull(count) / total_on_campus
+off_campus_high <- proportions |> filter(OnCampus == "No", HiLoPhone == "High") |> summarize(count = sum(count)) |> pull(count) / total_off_campus
+
+# Calculate the difference in proportions
+difference <- on_campus_high - off_campus_high
+
+# Display the result
+difference
+
+
+```
+
+## Part 5: Summarizing after grouping
+
+**TASK 5.1** Using group_by and summarize.
+
+Write a piece of code that groups observations by the variable TVShow, then records:
+
+  - the number of observations in each category of TVShow
+  - the average phone time of observations in each category
+  - the average exercise time of observations in each category
+  
+You will need to copy-paste your code into Canvas
+
+```{r}
+
+summary_stats <- CleanData |>
+  group_by(TVShow) |>
+  summarize(
+    num_observations = n(),                  # Number of observations in each TVShow category
+    avg_phone_time = mean(PhoneTime, na.rm = TRUE),  # Average phone time for each TVShow category
+    avg_exercise_time = mean(ExerciseMinutes, na.rm = TRUE)  # Average exercise time for each TVShow category
+  )
+summary_stats
+
+```
+
+**TASK 5.2**  Now make a scatterplot relating the average phone time to average exercise time, letting exercise time serve as the response variable.  
+
+```{r}
+gf_point(avg_exercise_time ~ avg_phone_time, data = summary_stats)
+```
+
+
+

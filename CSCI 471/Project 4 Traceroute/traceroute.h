@@ -25,6 +25,6 @@ inline int LOG_LEVEL = 0;
 uint16_t checksum(unsigned short *buffer, int size);
 
 const int PACKET_SIZE = 64;
-const int MAX_TTL = 3;
+const int MAX_TTL = 30;
 
 #endif

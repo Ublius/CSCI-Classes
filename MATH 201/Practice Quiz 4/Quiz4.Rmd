@@ -1,0 +1,69 @@
+---
+title: "Quiz 4: Helper file"
+output: html_notebook
+---
+
+# You want to run the intro R code
+  
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+# Space for R code 
+
+Use the space below to answer the questions that don't rely on raw data
+
+```{r}
+pnorm(5, mean = 3, sd = 4, lower.tail = F)
+qnorm((1+0.88)/2)
+qnorm((1+0.90)/2)
+
+#Q4
+z <- (0.75 - 0.70) / 0.05
+z
+
+#Q5
+t <- ((112 - 120) / (sqrt(12^2/60 + 14^2/100)))
+t
+
+#Q6
+p1 <- 140/200
+p2 <- 150/250
+se <- sqrt((p1 * (1-p1)/200) + (p2 * (1-p2)/250))
+t_ci <- (p1-p2) - qnorm((1+0.90)/2) * se
+t_ci
+```
+
+# PA Seniors
+
+Use the space below to work with the dataset 'PASeniors' from the Lock5Data package.
+
+```{r}
+#load the dataset into your workspace
+data(PASeniors)
+prop.test(~Vegetarian, p = 0.10, alternative = "less", data = PASeniors, success = "Yes")
+t.test(~Height, alternative = "two.sided", data = PASeniors, conf.level = 0.90)
+t.test(HWHours~Allergies, alternative = "two.sided", data = PASeniors, conf.level = 0.98, success="Yes")
+
+
+```
+
+# Quiz4Data
+
+Use the space below to work with the large dataset 'Quiz4Data.csv".
+
+```{r}
+Quiz4Data <- read.csv(file.choose())
+
+
+
+```
+

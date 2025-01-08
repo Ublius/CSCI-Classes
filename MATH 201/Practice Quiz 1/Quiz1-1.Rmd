@@ -36,9 +36,11 @@ tally(Size ~ Type, data = Cars2020)
 #favstats(Size ~ Type, data = Cars2020)
 tally(~Size, data = Cars2020)
 total_large = 21
-diff <- (11/110) - (5/110)
+diff <- (20/48) - (16/48)
 diff
 
+(48)/(21+41+48)
+# 
 gf_dotplot(~ Acc060, data = Cars2020)
 
 favstats(~ Height, data = Cars2020)

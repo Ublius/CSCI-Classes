@@ -1,0 +1,69 @@
+---
+title: "Quiz 5: Helper file"
+output: html_notebook
+---
+
+# You want to run the intro R code
+  
+```{r, echo = F, message = F}
+# Clear workspace
+rm(list = ls()) 
+
+# load packages we need for this lab
+library(mosaic, warn.conflicts = FALSE) 
+library(ggformula, warn.conflicts = FALSE)
+library(Lock5Data, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+
+```
+
+# Space for R code 
+
+Use the space below to answer the questions that don't rely on raw data
+
+```{r}
+x <- c(1, 2, 3, 4, 5)
+y <- c(1, 2, 3, 4, 5)
+cor(x, y)
+
+sqrt(0.766)
+```
+
+# PA Seniors
+
+Use the space below to work with the dataset 'PASeniors' from the Lock5Data package.
+
+```{r}
+#load the dataset into your workspace
+data(PASeniors)
+PASeniors <- PASeniors |> na.omit()
+xchisq.test(Allergies ~ Year, data = PASeniors)
+gf_point(WorkHours ~ HWHours, data = PASeniors)
+cor(ReactionTime ~ MemoryScore, data = PASeniors)
+cor.test(ReactionTime ~ MemoryScore, data = PASeniors)
+```
+
+# Cars2020
+
+Use the space below to work with the dataset 'Cars2020" from the Lock5Data package.
+
+```{r}
+data(Cars2020)
+
+lm(HwyMPG ~ Weight, data = Cars2020)
+60.524138 + (-0.006846 * 3500)
+cor(Length ~ Weight, data = Cars2020)
+summary(lm(Length ~ Weight, data = Cars2020))
+```
+
+# Quiz4Data
+
+Use the space below to work with the large dataset 'Quiz4Data.csv".
+
+```{r}
+Quiz4Data <- read.csv(file.choose())
+
+
+
+```
+

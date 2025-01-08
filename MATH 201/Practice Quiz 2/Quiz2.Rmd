@@ -60,5 +60,9 @@ quantile(BootStats, probs = c(0.05, 0.95))
 quantile(BootStats, 0.05)
 ```
 
-
+```{r}
+# this is code calculate the Pth percentile from a vector named MyVector
+z <- (2.7-5)/2.935
+pnorm(z)
+```
 

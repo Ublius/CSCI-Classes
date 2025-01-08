@@ -1,0 +1,8 @@
+ line |                       stanza                        
+------+-----------------------------------------------------
+    1 | Smooth birds clash the lakes.
+    2 | The kindly full profiles turn.
+    3 | The men plunder snow.
+      | --from http://peterhoward.org/haikugen/framset1.htm
+(4 rows)
+

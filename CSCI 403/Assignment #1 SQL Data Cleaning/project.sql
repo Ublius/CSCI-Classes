@@ -23,11 +23,17 @@ CALL check_view('q1', ARRAY['id', 'label', 'site', 'units'], 23);
 
 CREATE VIEW q2 AS (
     select 
-        id,
-        label,
-        regexp_replace(site, '\s*(New.*|\(.*\))', '', 'g') AS clean_site,
-        units
-    from Q1
+        id, 
+        label, 
+        trim( regexp_replace(regexp_replace(site,' \(.*\)', '', 'gi'), '\ynew\y', '', 'gi')) as clean_site, 
+        units 
+        from q1
+    -- select 
+    --    id,
+    --    label,
+    --    regexp_replace(site, '\s*(New.*|\(.*\))', '', 'g') AS clean_site,
+    --    units
+    --from Q1
 );
 CALL check_view('q2', ARRAY['id', 'label', 'clean_site', 'units'], 23);
 
@@ -88,43 +94,27 @@ CREATE VIEW q7 AS (
 CALL check_view('q7', ARRAY['site', 'time', 'value'], 7737);
 
 CREATE VIEW q8 AS (
-    WITH site_counts AS (
-        SELECT 
-            q2.clean_site AS site,
-            COUNT(*) FILTER (WHERE data.value <> 0) AS non_zero_count
-        FROM data
-        JOIN q2 USING (id)
-        WHERE q2.clean_site NOT IN (
-            SELECT clean_site FROM q5
-            UNION
-            SELECT site FROM q6
-        )
-        GROUP BY q2.clean_site
-    ),
-    stats AS (
-        SELECT 
-            PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY non_zero_count) AS median_count,
-            PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY non_zero_count) AS q1,
-            PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY non_zero_count) AS q3
-        FROM site_counts
-    )
-    SELECT site
-    FROM site_counts, stats
-    WHERE non_zero_count < (q1 - 1.5 * (q3 - q1))
-       OR non_zero_count > (q3 + 1.5 * (q3 - q1))
+    select site
+    from q7
+    group by site
+    having count(*) = sum(case when value < 1 then 1 else 0 end)
 );
 CALL check_view('q8', ARRAY['site'], 5);
 
 -- --- put q9 answer in README.txt
 
--- CREATE VIEW q10 AS (
---     SELECT 'YOUR CODE HERE'
--- );
--- CALL check_view('q10', ARRAY['site', 'weekly_eui'], 7);
+CREATE VIEW q10 AS (
+    select site, (sum(q7.value) / (4 * real_estate.net_sqft)) as weekly_eui
+    from q7
+    join real_estate on q7.site = real_estate.building_name
+    where q7.site not in (select site from q8)
+    group by q7.site, real_estate.net_sqft
+);
+CALL check_view('q10', ARRAY['site', 'weekly_eui'], 7);
 
--- CREATE VIEW q11 AS (
---     SELECT 'YOUR CODE HERE'
--- );
--- CALL check_view('q11', ARRAY['slope', 'intercept', 'corr'], 1);
+CREATE VIEW q11 AS (
+     
+);
+CALL check_view('q11', ARRAY['slope', 'intercept', 'corr'], 1);
 
 --- put q12 answer in README.txt

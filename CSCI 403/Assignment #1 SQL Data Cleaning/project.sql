@@ -28,12 +28,6 @@ CREATE VIEW q2 AS (
         trim( regexp_replace(regexp_replace(site,' \(.*\)', '', 'gi'), '\ynew\y', '', 'gi')) as clean_site, 
         units 
         from q1
-    -- select 
-    --    id,
-    --    label,
-    --    regexp_replace(site, '\s*(New.*|\(.*\))', '', 'g') AS clean_site,
-    --    units
-    --from Q1
 );
 CALL check_view('q2', ARRAY['id', 'label', 'clean_site', 'units'], 23);
 
@@ -113,7 +107,13 @@ CREATE VIEW q10 AS (
 CALL check_view('q10', ARRAY['site', 'weekly_eui'], 7);
 
 CREATE VIEW q11 AS (
-     
+    select
+        regr_slope(q10.weekly_eui, extract(year from current_date) - r.year) as slope,
+        regr_intercept(q10.weekly_eui, extract(year from current_date) - r.year) as intercept,
+        corr(q10.weekly_eui, extract(year from current_date) - r.year) as corr
+    from q10
+    join real_estate r on q10.site = r.building_name
+    where q10.site not in (select site from q8)
 );
 CALL check_view('q11', ARRAY['slope', 'intercept', 'corr'], 1);
 

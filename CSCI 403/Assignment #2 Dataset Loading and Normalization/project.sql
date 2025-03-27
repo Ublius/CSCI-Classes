@@ -127,10 +127,14 @@ ALTER TABLE Reviews
 ADD CONSTRAINT pk_reviews PRIMARY KEY (game_id),
 ADD CONSTRAINT fk_reviews_game FOREIGN KEY (game_id) REFERENCES Game_Info(game_id);
 
+ALTER TABLE Reviews
+ADD CONSTRAINT chk_score_range 
+CHECK (CAST(User_Score AS DOUBLE PRECISION) >= 0 AND CAST(User_Score AS DOUBLE PRECISION) <= 10);
+
 -- (Q7) Interesting Queries (SELECT ...)
 
 -- Query 1: JOIN to find total sales by Publisher
-SELECT pi.Publisher, gi.Developer, ROUND(SUM(s.Global_Sales)::numeric, 2) AS Total_Sales
+SELECT pi.Publisher, gi.Developer, ROUND(SUM(s.NA_Sales)::numeric, 2) AS Total_Sales_NA
 FROM Sales s
 JOIN Game_Info gi ON s.game_id = gi.game_id
 JOIN Publisher_Info pi ON gi.Publisher = pi.Publisher
@@ -155,10 +159,7 @@ GROUP BY gi.Genre;
 
 -- (Q8) Indexes and performance tuning (CREATE INDEX ...)
 
--- Index on Publisher to speed up queries by publisher
--- CREATE INDEX idx_publisher ON Game_Info (Publisher);
-
--- CREATE INDEX idx_user_score ON Reviews (CAST(User_Score AS FLOAT));
+CREATE INDEX idx_user_score ON Reviews (CAST(User_Score AS FLOAT));
 
 EXPLAIN ANALYZE
 SELECT gi.Name, r.User_Score
@@ -169,7 +170,7 @@ WHERE CAST(r.User_Score AS FLOAT) >= (
     FROM Reviews
 );
 
--- CREATE INDEX idx_sales_game_global ON Sales (game_id, Global_Sales);
+CREATE INDEX idx_sales_game_global ON Sales (game_id, Global_Sales);
 
 EXPLAIN ANALYZE
 SELECT pi.Publisher, ROUND(SUM(s.Global_Sales)::numeric, 2) AS Total_Sales

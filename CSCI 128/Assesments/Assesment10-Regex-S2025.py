@@ -1,51 +1,90 @@
 import re
 
+
+# -------------------------------
+# Convert DNA to RNA using regex
+# -------------------------------
 def dna_to_rna(sequence):
+    # Replace each nucleotide using a regex substitution callback
     conversions = {'A': 'U', 'T': 'A', 'C': 'G', 'G': 'C'}
-    return ''.join(conversions[n] for n in sequence)
 
+    def replace(match):
+        base = match.group(0)
+        return conversions[base]
+
+    return re.sub(r'[ATCG]', replace, sequence)
+
+
+# -------------------------------
+# Parse file into acids (unchanged)
+# -------------------------------
 def parse_file_into_acids(filename):
+    filelist = []
     with open(filename) as myfile:
-        return [line.split() for line in myfile]
+        for row in myfile:
+            newrow = row.split()
+            filelist.append(newrow)
+    return filelist
 
+
+# -------------------------------------------
+#   MAIN PROGRAM (codon scanning via regex)
+# -------------------------------------------
 if __name__ == '__main__':
-    filename = input("FILENAME> ")
+    codonsFilename = input("CODON FILENAME> ")
+    sequenceFilename = input("SEQUENCE FILENAME> ")
     output_file = input("OUTPUT FILE> ")
 
-    acids = parse_file_into_acids(filename)
+    acids = parse_file_into_acids(codonsFilename)
 
-    # Regex:
-    #   (?=...) positive lookahead so overlapping codons can be matched
-    #   (AUG(?:...(?!UAA|UAG|UGA))*) captures start AUG and all following codons
-    #   stops before first stop codon
-    codon_regex = re.compile(r'(AUG(?:(?!UAA|UAG|UGA)...)*)(?=UAA|UAG|UGA|$)')
+    start_codon = "AUG"
+    stop_codons = ["UAA", "UGA", "UAG"]
+
+    # Create a regex that matches:
+    # start codon AUG followed by any number of codons (3 letters each)
+    codon_regex = re.compile(r'(AUG(?:...)*?)')
 
     with open(output_file, 'w') as file:
-        while True:
-            seq_input = input("SEQUENCE> ")
-            if seq_input == "DONE":
-                break
+        with open(sequenceFilename, 'r') as myfile:
+            while True:
+                sequence = myfile.readline().strip()
+                output = sequence + " "
 
-            # Header of output line
-            output = seq_input + " "
+                if sequence == "DONE":
+                    break
 
-            # Convert DNA → RNA
-            sequence = dna_to_rna(seq_input)
+                # Convert DNA → RNA using REGEX
+                sequence = dna_to_rna(sequence)
 
-            match = codon_regex.search(sequence)
-            if not match:
+                # -------------------------------------
+                # Find start codon and all codons via regex
+                # -------------------------------------
+                # Find AUG and everything after in groups of 3
+                match = re.search(r'AUG(?:...)*', sequence)
+
+                if not match:
+                    # No valid start codon found
+                    file.write(output + "\n")
+                    continue
+
+                full_codon_region = match.group(0)
+
+                # Split into codons of length 3
+                codons = re.findall(r'...', full_codon_region)
+
+                # Stop at stop codon
+                final_codons = []
+                for c in codons:
+                    if c in stop_codons:
+                        break
+                    final_codons.append(c)
+
+                # -------------------------------------
+                # Convert codons → amino acids
+                # -------------------------------------
+                for codon in final_codons:
+                    for acid in acids:
+                        if codon == acid[0]:
+                            output += acid[2]  # single-letter abbreviation
+
                 file.write(output + "\n")
-                continue
-
-            coding_region = match.group(1)
-
-            # Break into 3-letter codons
-            codons = [coding_region[i:i+3] for i in range(0, len(coding_region), 3)]
-
-            # Translate codons using acids list
-            for codon in codons:
-                for acid in acids:
-                    if codon == acid[0]:
-                        output += acid[2]
-
-            file.write(output + "\n")

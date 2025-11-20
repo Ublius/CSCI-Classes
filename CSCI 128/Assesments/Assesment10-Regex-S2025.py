@@ -4,6 +4,7 @@ def dna_to_rna(sequence):
     conversions = {'A': 'U', 'T': 'A', 'C': 'G', 'G': 'C'}
     # Find all the dna
     bases = re.findall(r'[ATCG]', sequence)
+    # print("TEST: ", bases)
     # Replace the dna with the rna
     return "".join(conversions[b] for b in bases)
 
@@ -24,10 +25,6 @@ if __name__ == '__main__':
 
     start_codon = "AUG"
     stop_codons = ["UAA", "UGA", "UAG"]
-
-    # Create a regex that matches:
-    # start codon AUG followed by any number of codons (3 letters each)
-    codon_regex = re.compile(r'(AUG(?:...)*?)')
 
     with open(output_file, 'w') as file:
         with open(sequenceFilename, 'r') as myfile:
@@ -50,9 +47,10 @@ if __name__ == '__main__':
                     continue
 
                 full_codon_region = match.group(0)
-
+                # print("TEST: ", match)
                 # Split into codons of length 3
                 codons = re.findall(r'...', full_codon_region)
+                # print("TEST: ", codons)
 
                 final_codons = []
                 for c in codons:
@@ -66,4 +64,3 @@ if __name__ == '__main__':
                             output += acid[2]
 
                 file.write(output + "\n")
-

@@ -66,6 +66,11 @@ fn encode(file_path: &str) {
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).expect("Failed to read file");
 
+    if buffer.is_empty() {
+        eprintln!("Input file is empty");
+        std::process::exit(1);
+    }
+
     print!("OUTPUT :");
     for byte in buffer {
         if byte.is_ascii_alphanumeric() {

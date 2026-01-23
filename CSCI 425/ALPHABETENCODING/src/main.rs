@@ -1,6 +1,6 @@
 use std::env;
 use std::fs::File;
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 fn main() {
     let args: Vec<String> = env::args().collect();

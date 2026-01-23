@@ -50,7 +50,7 @@ fn encode(file_path: &str) {
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).expect("Failed to read file");
 
-    print!(":");
+    print!("OUTPUT :");
     for byte in buffer {
         if byte.is_ascii_alphanumeric() {
             print!("{}", byte as char);

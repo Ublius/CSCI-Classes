@@ -1,6 +1,6 @@
 use std::env;
 use std::fs::File;
-use std::io::{self, Read};
+use std::io::{self, Read, Write};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -42,7 +42,23 @@ fn main() {
 }
 
 fn decode(token: &str, file_path: &str) {
-    // TODO: Decoding logic will be implemented here
+    let mut file = File::create(file_path).expect("Failed to create file");
+    let mut it = token.chars();
+
+    while let Some(char) = it.next() {
+        if char == 'x' || char == 'X' {
+            let hex_value = format!(
+                "{}{}",
+                it.next().expect("Expected hex digit after 'x'"),
+                it.next().expect("Expected hex digit after 'x'")
+            );
+            let byte = u8::from_str_radix(&hex_value, 16).expect("Failed to parse hex value");
+            file.write_all(&[byte]).expect("Failed to write to file");
+        } else {
+            let byte = char as u8;
+            file.write_all(&[byte]).expect("Failed to write to file");
+        }
+    }
 }
 
 fn encode(file_path: &str) {

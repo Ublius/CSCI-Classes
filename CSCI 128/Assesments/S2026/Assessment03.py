@@ -38,7 +38,7 @@ elif (b1_pressure_diff < SPIKE_THRESHOLD) and (b2_pressure_diff < SPIKE_THRESHOL
 
         wave_speed = distance / time if time > 0 else 0
 
-        print(f"OUTPUT Wave speed: {wave_speed:.2f} m/s")
+        print(f"OUTPUT Tsunami wave detected. Wave velocity of {wave_speed:.2f} m/s")
 
     else:
         if (b1_pressure_diff > TSUNAMI_THRESHOLD):

@@ -15,3 +15,8 @@ Cargo.lock
 
 # TMP files for testing the autograder
 tmp/
+
+# Ignore executable created by Build.sh
+
+# Ignore COMPGRADE files
+COMPGRADING/

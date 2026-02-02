@@ -98,10 +98,11 @@ fn decode_value(s: &str) -> Vec<u8> {
 }
 
 fn encode_char(c: u8) -> String {
-    if c.is_ascii_alphanumeric() {
-        (c as char).to_string()
-    } else {
+    if !(c != b'x' && c != b'\\' && c != b':' && c.is_ascii_graphic() && !c.is_ascii_whitespace()) {
         format!("x{:02x}", c)
+    }
+    else {
+        (c as char).to_string()
     }
 }
 

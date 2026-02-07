@@ -1,0 +1,3 @@
+Fun Factor: I think this game is moderately fun on a first play through however it can get boring very quickly especially on multiple play through's.
+
+Changes: I would implement more levels into the game that way their is some uniqueness as well as progression instead of only having map. I would also make it into more of dungeon crawler type game where their is randomness on where the monsters spawn as well as procedurally generated levels so it isn't always the same. Finally, I would add different attacks as well being able to find attacks in chest.

@@ -1,0 +1,2 @@
+// Variables
+damage = 1;

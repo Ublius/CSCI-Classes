@@ -1,3 +1,3 @@
 if (hp <= 0) {
-    instance_destroy()
+    instance_destroy(id, true)
 }

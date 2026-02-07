@@ -1,3 +1,3 @@
-if (y < (room_width - sprite_width / 2) ) {
+if (y > (room_height - sprite_width / 2) ) {
     instance_destroy(id, false)
 }

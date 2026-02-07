@@ -1,0 +1,1 @@
+if (x < (room_width - obj_funnyguy.sprite_width)) x+= spd;

@@ -1,0 +1,1 @@
+audio_play_sound(boink, 1, false);

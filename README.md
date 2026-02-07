@@ -12,6 +12,7 @@
  - CSCI 425
  - CSCI 471
  - CSCI 474
+ - CSCI 477
 # MATH Classes
 Labs for all Math Classes:
  - MATH 201

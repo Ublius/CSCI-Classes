@@ -19,6 +19,6 @@ cargo build --${PROFILE:-release} --offline --bin ${project}
 # purge, just in case it is a directory for some bizarre reason.
 rm -rf ${PROJECT}
 
-# move the executable resident under target/.../ back to the top directory, where
+# hard link the executable resident under target/.../ back to the top directory, where
 # project requirements expect it to be.
-ln -s target/${PROFILE:-release}/${project} ./${PROJECT}
+ln target/${PROFILE:-release}/${project} ./${PROJECT}

@@ -5,7 +5,8 @@ SPIKE_THRESHOLD = 100
 TSUNAMI_THRESHOLD = 30
 EARTH_RADIUS = 6371
 
-buoy1 = [float(val) for val in input("Buoy #1 - OBSERVED PRESSURES (mm)> ").split()]
+#buoy1 = [float(val) for val in input("Buoy #1 - OBSERVED PRESSURES (mm)> ").split()]
+buoy1 = map(float, input("Buoy #1 - OBSERVED PRESSURES (mm)").split())
 buoy2 = [float(val) for val in input("Buoy #2 - OBSERVED PRESSURES (mm)> ").split()]
 
 b1_predict_pressure = (W[0] * buoy1[0]) + (W[1] * buoy1[1]) + (W[2] * buoy1[2]) + (W[3] * buoy1[3])

@@ -85,7 +85,7 @@ fn decode_value(s: &str) -> Vec<u8> {
     let mut i = 0;
 
     while i < s.len() {
-        if &s[i..i+1] == "x" || &s[i..i+1] == "X" {
+        if &s[i..i+1] == "x" || &s[i..i+1] == "X"  && s[i+1..i+3].chars().all(|c| c.is_ascii_hexdigit()) {
             let byte = u8::from_str_radix(&s[i+1..i+3], 16).expect("Failed to parse hex value");
             out.push(byte);
             i += 3;

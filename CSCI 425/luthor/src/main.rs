@@ -94,17 +94,22 @@ fn parse_alphabet(line: &str) -> Alphabet {
 
 fn decode_value(s: &str) -> Vec<u8> {
     let mut out = Vec::new();
+    let bytes = s.as_bytes();
     let mut i = 0;
 
-    while i < s.len() {
-        if s[i+1..i+3].chars().all(|c| c.is_ascii_hexdigit()) {
-            let byte = u8::from_str_radix(&s[i+1..i+3], 16).expect("Failed to parse hex value");
-            out.push(byte);
-            i += 3;
-        } else {
-            out.push(s.as_bytes()[i]);
-            i += 1;
+    while i < bytes.len() {
+        if i + 3 <= bytes.len() && (bytes[i] == b'x' || bytes[i] == b'X') {
+            let hex_slice = &s[i+1..i+3];
+            if hex_slice.chars().all(|c| c.is_ascii_hexdigit()) {
+                if let Ok(byte) = u8::from_str_radix(hex_slice, 16) {
+                    out.push(byte);
+                    i += 3;
+                    continue;
+                }
+            }
         }
+        out.push(bytes[i]);
+        i += 1;
     }
     out
 }

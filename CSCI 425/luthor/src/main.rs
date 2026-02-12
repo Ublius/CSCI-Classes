@@ -67,9 +67,21 @@ fn parse_alphabet(line: &str) -> Alphabet {
         let mut i = 0;
         while i < field.len() {
             if &field[i..i+1] == "x" || &field[i..i+1] == "X" {
-                let byte = u8::from_str_radix(&field[i+1..i+3], 16).expect("Failed to parse hex value");
-                chars.push(byte);
-                i += 3;
+                if i + 3 <= field.len() {
+                    match u8::from_str_radix(&field[i+1..i+3], 16) {
+                        Ok(byte) => {
+                            chars.push(byte);
+                            i += 3;
+                        }
+                        Err(_) => {
+                            chars.push(b'x');
+                            i += 1;
+                        }
+                    }
+                } else {
+                    chars.push(b'x');
+                    i += 1;
+                }
             } else {
                 chars.push(field.as_bytes()[i]);
                 i += 1;

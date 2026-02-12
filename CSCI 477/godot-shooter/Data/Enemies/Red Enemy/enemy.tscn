@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bvdo3kql7b67g"]
+
+[ext_resource type="Script" uid="uid://burmxn1wkns5d" path="res://Data/Enemies/Red Enemy/enemy.gd" id="1_a57dn"]
+[ext_resource type="Texture2D" uid="uid://dxu6r7s14nt6l" path="res://Sprites/spr_enemy_red_0.png" id="2_iiq6r"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a57dn"]
+size = Vector2(20, 50)
+
+[node name="Enemy" type="CharacterBody2D" unique_id=953528040 groups=["Enemies"]]
+script = ExtResource("1_a57dn")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=861462825]
+texture = ExtResource("2_iiq6r")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2051711309]
+scale = Vector2(2.2800004, 1)
+shape = SubResource("RectangleShape2D_a57dn")

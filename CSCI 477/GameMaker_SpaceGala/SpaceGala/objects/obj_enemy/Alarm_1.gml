@@ -1,8 +1,15 @@
-var bullet = instance_create_layer(x, y, "Instances", obj_bullet_enemy)
-var player_y = obj_player.y
-var player_x = obj_player.x
+if (!instance_exists(obj_player)) exit;
 
-bullet.direction = point_direction(x, y, player_x, player_y)
-bullet.speed = bullet.spd
+var cam = view_camera[0];
 
-alarm[1] = shoot_speed
+var cam_top = camera_get_view_y(cam);
+var cam_bottom = cam_top + camera_get_view_height(cam);
+
+if (obj_player.y > y && abs(obj_player.x - x) < 768)
+{
+    var bullet = instance_create_layer(x, y, "Instances", obj_bullet_enemy);
+    bullet.direction = point_direction(x, y, obj_player.x, obj_player.y);
+    bullet.speed = bullet.spd;
+
+    alarm[1] = shoot_speed;
+}

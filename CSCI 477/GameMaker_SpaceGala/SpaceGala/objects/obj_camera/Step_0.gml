@@ -10,6 +10,6 @@ if (instance_exists(obj_player)) {
     if(obj_player.y + (obj_player.sprite_height / 2) >= camera_y + camera_h) obj_player.y = camera_y + camera_h - (obj_player.sprite_height / 2)
     if(obj_player.y - (obj_player.sprite_height / 2) <= camera_y) obj_player.y = camera_y + (obj_player.sprite_height / 2)
     
-    speed = spd
+    speed = obj_player.speed
     obj_player.speed = spd
 }

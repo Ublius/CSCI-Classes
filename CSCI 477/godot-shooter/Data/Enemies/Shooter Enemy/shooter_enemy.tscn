@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://ffapvjmubaxm"]
+
+[ext_resource type="Script" uid="uid://butwxnecqleno" path="res://Data/Enemies/Shooter Enemy/shooter_enemy.gd" id="1_n65dy"]
+[ext_resource type="Texture2D" uid="uid://dnlympp7lcrp6" path="res://Sprites/spr_enemy_ufo_blue.png" id="2_05fcj"]
+[ext_resource type="PackedScene" uid="uid://b1b1lvm6gj55b" path="res://Data/Bullet/bullet.tscn" id="2_q1hrv"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_q1hrv"]
+
+[node name="Shooter Enemy" type="CharacterBody2D" unique_id=1155683313]
+script = ExtResource("1_n65dy")
+bullet_scene = ExtResource("2_q1hrv")
+points_value = 20
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=452418452]
+texture = ExtResource("2_05fcj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1151860099]
+scale = Vector2(3.4000013, 3.3600001)
+shape = SubResource("CircleShape2D_q1hrv")
+
+[node name="Muzzle" type="Marker2D" parent="." unique_id=189319692]
+position = Vector2(37, 0)
+
+[node name="ShootTimer" type="Timer" parent="." unique_id=119800373]

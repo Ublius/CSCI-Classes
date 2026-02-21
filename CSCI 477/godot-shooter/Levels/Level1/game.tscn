@@ -1,17 +1,37 @@
 [gd_scene format=3 uid="uid://cnmsdsdwv4ysv"]
 
 [ext_resource type="PackedScene" uid="uid://br786yqr66gbm" path="res://Data/Player/player.tscn" id="1_mmr2g"]
-[ext_resource type="PackedScene" uid="uid://bvdo3kql7b67g" path="res://Data/Enemies/Red Enemy/enemy.tscn" id="2_ud0hs"]
+[ext_resource type="Texture2D" uid="uid://bdl61feew74cb" path="res://Sprites/spr_background.png" id="1_ud0hs"]
+[ext_resource type="PackedScene" uid="uid://37uo4u76n7md" path="res://Data/Controllers/GameController/game_controller.tscn" id="2_rvmkj"]
+[ext_resource type="PackedScene" uid="uid://bvdo3kql7b67g" path="res://Data/Enemies/Tracker Enemy/tracker_enemy.tscn" id="2_ud0hs"]
+[ext_resource type="PackedScene" uid="uid://idifb512mw3g" path="res://Data/Controllers/Spawner/enemy_spawner.tscn" id="3_3uyyw"]
+[ext_resource type="PackedScene" uid="uid://ffapvjmubaxm" path="res://Data/Enemies/Shooter Enemy/shooter_enemy.tscn" id="5_a1unl"]
 
 [node name="Game" type="Node2D" unique_id=2139035965]
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=446748160]
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1738309332]
 offset_right = 1152.0
-offset_bottom = 648.0
-color = Color(1, 0.7607843, 1, 1)
+offset_bottom = 649.0
+texture = ExtResource("1_ud0hs")
+stretch_mode = 1
+
+[node name="GameController" parent="." unique_id=284232221 instance=ExtResource("2_rvmkj")]
+position = Vector2(-11, -4)
+
+[node name="EnemySpawner" parent="." unique_id=2145814409 instance=ExtResource("3_3uyyw")]
+enemy_scenes = Array[PackedScene]([ExtResource("2_ud0hs"), ExtResource("5_a1unl")])
 
 [node name="Player" parent="." unique_id=596265871 instance=ExtResource("1_mmr2g")]
 position = Vector2(561, 554)
 
-[node name="Enemy" parent="." unique_id=953528040 instance=ExtResource("2_ud0hs")]
-position = Vector2(569, 111)
+[node name="Tracker Enemy" parent="." unique_id=953528040 instance=ExtResource("2_ud0hs")]
+position = Vector2(185, 109)
+
+[node name="Tracker Enemy2" parent="." unique_id=1864015650 instance=ExtResource("2_ud0hs")]
+position = Vector2(980, 105)
+
+[node name="Shooter Enemy" parent="." unique_id=1155683313 instance=ExtResource("5_a1unl")]
+position = Vector2(422, 107)
+
+[node name="Shooter Enemy2" parent="." unique_id=639341276 instance=ExtResource("5_a1unl")]
+position = Vector2(733, 107)

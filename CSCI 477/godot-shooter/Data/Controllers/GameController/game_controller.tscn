@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://37uo4u76n7md"]
+
+[ext_resource type="Script" uid="uid://cl2mekt2kys78" path="res://Data/Controllers/GameController/game_controller.gd" id="1_vj1cr"]
+[ext_resource type="PackedScene" uid="uid://du3gqftr2gdxd" path="res://Data/Controllers/Heart/heart.tscn" id="2_575fr"]
+
+[node name="GameController" type="Node2D" unique_id=284232221 groups=["GameController"]]
+script = ExtResource("1_vj1cr")
+heart_scene = ExtResource("2_575fr")
+
+[node name="ScoreLabel" type="Label" parent="." unique_id=744799742]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="HealthContainer" type="Node2D" parent="." unique_id=1211407204]

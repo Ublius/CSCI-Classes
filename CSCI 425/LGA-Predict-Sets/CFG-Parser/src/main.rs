@@ -58,7 +58,7 @@ impl Grammar {
         }
     }
 
-    pub fn from_string(contents: &str) -> Grammar {
+    pub fn parse_grammar(contents: &str) -> Grammar {
         let split_contents: Vec<&str> = contents.split("->").collect();
         let mut current_nonterminal = split_contents[0].trim().to_string();
         let mut grammar = Grammar::new();
@@ -106,7 +106,7 @@ impl Grammar {
     }
 
     pub fn from_file(filename: &str) -> Result<Grammar, std::io::Error> {
-        let contents = fs::read_to_string(filename)?;
+        let contents = fs::parse_grammar(filename)?;
         Ok(Grammar::from_string(&contents))
     }
 

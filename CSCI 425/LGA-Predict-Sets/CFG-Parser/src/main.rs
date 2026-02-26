@@ -113,8 +113,22 @@ impl Grammar {
 
     pub fn derives_to_lambda(&self, nonterminal: &String) -> bool {
         if let Some(prods) = self.productions.get(nonterminal) {
-            for p in prods {
-                if p.len() == 1 && p[0] == "lambda" {
+            for rhs in prods {
+                if rhs.len() == 1 && rhs[0] == "lambda" {
+                    return true;
+                }
+                let mut all_lambda = true;
+                for symbol in rhs {
+                    if self.terminals.contains(symbol) || symbol == "$" {
+                        all_lambda = false;
+                        break;
+                    }
+                    if !self.derives_to_lambda(symbol) {
+                        all_lambda = false;
+                        break;
+                    }
+                }
+                if all_lambda {
                     return true;
                 }
             }
@@ -178,9 +192,9 @@ fn main() {
     // grammar.print();
 
     // Dervies to lambda test
-    // for nt in &grammar.nonterminals {
-    //     println!("{} derives to lambda: {}", nt, grammar.derives_to_lambda(nt));
-    // }
+    for nt in &grammar.nonterminals {
+        println!("{} derives to lambda: {}", nt, grammar.derives_to_lambda(nt));
+    }
 
     // First Set Test
     // for nt in &grammar.nonterminals {

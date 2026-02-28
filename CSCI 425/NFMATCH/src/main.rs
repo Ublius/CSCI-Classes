@@ -381,49 +381,6 @@ fn merge_states(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> (Ve
     (new_transitions, new_accepting)
 }
 
-fn merge_state_sets(transitions: &[Vec<Option<StateId>>], accepting: &[bool], merge_sets: &[Vec<StateId>]) -> (Vec<Vec<Option<StateId>>>, Vec<bool>) {
-    let num_states = transitions.len();
-    let alphabet_size = transitions[0].len();
-    
-    let mut old_to_new = vec![None; num_states];
-    let mut new_accepting = Vec::new();
-    
-    for (new_id, set) in merge_sets.iter().enumerate() {
-        for &old_state in set {
-            if old_state < num_states {
-                old_to_new[old_state] = Some(new_id);
-            }
-        }
-        new_accepting.push(set.iter().any(|&s| s < num_states && accepting[s]));
-    }
-    
-    let new_num_states = merge_sets.len();
-    let mut new_transitions = vec![vec![None; alphabet_size]; new_num_states];
-    
-    for (new_id, set) in merge_sets.iter().enumerate() {
-        if set.is_empty() {
-            continue;
-        }
-        let representative = set[0];
-        
-        if representative < num_states {
-            for sym in 0..alphabet_size {
-                if sym < transitions[representative].len() {
-                    if let Some(next) = transitions[representative][sym] {
-                        if next < num_states {
-                            if let Some(mapped_next) = old_to_new[next] {
-                                new_transitions[new_id][sym] = Some(mapped_next);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    (new_transitions, new_accepting)
-}
-
 fn prune_dfa(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> DFA {
     let num_states = transitions.len();
     if num_states == 0 {
@@ -535,10 +492,10 @@ fn test_token(dfa: &DFA, token: &str, alphabet: &[u8]) {
     let bytes = token.as_bytes();
     let mut current_state = 0;
     
-    // Handle empty string
     if bytes.is_empty() {
-        if *dfa.accepting.get(0).unwrap_or(&false) {
-            println!("OUTPUT (:M:)");
+        let accepting = *dfa.accepting.get(0).unwrap_or(&false);
+        if accepting {
+            println!("OUTPUT :M:");
         } else {
             println!("OUTPUT 0");
         }
@@ -546,7 +503,6 @@ fn test_token(dfa: &DFA, token: &str, alphabet: &[u8]) {
     }
     
     for (pos, &c) in bytes.iter().enumerate() {
-        // Find column for this character (skip lambda at index 0)
         let mut col = None;
         for (idx, &sym) in alphabet.iter().enumerate() {
             if idx > 0 && sym == c {
@@ -563,7 +519,6 @@ fn test_token(dfa: &DFA, token: &str, alphabet: &[u8]) {
             }
         };
         
-        // Check bounds
         if current_state >= dfa.transitions.len() || col >= dfa.transitions[current_state].len() {
             println!("OUTPUT {}", pos + 1);
             return;
@@ -585,9 +540,9 @@ fn test_token(dfa: &DFA, token: &str, alphabet: &[u8]) {
         }
     }
     
-    // Check if final state is accepting
-    if *dfa.accepting.get(current_state).unwrap_or(&false) {
-        println!("OUTPUT (:M:)");
+    let accepting = *dfa.accepting.get(current_state).unwrap_or(&false);
+    if accepting {
+        println!("OUTPUT :M:");
     } else {
         println!("OUTPUT {}", bytes.len() + 1);
     }

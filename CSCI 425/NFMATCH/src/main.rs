@@ -423,12 +423,10 @@ fn prune_dfa(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> DFA {
     
     let mut reverse_trans: Vec<Vec<StateId>> = vec![Vec::new(); num_states];
     for from in 0..num_states {
-        if reachable[from] {
-            for &next_opt in &transitions[from] {
-                if let Some(to) = next_opt {
-                    if to < num_states && reachable[to] {
-                        reverse_trans[to].push(from);
-                    }
+        for &next_opt in &transitions[from] {
+            if let Some(to) = next_opt {
+                if to < num_states {
+                    reverse_trans[to].push(from);
                 }
             }
         }
@@ -450,8 +448,8 @@ fn prune_dfa(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> DFA {
     
     if !useful[0] {
         return DFA {
-            transitions: vec![vec![None; alphabet_size]],
-            accepting: vec![false],
+            transitions: Vec::new(),
+            accepting: Vec::new(),
         };
     }
     

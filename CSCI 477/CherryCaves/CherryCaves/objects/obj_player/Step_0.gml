@@ -26,9 +26,10 @@ if (place_meeting(x + hsp, y, obj_block)) {
 
 // Check for jump
 if (grounded && jumping ) {
-    vsp = -spd
+    vsp = -jspd
     grounded = false
     sprite_index = spr_player_idle
+    audio_play_sound(snd_jump, 1, false)
 }
 
 // Vert Collision
@@ -62,3 +63,22 @@ if (climbing) {
 // Movement
 x += hsp
 y += vsp
+
+if (y > room_height || x > room_width || x < 0) {
+    global.hp -= 1
+    
+    if (global.hp > 0) {
+        x = respawn_x
+        y = respawn_y
+        hsp = 0
+        vsp = 0
+        audio_play_sound(snd_damage, 1, false)
+    } else {
+        obj_game_controller.game_over = true
+    }
+}
+
+if (global.hp <= 0) {
+    instance_destroy(id, true)
+    obj_game_controller.game_over = true
+}

@@ -1,2 +1,4 @@
 global.cherries = 0
-//global.titlescreen = true
+global.hp = 1
+
+game_over = false

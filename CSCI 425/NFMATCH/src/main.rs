@@ -254,207 +254,184 @@ fn nfa_to_dfa(nfa: &NFA) -> DFA {
 }
 
 // ============ Optimize FA ============
-fn optimize_dfa(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> DFA {
-    let num_states = transitions.len();
-    if num_states == 0 {
-        return DFA {
-            transitions: Vec::new(),
-            accepting: Vec::new(),
-        };
+fn optimize_dfa( transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> DFA {
+    let (t1, a1) = remove_unreachable(transitions, accepting);
+    let (t2, a2) = remove_dead(&t1, &a1);
+
+    merge_equivalent(&DFA {
+        transitions: t2,
+        accepting: a2,
+    })
+
+}
+
+fn remove_unreachable( transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> (Vec<Vec<Option<StateId>>>, Vec<bool>) {
+    let n = transitions.len();
+    if n == 0 {
+        return (Vec::new(), Vec::new());
     }
-    
-    let alphabet_size = transitions[0].len();
-    
-    let mut reverse_trans: Vec<Vec<StateId>> = vec![Vec::new(); num_states];
-    for from in 0..num_states {
-        for &next_opt in &transitions[from] {
-            if let Some(to) = next_opt {
-                if to < num_states {
-                    reverse_trans[to].push(from);
+
+    let alphabet = transitions[0].len();
+
+    let mut reachable = vec![false; n];
+    let mut queue = VecDeque::new();
+
+    reachable[0] = true;
+    queue.push_back(0);
+
+    while let Some(s) = queue.pop_front() {
+        for &next in &transitions[s] {
+            if let Some(t) = next {
+                if !reachable[t] {
+                    reachable[t] = true;
+                    queue.push_back(t);
                 }
             }
         }
     }
-    
-    let mut live = vec![false; num_states];
+
+    rebuild_dfa(transitions, accepting, &reachable, alphabet)
+}
+
+fn remove_dead(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> (Vec<Vec<Option<StateId>>>, Vec<bool>) {
+    let n = transitions.len();
+    if n == 0 {
+        return (Vec::new(), Vec::new());
+    }
+
+    let alphabet = transitions[0].len();
+
+    let mut reverse = vec![Vec::new(); n];
+    for from in 0..n {
+        for &next in &transitions[from] {
+            if let Some(to) = next {
+                reverse[to].push(from);
+            }
+        }
+    }
+
+    let mut live = vec![false; n];
     let mut stack = Vec::new();
-    
-    for i in 0..num_states {
+
+    for i in 0..n {
         if accepting[i] {
             live[i] = true;
             stack.push(i);
         }
     }
-    
-    while let Some(state) = stack.pop() {
-        for &prev in &reverse_trans[state] {
-            if !live[prev] {
-                live[prev] = true;
-                stack.push(prev);
+
+    while let Some(s) = stack.pop() {
+        for &p in &reverse[s] {
+            if !live[p] {
+                live[p] = true;
+                stack.push(p);
             }
         }
     }
-    
-    let mut reachable = vec![false; num_states];
-    let mut queue = VecDeque::new();
-    reachable[0] = true;
-    queue.push_back(0);
-    
-    while let Some(state) = queue.pop_front() {
-        for &next_opt in &transitions[state] {
-            if let Some(next) = next_opt {
-                if !reachable[next] && next < num_states {
-                    reachable[next] = true;
-                    queue.push_back(next);
-                }
-            }
+
+    rebuild_dfa(transitions, accepting, &live, alphabet)
+}
+
+fn rebuild_dfa(transitions: &[Vec<Option<StateId>>], accepting: &[bool], keep: &[bool], alphabet: usize) -> (Vec<Vec<Option<StateId>>>, Vec<bool>) {
+    let n = transitions.len();
+
+    let mut old_to_new = vec![None; n];
+    let mut states = Vec::new();
+
+    for i in 0..n {
+        if keep[i] {
+            old_to_new[i] = Some(states.len());
+            states.push(i);
         }
     }
-    
-    let mut useful = vec![false; num_states];
-    let mut useful_states = Vec::new();
-    let mut old_to_new = vec![None; num_states];
-    
-    for i in 0..num_states {
-        useful[i] = reachable[i] && live[i];
-        if useful[i] {
-            old_to_new[i] = Some(useful_states.len());
-            useful_states.push(i);
-        }
+
+    if states.is_empty() {
+        return (
+            vec![vec![None; alphabet]],
+            vec![false],
+        );
     }
-    
-    if !useful[0] {
-        return DFA {
-            transitions: vec![vec![None; alphabet_size]],
-            accepting: vec![false],
-        };
-    }
-    
-    let useful_count = useful_states.len();
-    
-    let mut useful_trans = vec![vec![None; alphabet_size]; useful_count];
-    let mut useful_accepting = vec![false; useful_count];
-    
-    for (new_id, &old_id) in useful_states.iter().enumerate() {
-        useful_accepting[new_id] = accepting[old_id];
-        for sym in 0..alphabet_size {
+
+    let new_n = states.len();
+    let mut new_trans = vec![vec![None; alphabet]; new_n];
+    let mut new_accept = vec![false; new_n];
+
+    for (new_id, &old_id) in states.iter().enumerate() {
+        new_accept[new_id] = accepting[old_id];
+
+        for sym in 0..alphabet {
             if let Some(next) = transitions[old_id][sym] {
-                if let Some(mapped_next) = old_to_new[next] {
-                    useful_trans[new_id][sym] = Some(mapped_next);
+                if let Some(mapped) = old_to_new[next] {
+                    new_trans[new_id][sym] = Some(mapped);
                 }
             }
         }
     }
-    
-    let mut m: Vec<BTreeSet<StateId>> = Vec::new();
-    let mut l: VecDeque<(BTreeSet<StateId>, BTreeSet<usize>)> = VecDeque::new();
-    
-    let mut accepting_set = BTreeSet::new();
-    let mut non_accepting_set = BTreeSet::new();
-    
-    for i in 0..useful_count {
-        if useful_accepting[i] {
-            accepting_set.insert(i);
-        } else {
-            non_accepting_set.insert(i);
-        }
-    }
-    
-    let all_symbols: BTreeSet<usize> = (0..alphabet_size).collect();
-    
-    if !accepting_set.is_empty() {
-        l.push_back((accepting_set, all_symbols.clone()));
-    }
-    if !non_accepting_set.is_empty() {
-        l.push_back((non_accepting_set, all_symbols));
-    }
-    
-    while !l.is_empty() {
-        let (s, mut c) = l.pop_back().unwrap();
-        
-        if c.is_empty() {
-            continue;
-        }
-        
-        let sym = *c.iter().next().unwrap();
-        c.remove(&sym);
-        
-        let mut partitions: HashMap<Option<StateId>, BTreeSet<StateId>> = HashMap::new();
-        
-        for &state in &s {
-            partitions.entry(useful_trans[state][sym])
-                .or_insert_with(BTreeSet::new)
-                .insert(state);
-        }
-        
-        for (_, xi) in partitions {
-            if xi.len() <= 1 {
-                continue;
-            }
-            
-            if c.is_empty() {
-                m.push(xi);
-            } else {
-                l.push_back((xi, c.clone()));
+
+    (new_trans, new_accept)
+}
+
+fn merge_equivalent(dfa: &DFA) -> DFA {
+    let n = dfa.transitions.len();
+    if n == 0 { return DFA { transitions: vec![], accepting: vec![] }; }
+    let alphabet = dfa.transitions[0].len();
+
+    let mut mapping: Vec<usize> = (0..n).collect();
+    let mut changed = true;
+
+    while changed {
+        changed = false;
+        for i in 0..n {
+            for j in 0..i {
+                if mapping[i] == mapping[j] { continue; }
+                if dfa.accepting[i] != dfa.accepting[j] { continue; }
+                let mut can_merge = true;
+                for sym in 0..alphabet {
+                    let ti = dfa.transitions[i][sym].map(|x| mapping[x]);
+                    let tj = dfa.transitions[j][sym].map(|x| mapping[x]);
+                    if ti != tj { can_merge = false; break; }
+                }
+                if can_merge {
+                    let old = mapping[i];
+                    for k in 0..n {
+                        if mapping[k] == old {
+                            mapping[k] = mapping[j];
+                        }
+                    }
+                    changed = true;
+                    break;
+                }
             }
         }
     }
-    
-    let mut state_mapping: Vec<StateId> = (0..useful_count).collect();
-    
-    for set in m {
-        if set.len() <= 1 {
-            continue;
-        }
-        
-        let mut iter = set.iter();
-        let target = *iter.next().unwrap();
-        
-        for &state in iter {
-            state_mapping[state] = target;
-        }
+
+    let mut old_to_new = vec![0; n];
+    let mut class_ids = std::collections::BTreeMap::new();
+    let mut next_id = 0;
+    for i in 0..n {
+        let cls = mapping[i];
+        let id = *class_ids.entry(cls).or_insert_with(|| {
+            let cur = next_id;
+            next_id += 1;
+            cur
+        });
+        old_to_new[i] = id;
     }
-    
-    let mut final_mapping = vec![None; useful_count];
-    let mut final_states = Vec::new();
-    
-    for i in 0..useful_count {
-        let mut root = i;
-        while state_mapping[root] != root {
-            root = state_mapping[root];
-        }
-        let mut j = i;
-        while state_mapping[j] != j {
-            let next = state_mapping[j];
-            state_mapping[j] = root;
-            j = next;
-        }
-        
-        if final_mapping[root].is_none() {
-            final_mapping[root] = Some(final_states.len());
-            final_states.push(root);
-        }
-    }
-    
-    let final_count = final_states.len();
-    let mut final_transitions = vec![vec![None; alphabet_size]; final_count];
-    let mut final_accepting = vec![false; final_count];
-    
-    for (new_id, &old_id) in final_states.iter().enumerate() {
-        final_accepting[new_id] = useful_accepting[old_id];
-        
-        for sym in 0..alphabet_size {
-            if let Some(next) = useful_trans[old_id][sym] {
-                let mapped_next = state_mapping[next];
-                final_transitions[new_id][sym] = Some(final_mapping[*&mapped_next].unwrap());
+
+    let mut final_trans = vec![vec![None; alphabet]; next_id];
+    let mut final_accept = vec![false; next_id];
+
+    for i in 0..n {
+        let new_i = old_to_new[i];
+        final_accept[new_i] |= dfa.accepting[i];
+        for sym in 0..alphabet {
+            if let Some(next) = dfa.transitions[i][sym] {
+                final_trans[new_i][sym] = Some(old_to_new[next]);
             }
         }
     }
-    
-    DFA {
-        transitions: final_transitions,
-        accepting: final_accepting,
-    }
+
+    DFA { transitions: final_trans, accepting: final_accept }
 }
 
 // ============ Compare Tokens ============

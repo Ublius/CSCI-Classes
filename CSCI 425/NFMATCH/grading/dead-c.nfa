@@ -1,0 +1,13 @@
+8 @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z _ a b c d e f g h i j k l m n o p q r s t u v w x78 y z
+- 0 1 0 1 2 3 4 5 6 7 8 9 _
+- 0 2 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x78 y z
+- 0 6 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x78 y z
+- 2 3 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x78 y z
+- 2 4 _
+- 3 8 _
+- 3 6 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x78 y z
+- 4 8 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P _ a b c d e f g h i j k l m n o p q r s t u v w x78 y z
+- 4 7 Q R S T U V W X Y Z 
++ 8 8 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z _ a b c d e f g h i j k l m n o p q r s t u v w x78 y z
++ 6 8 _
++ 6 6 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x78 y z

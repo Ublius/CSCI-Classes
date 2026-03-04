@@ -33,8 +33,9 @@ fn main() -> io::Result<()> {
     let nfa = load_nfa_definition(nfa_file)?;
     
     let dfa = nfa_to_dfa(&nfa);
-    let optimized_dfa = optimize_dfa(&dfa);
-    
+
+    let optimized_dfa = optimize_dfa(&dfa.transitions, &dfa.accepting);
+
     write_dfa(&optimized_dfa, dfa_output_file)?;
     
     for token in tokens {
@@ -253,203 +254,7 @@ fn nfa_to_dfa(nfa: &NFA) -> DFA {
 }
 
 // ============ Optimize FA ============
-fn optimize_dfa(dfa: &DFA) -> DFA {
-    let unreachable_pruned = prune_unreachable(&dfa.transitions, &dfa.accepting);
-    let dead_pruned = prune_dead(&unreachable_pruned.transitions, &unreachable_pruned.accepting);
-    
-    let mut current_transitions = dead_pruned.transitions;
-    let mut current_accepting = dead_pruned.accepting;
-    
-    loop {
-        let (new_transitions, new_accepting) = merge_states(&current_transitions, &current_accepting);
-        
-        if new_transitions.len() == current_transitions.len() {
-            break;
-        }
-        
-        current_transitions = new_transitions;
-        current_accepting = new_accepting;
-    }
-    
-    let final_unreachable_pruned = prune_unreachable(&current_transitions, &current_accepting);
-    prune_dead(&final_unreachable_pruned.transitions, &final_unreachable_pruned.accepting)
-}
-
-fn merge_states(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> (Vec<Vec<Option<StateId>>>, Vec<bool>) {
-    let num_states = transitions.len();
-    if num_states <= 1 {
-        return (transitions.to_vec(), accepting.to_vec());
-    }
-    
-    let alphabet_size = transitions[0].len();
-    
-    let mut partitions: Vec<Vec<StateId>> = Vec::new();
-    
-    let accepting_states: Vec<StateId> = (0..num_states)
-        .filter(|&i| accepting[i])
-        .collect();
-    if !accepting_states.is_empty() {
-        partitions.push(accepting_states);
-    }
-    
-    let non_accepting_states: Vec<StateId> = (0..num_states)
-        .filter(|&i| !accepting[i])
-        .collect();
-    if !non_accepting_states.is_empty() {
-        partitions.push(non_accepting_states);
-    }
-    
-    let mut changed = true;
-    while changed {
-        changed = false;
-        let mut new_partitions = Vec::new();
-        
-        for partition in &partitions {
-            if partition.len() <= 1 {
-                new_partitions.push(partition.clone());
-                continue;
-            }
-            
-            let mut split_occurred = false;
-            
-            for sym in 0..alphabet_size {
-                if split_occurred {
-                    break;
-                }
-                
-                let mut group_map: HashMap<Option<StateId>, Vec<StateId>> = HashMap::new();
-                
-                for &state in partition {
-                    let target = if let Some(next) = transitions[state][sym] {
-                        let mut target_partition = None;
-                        for (part_idx, part) in partitions.iter().enumerate() {
-                            if part.contains(&next) {
-                                target_partition = Some(part_idx);
-                                break;
-                            }
-                        }
-                        target_partition
-                    } else {
-                        None
-                    };
-                    
-                    group_map.entry(target).or_insert_with(Vec::new).push(state);
-                }
-                
-                if group_map.len() > 1 {
-                    split_occurred = true;
-                    changed = true;
-                    
-                    for (_, group) in group_map {
-                        new_partitions.push(group);
-                    }
-                }
-            }
-            
-            if !split_occurred {
-                new_partitions.push(partition.clone());
-            }
-        }
-        
-        if changed {
-            partitions = new_partitions;
-        }
-    }
-    
-    partitions.sort_by(|a, b| a[0].cmp(&b[0]));
-    
-    let mut old_to_new = vec![0; num_states];
-    let mut new_accepting = Vec::new();
-    
-    for (new_id, partition) in partitions.iter().enumerate() {
-        for &state in partition {
-            old_to_new[state] = new_id;
-        }
-        new_accepting.push(partition.iter().any(|&s| accepting[s]));
-    }
-    
-    let new_num_states = partitions.len();
-    let mut new_transitions = vec![vec![None; alphabet_size]; new_num_states];
-    
-    for (new_id, partition) in partitions.iter().enumerate() {
-        let representative = partition[0];
-        for sym in 0..alphabet_size {
-            if let Some(next) = transitions[representative][sym] {
-                new_transitions[new_id][sym] = Some(old_to_new[next]);
-            }
-        }
-    }
-    
-    (new_transitions, new_accepting)
-}
-
-fn prune_unreachable(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> DFA {
-    let num_states = transitions.len();
-    if num_states == 0 {
-        return DFA {
-            transitions: Vec::new(),
-            accepting: Vec::new(),
-        };
-    }
-    
-    let alphabet_size = transitions[0].len();
-    
-    let mut reachable = vec![false; num_states];
-    let mut stack = Vec::new();
-    
-    reachable[0] = true;
-    stack.push(0);
-        while let Some(state) = stack.pop() {
-        for &next_opt in &transitions[state] {
-            if let Some(next) = next_opt {
-                if next < num_states && !reachable[next] {
-                    reachable[next] = true;
-                    stack.push(next);
-                }
-            }
-        }
-    }
-    
-    let mut old_to_new = vec![None; num_states];
-    let mut reachable_states = Vec::new();
-    
-    for i in 0..num_states {
-        if reachable[i] {
-            old_to_new[i] = Some(reachable_states.len());
-            reachable_states.push(i);
-        }
-    }
-    
-    if reachable_states.is_empty() {
-        return DFA {
-            transitions: Vec::new(),
-            accepting: Vec::new(),
-        };
-    }
-    
-    let new_state_count = reachable_states.len();
-    let mut new_transitions = vec![vec![None; alphabet_size]; new_state_count];
-    let mut new_accepting = vec![false; new_state_count];
-    
-    for (new_id, &old_id) in reachable_states.iter().enumerate() {
-        new_accepting[new_id] = accepting[old_id];
-        
-        for sym in 0..alphabet_size {
-            if let Some(next) = transitions[old_id][sym] {
-                if let Some(mapped_next) = old_to_new[next] {
-                    new_transitions[new_id][sym] = Some(mapped_next);
-                }
-            }
-        }
-    }
-    
-    DFA {
-        transitions: new_transitions,
-        accepting: new_accepting,
-    }
-}
-
-fn prune_dead(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> DFA {
+fn optimize_dfa(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> DFA {
     let num_states = transitions.len();
     if num_states == 0 {
         return DFA {
@@ -490,42 +295,165 @@ fn prune_dead(transitions: &[Vec<Option<StateId>>], accepting: &[bool]) -> DFA {
         }
     }
     
-    if !live[0] {
+    let mut reachable = vec![false; num_states];
+    let mut queue = VecDeque::new();
+    reachable[0] = true;
+    queue.push_back(0);
+    
+    while let Some(state) = queue.pop_front() {
+        for &next_opt in &transitions[state] {
+            if let Some(next) = next_opt {
+                if !reachable[next] && next < num_states {
+                    reachable[next] = true;
+                    queue.push_back(next);
+                }
+            }
+        }
+    }
+    
+    let mut useful = vec![false; num_states];
+    let mut useful_states = Vec::new();
+    let mut old_to_new = vec![None; num_states];
+    
+    for i in 0..num_states {
+        useful[i] = reachable[i] && live[i];
+        if useful[i] {
+            old_to_new[i] = Some(useful_states.len());
+            useful_states.push(i);
+        }
+    }
+    
+    if !useful[0] {
         return DFA {
             transitions: vec![vec![None; alphabet_size]],
             accepting: vec![false],
         };
     }
     
-    let mut old_to_new = vec![None; num_states];
-    let mut live_states = Vec::new();
+    let useful_count = useful_states.len();
     
-    for i in 0..num_states {
-        if live[i] {
-            old_to_new[i] = Some(live_states.len());
-            live_states.push(i);
-        }
-    }
+    let mut useful_trans = vec![vec![None; alphabet_size]; useful_count];
+    let mut useful_accepting = vec![false; useful_count];
     
-    let new_state_count = live_states.len();
-    let mut new_transitions = vec![vec![None; alphabet_size]; new_state_count];
-    let mut new_accepting = vec![false; new_state_count];
-    
-    for (new_id, &old_id) in live_states.iter().enumerate() {
-        new_accepting[new_id] = accepting[old_id];
-        
+    for (new_id, &old_id) in useful_states.iter().enumerate() {
+        useful_accepting[new_id] = accepting[old_id];
         for sym in 0..alphabet_size {
             if let Some(next) = transitions[old_id][sym] {
                 if let Some(mapped_next) = old_to_new[next] {
-                    new_transitions[new_id][sym] = Some(mapped_next);
+                    useful_trans[new_id][sym] = Some(mapped_next);
                 }
             }
         }
     }
     
+    let mut m: Vec<BTreeSet<StateId>> = Vec::new();
+    let mut l: VecDeque<(BTreeSet<StateId>, BTreeSet<usize>)> = VecDeque::new();
+    
+    let mut accepting_set = BTreeSet::new();
+    let mut non_accepting_set = BTreeSet::new();
+    
+    for i in 0..useful_count {
+        if useful_accepting[i] {
+            accepting_set.insert(i);
+        } else {
+            non_accepting_set.insert(i);
+        }
+    }
+    
+    let all_symbols: BTreeSet<usize> = (0..alphabet_size).collect();
+    
+    if !accepting_set.is_empty() {
+        l.push_back((accepting_set, all_symbols.clone()));
+    }
+    if !non_accepting_set.is_empty() {
+        l.push_back((non_accepting_set, all_symbols));
+    }
+    
+    while !l.is_empty() {
+        let (s, mut c) = l.pop_back().unwrap();
+        
+        if c.is_empty() {
+            continue;
+        }
+        
+        let sym = *c.iter().next().unwrap();
+        c.remove(&sym);
+        
+        let mut partitions: HashMap<Option<StateId>, BTreeSet<StateId>> = HashMap::new();
+        
+        for &state in &s {
+            partitions.entry(useful_trans[state][sym])
+                .or_insert_with(BTreeSet::new)
+                .insert(state);
+        }
+        
+        for (_, xi) in partitions {
+            if xi.len() <= 1 {
+                continue;
+            }
+            
+            if c.is_empty() {
+                m.push(xi);
+            } else {
+                l.push_back((xi, c.clone()));
+            }
+        }
+    }
+    
+    let mut state_mapping: Vec<StateId> = (0..useful_count).collect();
+    
+    for set in m {
+        if set.len() <= 1 {
+            continue;
+        }
+        
+        let mut iter = set.iter();
+        let target = *iter.next().unwrap();
+        
+        for &state in iter {
+            state_mapping[state] = target;
+        }
+    }
+    
+    let mut final_mapping = vec![None; useful_count];
+    let mut final_states = Vec::new();
+    
+    for i in 0..useful_count {
+        let mut root = i;
+        while state_mapping[root] != root {
+            root = state_mapping[root];
+        }
+        let mut j = i;
+        while state_mapping[j] != j {
+            let next = state_mapping[j];
+            state_mapping[j] = root;
+            j = next;
+        }
+        
+        if final_mapping[root].is_none() {
+            final_mapping[root] = Some(final_states.len());
+            final_states.push(root);
+        }
+    }
+    
+    let final_count = final_states.len();
+    let mut final_transitions = vec![vec![None; alphabet_size]; final_count];
+    let mut final_accepting = vec![false; final_count];
+    
+    for (new_id, &old_id) in final_states.iter().enumerate() {
+        final_accepting[new_id] = useful_accepting[old_id];
+        
+        for sym in 0..alphabet_size {
+            if let Some(next) = useful_trans[old_id][sym] {
+                let mapped_next = state_mapping[next];
+                final_transitions[new_id][sym] = Some(final_mapping[*&mapped_next].unwrap());
+            }
+        }
+    }
+    
     DFA {
-        transitions: new_transitions,
-        accepting: new_accepting,
+        transitions: final_transitions,
+        accepting: final_accepting,
     }
 }
 

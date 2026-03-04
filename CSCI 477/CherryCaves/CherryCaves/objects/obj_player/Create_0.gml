@@ -1,5 +1,5 @@
 spd = 4
-jspd = 10
+jspd = 12
 hsp = 0
 vsp = 0
 grv = 0.5

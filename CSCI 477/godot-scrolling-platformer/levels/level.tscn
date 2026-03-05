@@ -1,0 +1,23 @@
+[gd_scene format=4 uid="uid://2hbxsn710m1p"]
+
+[ext_resource type="Texture2D" uid="uid://fs2gjb8u6hdn" path="res://sprites/spr_block_brown.png" id="1_80vhd"]
+[ext_resource type="PackedScene" uid="uid://cgkl7vbmvjgo2" path="res://scenes/player.tscn" id="2_hjsbj"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hjsbj"]
+texture = ExtResource("1_80vhd")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, -32, 32, 32, 32, 32, -32)
+
+[sub_resource type="TileSet" id="TileSet_cwqvt"]
+tile_size = Vector2i(64, 64)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_hjsbj")
+
+[node name="Level" type="Node2D" unique_id=1354937039]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=6865335]
+tile_map_data = PackedByteArray("AAAAAAUAAAAAAAAAAAABAAUAAAAAAAAAAAACAAUAAAAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAAAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAAAAAAAAAAAGAAYAAAAAAAAAAAAGAAcAAAAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAAAAAAAAAAAJAAcAAAAAAAAAAAAKAAcAAAAAAAAAAAALAAcAAAAAAAAAAAD//wUAAAAAAAAAAAD+/wUAAAAAAAAAAAD9/wUAAAAAAAAAAAD8/wUAAAAAAAAAAAAMAAcAAAAAAAAAAAANAAcAAAAAAAAAAAAOAAcAAAAAAAAAAAAPAAcAAAAAAAAAAAAPAAYAAAAAAAAAAAAQAAYAAAAAAAAAAAARAAYAAAAAAAAAAAARAAcAAAAAAAAAAAASAAcAAAAAAAAAAAATAAcAAAAAAAAAAAAUAAcAAAAAAAAAAAAVAAcAAAAAAAAAAAAWAAcAAAAAAAAAAAAXAAcAAAAAAAAAAAA=")
+tile_set = SubResource("TileSet_cwqvt")
+
+[node name="Player" parent="." unique_id=523658752 instance=ExtResource("2_hjsbj")]

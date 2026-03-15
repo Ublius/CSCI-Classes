@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://b854eomqu8kkp"]
+
+[ext_resource type="Script" uid="uid://kxt8g0by5p5s" path="res://scripts/game_state_ui.gd" id="1_uphii"]
+
+[node name="GameStateUI" type="Control" unique_id=2100566045]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_uphii")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=287370427]
+layout_mode = 1
+offset_right = 358.0
+offset_bottom = 83.0
+
+[node name="Label" type="Label" parent="CenterContainer" unique_id=43392775]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 60
+text = "Game Over!!"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://6pvrtr5g6ptd"]
+
+[ext_resource type="Texture2D" uid="uid://by2m4afix1c1m" path="res://sprites/spr_player_idle.png" id="1_qckcs"]
+[ext_resource type="Script" uid="uid://dwe6ga2u0kabf" path="res://scripts/health_ui.gd" id="1_rsgf8"]
+
+[node name="HealthUI" type="Control" unique_id=492506037]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -100.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = 70.0
+grow_horizontal = 0
+script = ExtResource("1_rsgf8")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=893684454]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_qckcs")
+
+[node name="Label" type="Label" parent="." unique_id=2034821158]
+layout_mode = 0
+offset_left = 61.0
+offset_top = 16.0
+offset_right = 84.0
+offset_bottom = 47.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 22
+text = "0"
+horizontal_alignment = 1

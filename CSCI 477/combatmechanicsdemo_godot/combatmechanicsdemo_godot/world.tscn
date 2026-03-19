@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bg0j4nhihamra"]
+
+[ext_resource type="PackedScene" uid="uid://b3667jtndhnwn" path="res://player.tscn" id="1_tl2kj"]
+[ext_resource type="Script" uid="uid://drfi0pyefa3v7" path="res://player.gd" id="2_pxejl"]
+[ext_resource type="PackedScene" uid="uid://donj35vsxyadj" path="res://floor.tscn" id="2_yt76i"]
+[ext_resource type="PackedScene" uid="uid://ddlra0ufbpqd0" path="res://enemy.tscn" id="4_ed0j6"]
+
+[node name="World" type="Node2D" unique_id=990175650]
+position = Vector2(262, 214)
+scale = Vector2(4.21591, 4.69194)
+
+[node name="Player" parent="." unique_id=1184381265 instance=ExtResource("1_tl2kj")]
+position = Vector2(0.9487877, 0)
+script = ExtResource("2_pxejl")
+
+[node name="Floor" parent="." unique_id=310985478 instance=ExtResource("2_yt76i")]
+position = Vector2(-452.097, -421.574)
+
+[node name="Enemy" parent="." unique_id=1781225540 instance=ExtResource("4_ed0j6")]
+position = Vector2(126.9, 6.60707)

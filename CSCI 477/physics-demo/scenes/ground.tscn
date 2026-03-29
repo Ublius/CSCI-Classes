@@ -3,13 +3,25 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ylpw"]
 size = Vector2(800, 32)
 
-[node name="ground" type="StaticBody2D" unique_id=1230573518]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pybca"]
+size = Vector2(801, 32)
 
-[node name="Sprite2D" type="ColorRect" parent="." unique_id=112653499]
+[node name="Node2D" type="Node2D" unique_id=1118254637]
+
+[node name="ground" type="StaticBody2D" parent="." unique_id=1230573518]
+
+[node name="Sprite2D" type="ColorRect" parent="ground" unique_id=112653499]
 offset_right = 800.0
 offset_bottom = 32.0
 color = Color(0.7325956, 0.49640673, 0.102373935, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=488863142]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ground" unique_id=488863142]
 position = Vector2(400, 16)
 shape = SubResource("RectangleShape2D_7ylpw")
+
+[node name="Area2D" type="Area2D" parent="ground" unique_id=1107335742]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ground/Area2D" unique_id=440560374]
+position = Vector2(399.5, 16)
+shape = SubResource("RectangleShape2D_pybca")
+debug_color = Color(0.94839877, 3.080368e-06, 0.5808584, 0.41960785)

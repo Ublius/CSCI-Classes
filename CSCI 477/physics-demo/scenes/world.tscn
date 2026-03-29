@@ -1,12 +1,39 @@
 [gd_scene format=3 uid="uid://bn8fmx304vgtx"]
 
+[ext_resource type="Script" uid="uid://bxsa4lu7d3tdl" path="res://scripts/game_controller.gd" id="1_k0juu"]
 [ext_resource type="PackedScene" uid="uid://cxc270ct8pi4x" path="res://scenes/ground.tscn" id="1_rwgxs"]
-[ext_resource type="PackedScene" uid="uid://dfsoa6dsaf5aj" path="res://scenes/crate.tscn" id="2_4wyf3"]
+[ext_resource type="PackedScene" uid="uid://daqalk0ndgndv" path="res://scenes/ball.tscn" id="2_71j4m"]
+[ext_resource type="AudioStream" uid="uid://c6lmvifmq7jyt" path="res://snd_bkgrnd.mp3" id="4_k0juu"]
 
 [node name="World" type="Node2D" unique_id=1216493340]
 
-[node name="ground" parent="." unique_id=1230573518 instance=ExtResource("1_rwgxs")]
+[node name="GameController" type="Node2D" parent="." unique_id=1538868593]
+script = ExtResource("1_k0juu")
+ball_scene = ExtResource("2_71j4m")
+
+[node name="Platform" parent="." unique_id=1230573518 instance=ExtResource("1_rwgxs")]
 position = Vector2(162, 373)
 
-[node name="Crate" parent="." unique_id=716744297 instance=ExtResource("2_4wyf3")]
-position = Vector2(251, 178)
+[node name="UI" type="Node2D" parent="." unique_id=1383937553]
+
+[node name="ScoreLabel" type="Label" parent="UI" unique_id=1144404869]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="TimeLabel" type="Label" parent="UI" unique_id=33179268]
+offset_left = 1075.0
+offset_right = 1115.0
+offset_bottom = 23.0
+
+[node name="Timer" type="Timer" parent="." unique_id=328482533]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=846656767]
+stream = ExtResource("4_k0juu")
+volume_db = -15.0
+autoplay = true
+
+[connection signal="body_entered" from="Platform/ground/Area2D" to="GameController" method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Platform/ground/Area2D" to="GameController" method="_on_area_2d_body_exited"]
+[connection signal="timeout" from="Timer" to="GameController" method="_on_timer_timeout"]
+
+[editable path="Platform"]

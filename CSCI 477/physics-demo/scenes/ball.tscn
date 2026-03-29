@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://daqalk0ndgndv"]
+
+[ext_resource type="Script" uid="uid://de3h6mpyfn5jd" path="res://scripts/ball.gd" id="1_7s4qf"]
+[ext_resource type="Script" uid="uid://trxyg4plvpfg" path="res://scenes/ball_visual.gd" id="2_cxlvu"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cxlvu"]
+
+[node name="Ball" type="RigidBody2D" unique_id=1178693102]
+script = ExtResource("1_7s4qf")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=151609710]
+shape = SubResource("CircleShape2D_cxlvu")
+
+[node name="BallVisual" type="Node2D" parent="." unique_id=1868885232]
+script = ExtResource("2_cxlvu")

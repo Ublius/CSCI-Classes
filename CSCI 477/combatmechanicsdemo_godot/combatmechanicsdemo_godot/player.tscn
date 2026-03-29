@@ -1,0 +1,175 @@
+[gd_scene format=3 uid="uid://b3667jtndhnwn"]
+
+[ext_resource type="Texture2D" uid="uid://yan66yyx1yfs" path="res://sprites/spr_knight_slash/3d842046-e1b5-4e42-8e0d-ba9428c184b2.png" id="3_1q8i5"]
+[ext_resource type="Texture2D" uid="uid://b0mjkvdd6do6a" path="res://sprites/spr_knight_slash/3e10e322-fc00-4e9c-8ccb-7c41ae138eaf.png" id="4_c7acn"]
+[ext_resource type="Texture2D" uid="uid://nnrdpjd3cs7c" path="res://sprites/spr_knight_slash/5b46ae45-cf77-4e5d-b33d-da89064e2df0.png" id="5_stpea"]
+[ext_resource type="Texture2D" uid="uid://sxdnt8uxrag0" path="res://sprites/spr_knight_slash/054e8441-4e75-4f7c-bbd4-0bd36db358ae.png" id="6_vq88b"]
+[ext_resource type="Texture2D" uid="uid://cvqg7wpaujcpg" path="res://sprites/spr_knight_slash/5557b63c-18c6-4edf-a1e5-af20a7ff6f4d.png" id="7_iuvf2"]
+[ext_resource type="Texture2D" uid="uid://cegify4dsiybu" path="res://sprites/spr_knight_slash/48280f64-d9c6-4dc7-a2b1-ae57008c84ad.png" id="8_ojw1m"]
+[ext_resource type="Texture2D" uid="uid://cfabyb6mihvfh" path="res://sprites/spr_knight_slash/26408536-9d10-4a71-b2eb-1c1c7085fbf1.png" id="9_51g0o"]
+[ext_resource type="Texture2D" uid="uid://begh6xa34js6a" path="res://sprites/spr_knight_slash/a26e7736-3a9b-425c-ad4e-eed6507a085f.png" id="10_b1qux"]
+[ext_resource type="Texture2D" uid="uid://cxfxiqt4je6x3" path="res://sprites/spr_knight_slash/ae36a1e2-580d-4d3d-bfe5-fab7511e7c5a.png" id="11_n2j34"]
+[ext_resource type="Texture2D" uid="uid://d2ws47cr4cmqr" path="res://sprites/spr_knight_slash/c3d1e12d-dc64-4ce9-822b-aeacb1953662.png" id="12_0r7x4"]
+[ext_resource type="Texture2D" uid="uid://wkgc70yahfl4" path="res://sprites/e9f106b6-8068-4bde-8257-0bfd24685b6b.png" id="13_736vi"]
+[ext_resource type="Texture2D" uid="uid://u3a1dmnu2g5m" path="res://sprites/spr_knight_slash/cc7a6056-4a7a-4663-9c7b-a3fcb9fe8eda.png" id="13_m8526"]
+[ext_resource type="Texture2D" uid="uid://cn2q8fo1q5wyn" path="res://sprites/9e315d20-4c9a-45cc-8d76-efd570605784.png" id="14_kbhuk"]
+[ext_resource type="Texture2D" uid="uid://cyshpsojpywgi" path="res://sprites/916a4b1c-4898-47fb-85dd-a939756f4a33.png" id="15_r34yv"]
+[ext_resource type="Texture2D" uid="uid://dpqvb0l5v2lto" path="res://sprites/fc43ee2d-6b08-476a-931a-310df7ff6644.png" id="17_1lrh1"]
+
+[sub_resource type="GDScript" id="GDScript_xn18l"]
+script/source = "extends CharacterBody2D
+
+const SPEED   := 200.0
+const GRAVITY := 980.0
+
+var is_attacking := false
+var facing       := 1   # 1 = right, -1 = left
+
+@onready var anim    := $AnimatedSprite2D
+@onready var hitbox	 := $AttackHitbox
+@onready var hitbox_col  := $AttackHitbox/CollisionShape2D
+
+func _ready():
+	# Hitbox starts disabled — only active during attack
+	hitbox.monitoring = false
+
+	# When the attack animation finishes, end the attack
+	anim.animation_finished.connect(_on_animation_finished)
+
+func _physics_process(delta):
+	# Gravity
+	if not is_on_floor():
+		velocity.y += GRAVITY * delta
+
+	# Don't allow movement or new attacks while attacking
+	if not is_attacking:
+		_handle_movement()
+		_handle_attack_input()
+
+	move_and_slide()
+	_update_animation()
+
+func _handle_movement():
+	var dir = Input.get_axis(\"ui_left\", \"ui_right\")
+
+	if dir != 0:
+		velocity.x   = dir * SPEED
+		facing        = int(sign(dir))
+		anim.flip_h   = facing == -1
+		# Keep hitbox in front of the player
+		hitbox.position.x *= facing # * 40
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+
+func _handle_attack_input():
+	if Input.is_action_just_pressed(\"ui_accept\"):
+		_start_attack()
+
+func _start_attack():
+	is_attacking      = true
+	anim.play(\"attack\")
+
+	# Small delay before hitbox activates (startup frames)
+	await get_tree().create_timer(0.1).timeout
+	hitbox.monitoring = true
+
+	# Hitbox stays active for a short window
+	await get_tree().create_timer(0.15).timeout
+	hitbox.monitoring = false
+
+func _on_animation_finished():
+	if anim.animation == \"attack\":
+		is_attacking = false
+
+func _update_animation():
+	if not is_attacking:
+		anim.play(\"idle\")
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j8wup"]
+size = Vector2(36, 41)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ed5w7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_iuvf2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_vq88b")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_stpea")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_0r7x4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_1q8i5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_m8526")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_51g0o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_c7acn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_b1qux")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_ojw1m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_n2j34")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13_736vi")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_kbhuk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_r34yv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_1lrh1")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_606se"]
+
+[node name="Player" type="CharacterBody2D" unique_id=173031742]
+script = SubResource("GDScript_xn18l")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1523708528]
+position = Vector2(-2, 18.5)
+shape = SubResource("RectangleShape2D_j8wup")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1931934924]
+sprite_frames = SubResource("SpriteFrames_ed5w7")
+animation = &"walk"
+
+[node name="AttackHitbox" type="Area2D" parent="." unique_id=1470014273]
+position = Vector2(12, 19)
+collision_layer = 2
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox" unique_id=99711539]
+position = Vector2(-2, 1)
+shape = SubResource("RectangleShape2D_606se")

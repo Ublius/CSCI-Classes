@@ -1,10 +1,15 @@
 extends CharacterBody2D
 
+@export var hp := 3
+
 const SPEED   := 200.0
 const GRAVITY := 980.0
 
 var is_attacking := false
 var facing       := 1   # 1 = right, -1 = left
+
+@export var health_bar_offset := Vector2(-27, -20)
+var health_bar: Control
 
 @onready var anim    := $AnimatedSprite2D
 @onready var hitbox	 := $AttackHitbox
@@ -16,6 +21,8 @@ func _ready():
 	
 	# When the attack animation finishes, end the attack
 	anim.animation_finished.connect(_on_animation_finished)
+	
+	setup_health_bar()
 
 func _physics_process(delta):
 	# Gravity
@@ -32,7 +39,7 @@ func _physics_process(delta):
 	_update_animation()
 
 func _handle_movement():
-	var dir = Input.get_axis("ui_left", "ui_right")
+	var dir = Input.get_axis("left", "right")
 
 	if dir != 0:
 		velocity.x   = dir * SPEED
@@ -44,11 +51,11 @@ func _handle_movement():
 	hitbox.position.x = facing * abs(hitbox.position.x)
 
 func _handle_attack_input():
-	if Input.is_action_just_pressed("ui_accept"):
+	if Input.is_action_just_pressed("attack"):
 		_start_attack()
 
 func _start_attack(): 
-	hitbox_col.disabled = false
+	hitbox_col.disabled = true
 	is_attacking      = true
 	velocity.x = 0
 	anim.play("attack")
@@ -79,3 +86,19 @@ func _update_hitbox_per_frame():
 		_:
 			hitbox_col.disabled = true
 			hitbox_col.position = Vector2(0,0)
+
+func setup_health_bar():
+	var health_bar_scene = preload("res://scenes/health_bar.tscn")
+	health_bar = health_bar_scene.instantiate()
+	add_child(health_bar)
+	
+	health_bar.position = health_bar_offset
+	
+	if health_bar.has_method("set_max_health"):
+		health_bar.set_max_health(hp)
+	elif health_bar.has_method("update_health"):
+		health_bar.update_health(hp)
+
+func update_health_bar():
+	if health_bar and health_bar.has_method("update_health"):
+		health_bar.update_health(hp)

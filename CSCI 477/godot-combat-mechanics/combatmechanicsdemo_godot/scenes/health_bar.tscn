@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://8jynlntiaoiv"]
+
+[ext_resource type="Script" uid="uid://b5amg4c4s5ibh" path="res://scenes/health_bar.gd" id="1_7e0a5"]
+
+[node name="HealthBar" type="Control" unique_id=1835002808]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_7e0a5")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1880132516]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Fill" type="ColorRect" parent="." unique_id=612324402]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

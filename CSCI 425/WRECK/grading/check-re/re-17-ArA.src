@@ -1,0 +1,12 @@
+dot
+open
+pipe
+char
+pipe
+char
+char
+kleene
+char
+pipe
+close
+plus

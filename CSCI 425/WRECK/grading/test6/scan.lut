@@ -1,0 +1,3 @@
+x28 x29 x2a x2b x2d x2e x5c abcdefg x7c
+abc\--\\efg       _is_valid
+abc\(\-\)efg      _is_valid_too

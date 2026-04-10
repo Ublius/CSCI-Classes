@@ -2,7 +2,7 @@ use std::{
     collections::{HashMap, HashSet},
     env,
     fs::{self, read_to_string, File},
-    io::{BufReader, BufWriter, Write, BufRead},
+    io::{BufRead, BufReader, BufWriter, Write},
     path::Path,
     process,
 };
@@ -21,31 +21,39 @@ enum AST {
 
 #[derive(Debug)]
 struct NFA {
-    states: usize,
-    transitions: Vec<(usize, usize, char)>,
-    lambda_transitions: Vec<(usize, usize)>,
-    start: usize,
-    accept: usize,
+    pub states: usize,
+    pub transitions: Vec<(usize, usize, char)>,
+    pub lambda_transitions: Vec<(usize, usize)>,
+    pub start: usize,
+    pub accept_states: Vec<(usize, String)>,
 }
 
-// ---------- ALPHABET ENCODING ---------- //
+// ALPHABETENCODING
 fn alphabet_decode(s: &str) -> String {
     let mut decoded = String::new();
     let chars: Vec<char> = s.chars().collect();
     let mut i = 0;
     while i < chars.len() {
-        if chars[i] == ' ' { i += 1; continue; }
-        if chars[i] == 'x' && i + 2 < chars.len() {
-            if let Ok(n) = u32::from_str_radix(&format!("{}{}", chars[i+1], chars[i+2]), 16) {
-                if let Some(ch) = char::from_u32(n) {
+        let c = chars[i];
+        if c == ' ' {
+            i += 1;
+            continue;
+        }
+        if c == 'x' && i + 2 < chars.len() {
+            let hex = format!("{}{}", chars[i + 1], chars[i + 2]);
+            if let Ok(digit) = u32::from_str_radix(&hex, 16) {
+                if let Some(ch) = char::from_u32(digit) {
                     decoded.push(ch);
                     i += 3;
                     continue;
                 }
             }
+            decoded.push(c);
+            i += 1;
+        } else {
+            decoded.push(c);
+            i += 1;
         }
-        decoded.push(chars[i]);
-        i += 1;
     }
     decoded
 }
@@ -63,13 +71,9 @@ fn alphabet_encode_char(c: char) -> String {
     }
 }
 
-fn alphabet_encode(s: &str) -> String {
-    s.chars().map(alphabet_encode_char).collect::<Vec<_>>().join("")
-}
-
 // ---------- REC MODE ---------- //
 pub fn run_rec_mode(scan_lut_path: &str, scan_u_path: &str) {
-    let content = read_to_string(scan_lut_path).unwrap_or_else(|_| {
+    let content = std::fs::read_to_string(scan_lut_path).unwrap_or_else(|_| {
         eprintln!("Failed to read {}", scan_lut_path);
         process::exit(1);
     });
@@ -78,10 +82,10 @@ pub fn run_rec_mode(scan_lut_path: &str, scan_u_path: &str) {
     let alphabet_line = lines.next().unwrap();
     let decoded_alphabet = alphabet_decode(alphabet_line);
     let alphabet_set: HashSet<char> = decoded_alphabet.chars().collect();
-    
-    // Choose lambda character not in alphabet
+
+    // Find a lambda char not in alphabet
     let lambda = (1..=255)
-        .map(|n| char::from_u32(n).unwrap())
+        .filter_map(|n| std::char::from_u32(n))
         .find(|c| !alphabet_set.contains(c))
         .unwrap_or_else(|| {
             eprintln!("Failed to find lambda character not in alphabet");
@@ -92,371 +96,496 @@ pub fn run_rec_mode(scan_lut_path: &str, scan_u_path: &str) {
         eprintln!("Failed to create {}", scan_u_path);
         process::exit(1);
     }));
-    
-    // Write alphabet line with spaces between characters
-    let alphabet_encoded: Vec<String> = decoded_alphabet.chars()
-        .map(alphabet_encode_char)
-        .collect();
+
+    let alphabet_encoded: Vec<String> =
+        decoded_alphabet.chars().map(alphabet_encode_char).collect();
     writeln!(writer, "{}", alphabet_encoded.join(" ")).unwrap();
+
+    let mut token_index = 1;
 
     for line in lines {
         let parts: Vec<&str> = line.split_whitespace().collect();
-        if parts.len() < 2 { 
+        if parts.len() < 2 {
             continue;
         }
-        
+
         let regex = parts[0];
-        let tokenid = parts[1];
+        let token_name = parts[1];
 
         // Parse regex into AST
-        let ast = parse_regex_full(regex, &alphabet_set);
-        
+        let ast = match parse_regex_full(regex, &alphabet_set) {
+            Ok(a) => a,
+            Err(code) => process::exit(code.into()),
+        };
+
         // Convert AST to NFA
-        let nfa = ast_to_nfa(&ast, lambda, &alphabet_set);
+        let nfa = ast_to_nfa(&ast, lambda, &alphabet_set, &token_index.to_string());
 
         // Write NFA file
-        let nfa_filename = format!("{}.nfa", tokenid);
+        let nfa_filename = format!("{}.nfa", token_name);
         write_nfa_file(&nfa_filename, &nfa, lambda, &alphabet_set);
 
         // Write to scan.u
-        write!(writer, "{}.tt {}", tokenid, tokenid).unwrap();
+        write!(writer, "{}.tt {}", token_name, token_name).unwrap();
         for extra in &parts[2..] {
             write!(writer, " {}", extra).unwrap();
         }
         writeln!(writer).unwrap();
+
+        token_index += 1;
     }
 }
-
-fn parse_regex_full(regex: &str, alphabet_set: &HashSet<char>) -> AST {
+// ----------------- PARSER ----------------- //
+fn parse_regex_full(regex: &str, alphabet_set: &HashSet<char>) -> Result<AST, u8> {
     let chars: Vec<char> = regex.chars().collect();
     let mut pos = 0;
-    parse_expr(&chars, &mut pos, alphabet_set)
+
+    let ast = parse_alt(&chars, &mut pos, alphabet_set)?;
+
+    if pos != chars.len() {
+        return Err(2); // syntax error
+    }
+
+    Ok(ast)
 }
 
-fn parse_expr(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> AST {
-    let mut node = parse_concat(chars, pos, alphabet_set);
+fn parse_alt(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> Result<AST, u8> {
+    let mut node = parse_seq(chars, pos, alphabet_set)?;
     while *pos < chars.len() && chars[*pos] == '|' {
         *pos += 1;
-        let right = parse_concat(chars, pos, alphabet_set);
+        let right = parse_seq(chars, pos, alphabet_set)?;
         node = AST::Alt(Box::new(node), Box::new(right));
     }
-    node
+    Ok(node)
 }
 
-fn parse_concat(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> AST {
-    let mut nodes = vec![];
+fn parse_seq(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> Result<AST, u8> {
+    let mut nodes = Vec::new();
     while *pos < chars.len() && chars[*pos] != '|' && chars[*pos] != ')' {
-        nodes.push(parse_factor(chars, pos, alphabet_set));
+        nodes.push(parse_factor(chars, pos, alphabet_set)?);
     }
-    nodes.into_iter()
-        .reduce(|a,b| AST::Seq(Box::new(a), Box::new(b)))
-        .unwrap_or(AST::Lambda)
+    let ast = nodes
+        .into_iter()
+        .reduce(|a, b| AST::Seq(Box::new(a), Box::new(b)))
+        .unwrap_or(AST::Lambda);
+    Ok(ast)
 }
 
-fn parse_factor(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> AST {
-    let mut node = parse_base(chars, pos, alphabet_set);
+fn parse_factor(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> Result<AST, u8> {
+    let mut node = parse_base(chars, pos, alphabet_set)?;
     while *pos < chars.len() && (chars[*pos] == '*' || chars[*pos] == '+') {
         node = match chars[*pos] {
             '*' => AST::Star(Box::new(node)),
             '+' => AST::Plus(Box::new(node)),
-            _ => node,
+            _ => unreachable!(),
         };
         *pos += 1;
     }
-    node
+    Ok(node)
 }
 
-fn parse_base(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> AST {
-    if *pos >= chars.len() { 
-        return AST::Lambda; 
+fn parse_base(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> Result<AST, u8> {
+    if *pos >= chars.len() {
+        return Ok(AST::Lambda);
     }
 
     let c = chars[*pos];
 
     if c == '(' {
         *pos += 1;
-        let node = parse_expr(chars, pos, alphabet_set);
-        if *pos >= chars.len() || chars[*pos] != ')' { 
-            process::exit(2); 
+        let node = parse_alt(chars, pos, alphabet_set)?;
+        if *pos >= chars.len() || chars[*pos] != ')' {
+            return Err(2); //syntax error
         }
         *pos += 1;
-        node
-    } else if *pos + 2 < chars.len() && chars[*pos + 1] == '-' {
-        let start = c;
-        let end = chars[*pos + 2];
-        
-        // Check lexical error: endpoints must be in alphabet
-        if !alphabet_set.contains(&start) || !alphabet_set.contains(&end) {
-            process::exit(4);
+        Ok(node)
+    } else if c == '\\' {
+        *pos += 1;
+        if *pos >= chars.len() {
+            return Err(2); //syntax error
         }
-        
-        *pos += 3;
-        
-        // Check semantic error: inverted range
-        if start > end {
-            process::exit(3);
+
+        let escaped = chars[*pos];
+
+        let actual = match escaped {
+            'n' => '\n',
+            't' => '\t',
+            's' => ' ',
+            'r' => '\r',
+            _ => escaped,
+        };
+        *pos += 1;
+
+        if !alphabet_set.contains(&actual) {
+            return Err(4);
         }
-        
-        expand_range(start, end)
+
+        // Check for range: escaped_char '-' next_char
+        if *pos + 1 < chars.len() && chars[*pos] == '-' {
+            let after_dash = chars[*pos + 1];
+            // Next thing must be an escaped char or alphabet char (not a metachar)
+            if after_dash == '\\' {
+                // Range end is an escaped character
+                *pos += 1; // skip '-'
+                *pos += 1; // skip '\'
+                if *pos >= chars.len() {
+                    return Err(2);
+                }
+                let end_escaped = chars[*pos];
+                let end_actual = match end_escaped {
+                    'n' => '\n',
+                    't' => '\t',
+                    's' => ' ',
+                    'r' => '\r',
+                    _ => end_escaped,
+                };
+                *pos += 1;
+                if !alphabet_set.contains(&end_actual) {
+                    return Err(4);
+                }
+                if actual > end_actual {
+                    return Err(3); // semantic error: inverted range
+                }
+                return Ok(expand_range_filtered(actual, end_actual, &alphabet_set));
+            } else if alphabet_set.contains(&after_dash) && !"|*+()".contains(after_dash) {
+                // Range end is a plain alphabet char
+                let end_actual = after_dash;
+                *pos += 1; // skip '-'
+                *pos += 1; // skip end char
+                if actual > end_actual {
+                    return Err(3);
+                }
+                return Ok(expand_range_filtered(actual, end_actual, &alphabet_set));
+            }
+        }
+
+        Ok(AST::Char(actual))
     } else if c == '.' {
         *pos += 1;
-        AST::Dot
-    } else {
-        // Check lexical error: character must be in alphabet
-        if !alphabet_set.contains(&c) && !"|*+().".contains(c) {
-            process::exit(4);
+        Ok(AST::Dot)
+    } else if c == '-' {
+        if *pos + 2 < chars.len() && chars[*pos + 1] == '-' {
+            *pos += 1;
+            return Err(2); //syntax error
+        } else if *pos >= 1 && *pos + 1 < chars.len() && chars[*pos + 1] == '-' {
+            let start = chars[*pos - 1];
+            let end = chars[*pos + 1];
+            if alphabet_set.contains(&start) && alphabet_set.contains(&end) && start <= end {
+                *pos += 2;
+                return Ok(expand_range(start, end));
+            } else {
+                return Err(2); //syntax error
+            }
+        } else {
+            *pos += 1;
+            if alphabet_set.contains(&'-') || (*pos < chars.len()) {
+                Ok(AST::Char('-'))
+            } else {
+                Err(2) //syntax error
+            }
         }
-        *pos += 1;
-        AST::Char(c)
-    }
-}
+    } else if alphabet_set.contains(&c) {
+        // if current character in alphabet, filter range
+        if *pos + 2 < chars.len() && chars[*pos + 1] == '-' {
+            let start = c;
+            let end = chars[*pos + 2];
+            if alphabet_set.contains(&end) {
+                if start > end {
+                    return Err(3);
+                }
+                *pos += 3;
+                return Ok(expand_range_filtered(start, end, &alphabet_set));
+            }
+        }
 
-fn check_ast_semantics(ast: &AST) -> Result<(), ()> {
-    match ast {
-        AST::Range(a,b) => { if a > b { return Err(()); } }
-        AST::Seq(l,r) | AST::Alt(l,r) => { check_ast_semantics(l)?; check_ast_semantics(r)?; }
-        AST::Star(x) | AST::Plus(x) => check_ast_semantics(x)?,
-        _ => {}
+        *pos += 1;
+        Ok(AST::Char(c))
+    } else if c == ')' {
+        Err(2)
+    } else if c == '*' || c == '+' || c == '|' {
+        Err(2)
+    } else {
+        Err(4)
     }
-    Ok(())
 }
 
 fn expand_range(a: char, b: char) -> AST {
     let mut nodes = Vec::new();
-    for c in a..=b { 
-        nodes.push(AST::Char(c)); 
+    for c in a..=b {
+        nodes.push(AST::Char(c));
     }
-    nodes.into_iter()
+    nodes
+        .into_iter()
         .reduce(|x, y| AST::Alt(Box::new(x), Box::new(y)))
         .unwrap()
 }
 
-fn ast_to_nfa(ast: &AST, lambda: char, alphabet_set: &HashSet<char>) -> NFA {
+// filter out stuff not in alphabet
+fn expand_range_filtered(a: char, b: char, alphabet_set: &HashSet<char>) -> AST {
+    let mut nodes = Vec::new();
+    for c in a..=b {
+        if alphabet_set.contains(&c) {
+            nodes.push(AST::Char(c));
+        }
+    }
+    nodes
+        .into_iter()
+        .reduce(|x, y| AST::Alt(Box::new(x), Box::new(y)))
+        .unwrap_or(AST::Lambda)
+}
+
+// ----------------- NFA Part ----------------- //
+fn ast_to_nfa(ast: &AST, lambda: char, alphabet_set: &HashSet<char>, token_id: &str) -> NFA {
+    let mut state_counter = 0;
+    let mut transitions = Vec::new();
+    let mut lambda_transitions = Vec::new();
+
+    let (start, accept) = build(
+        ast,
+        lambda,
+        alphabet_set,
+        &mut state_counter,
+        &mut transitions,
+        &mut lambda_transitions,
+    );
+
+    if start != 0 {
+        let swap = |s: usize| -> usize {
+            if s == start {
+                0
+            } else if s == 0 {
+                start
+            } else {
+                s
+            }
+        };
+
+        for t in transitions.iter_mut() {
+            t.0 = swap(t.0);
+            t.1 = swap(t.1);
+        }
+        for t in lambda_transitions.iter_mut() {
+            t.0 = swap(t.0);
+            t.1 = swap(t.1);
+        }
+
+        let new_accept = swap(accept);
+
+        NFA {
+            states: state_counter,
+            transitions,
+            lambda_transitions,
+            start: 0,
+            accept_states: vec![(new_accept, token_id.to_string())],
+        }
+    } else {
+        NFA {
+            states: state_counter,
+            transitions,
+            lambda_transitions,
+            start: 0,
+            accept_states: vec![(accept, token_id.to_string())],
+        }
+    }
+}
+
+fn build(
+    ast: &AST,
+    lambda: char,
+    alphabet_set: &HashSet<char>,
+    state_counter: &mut usize,
+    transitions: &mut Vec<(usize, usize, char)>,
+    lambda_transitions: &mut Vec<(usize, usize)>,
+) -> (usize, usize) {
     match ast {
         AST::Char(c) => {
-            // Simple transition from state 0 to 1 on character c
-            NFA {
-                states: 2,
-                transitions: vec![(0, 1, *c)],
-                lambda_transitions: vec![],
-                start: 0,
-                accept: 1,
-            }
+            let s = *state_counter;
+            *state_counter += 1;
+            let e = *state_counter;
+            *state_counter += 1;
+            transitions.push((s, e, *c));
+            (s, e)
         }
-
         AST::Dot => {
-            // Transition from state 0 to 1 on ANY character in alphabet
-            let mut transitions = Vec::new();
-            for c in alphabet_set {
-                transitions.push((0, 1, *c));
+            let s = *state_counter;
+            *state_counter += 1;
+            let e = *state_counter;
+            *state_counter += 1;
+            for &c in alphabet_set {
+                if c != lambda {
+                    transitions.push((s, e, c));
+                }
             }
-            NFA {
-                states: 2,
-                transitions,
-                lambda_transitions: vec![],
-                start: 0,
-                accept: 1,
-            }
+            (s, e)
         }
-
         AST::Lambda => {
-            // Single state that is both start and accept
-            NFA {
-                states: 1,
-                transitions: vec![],
-                lambda_transitions: vec![],
-                start: 0,
-                accept: 0,
-            }
+            let s = *state_counter;
+            *state_counter += 1;
+            (s, s)
         }
-
         AST::Alt(l, r) => {
-            let ln = ast_to_nfa(l, lambda, alphabet_set);
-            let rn = ast_to_nfa(r, lambda, alphabet_set);
-            
-            let new_start = 0;
-            let new_accept = ln.states + rn.states + 1;
-            
-            // Copy left NFA states (offset by 1)
-            let mut transitions = Vec::new();
-            for (f, t, c) in &ln.transitions {
-                transitions.push((f + 1, t + 1, *c));
-            }
-            
-            // Copy right NFA states (offset by ln.states + 1)
-            let right_offset = ln.states + 1;
-            for (f, t, c) in &rn.transitions {
-                transitions.push((f + right_offset, t + right_offset, *c));
-            }
-            
-            // Copy lambda transitions
-            let mut lambda_transitions = Vec::new();
-            for (f, t) in &ln.lambda_transitions {
-                lambda_transitions.push((f + 1, t + 1));
-            }
-            for (f, t) in &rn.lambda_transitions {
-                lambda_transitions.push((f + right_offset, t + right_offset));
-            }
-            
-            // Add new lambda transitions from new start
-            lambda_transitions.push((new_start, ln.start + 1));
-            lambda_transitions.push((new_start, rn.start + right_offset));
-            
-            // Add lambda transitions to new accept
-            lambda_transitions.push((ln.accept + 1, new_accept));
-            lambda_transitions.push((rn.accept + right_offset, new_accept));
-            
-            NFA {
-                states: new_accept + 1,
+            let (ls, le) = build(
+                l,
+                lambda,
+                alphabet_set,
+                state_counter,
                 transitions,
                 lambda_transitions,
-                start: new_start,
-                accept: new_accept,
+            );
+            let (rs, re) = build(
+                r,
+                lambda,
+                alphabet_set,
+                state_counter,
+                transitions,
+                lambda_transitions,
+            );
+
+            if ls == rs && le == re {
+                (ls, le)
+            } else {
+                let start = *state_counter;
+                *state_counter += 1;
+                let end = *state_counter;
+                *state_counter += 1;
+                lambda_transitions.push((start, ls));
+                lambda_transitions.push((start, rs));
+                lambda_transitions.push((le, end));
+                lambda_transitions.push((re, end));
+                (start, end)
             }
         }
-
         AST::Seq(l, r) => {
-            let ln = ast_to_nfa(l, lambda, alphabet_set);
-            let rn = ast_to_nfa(r, lambda, alphabet_set);
-            
-            // Copy left NFA
-            let mut transitions = ln.transitions.clone();
-            let mut lambda_transitions = ln.lambda_transitions.clone();
-            
-            // Copy right NFA (offset by ln.states)
-            for (f, t, c) in &rn.transitions {
-                transitions.push((f + ln.states, t + ln.states, *c));
-            }
-            for (f, t) in &rn.lambda_transitions {
-                lambda_transitions.push((f + ln.states, t + ln.states));
-            }
-            
-            // Add lambda from left accept to right start
-            lambda_transitions.push((ln.accept, rn.start + ln.states));
-            
-            NFA {
-                states: ln.states + rn.states,
+            let (ls, le) = build(
+                l,
+                lambda,
+                alphabet_set,
+                state_counter,
                 transitions,
                 lambda_transitions,
-                start: ln.start,
-                accept: rn.accept + ln.states,
-            }
+            );
+            let (rs, re) = build(
+                r,
+                lambda,
+                alphabet_set,
+                state_counter,
+                transitions,
+                lambda_transitions,
+            );
+            lambda_transitions.push((le, rs));
+            (ls, re)
         }
-
         AST::Star(x) => {
-            let inner = ast_to_nfa(x, lambda, alphabet_set);
-            
-            let new_start = 0;
-            let new_accept = inner.states + 1;
-            
-            // Copy inner NFA (offset by 1)
-            let mut transitions = Vec::new();
-            for (f, t, c) in &inner.transitions {
-                transitions.push((f + 1, t + 1, *c));
-            }
-            
-            let mut lambda_transitions = Vec::new();
-            for (f, t) in &inner.lambda_transitions {
-                lambda_transitions.push((f + 1, t + 1));
-            }
-            
-            // Add lambda transitions for Kleene star
-            lambda_transitions.push((new_start, inner.start + 1));  // Start to inner start
-            lambda_transitions.push((new_start, new_accept));       // Start to accept (zero repetitions)
-            lambda_transitions.push((inner.accept + 1, inner.start + 1)); // Loop back
-            lambda_transitions.push((inner.accept + 1, new_accept));     // Exit to accept
-            
-            NFA {
-                states: new_accept + 1,
+            let (xs, xe) = build(
+                x,
+                lambda,
+                alphabet_set,
+                state_counter,
                 transitions,
                 lambda_transitions,
-                start: new_start,
-                accept: new_accept,
-            }
+            );
+            let start = *state_counter;
+            *state_counter += 1;
+            let end = *state_counter;
+            *state_counter += 1;
+            lambda_transitions.push((start, xs));
+            lambda_transitions.push((start, end));
+            lambda_transitions.push((xe, xs));
+            lambda_transitions.push((xe, end));
+            (start, end)
         }
-
         AST::Plus(x) => {
-            // Plus = x followed by Star(x)
-            let x_nfa = ast_to_nfa(x, lambda, alphabet_set);
-            let star_nfa = ast_to_nfa(&AST::Star(Box::new((**x).clone())), lambda, alphabet_set);
-            
-            // Sequence of x then star(x)
-            let mut transitions = x_nfa.transitions.clone();
-            let mut lambda_transitions = x_nfa.lambda_transitions.clone();
-            
-            // Copy star (offset by x_nfa.states)
-            for (f, t, c) in &star_nfa.transitions {
-                transitions.push((f + x_nfa.states, t + x_nfa.states, *c));
-            }
-            for (f, t) in &star_nfa.lambda_transitions {
-                lambda_transitions.push((f + x_nfa.states, t + x_nfa.states));
-            }
-            
-            // Lambda from x's accept to star's start
-            lambda_transitions.push((x_nfa.accept, star_nfa.start + x_nfa.states));
-            
-            NFA {
-                states: x_nfa.states + star_nfa.states,
+            let (xs, xe) = build(
+                x,
+                lambda,
+                alphabet_set,
+                state_counter,
                 transitions,
                 lambda_transitions,
-                start: x_nfa.start,
-                accept: star_nfa.accept + x_nfa.states,
-            }
+            );
+            let start = *state_counter;
+            *state_counter += 1;
+            let end = *state_counter;
+            *state_counter += 1;
+            lambda_transitions.push((start, xs));
+            lambda_transitions.push((xe, xs));
+            lambda_transitions.push((xe, end));
+            (start, end)
         }
-
         AST::Range(a, b) => {
-            // Range should already be expanded by the parser
-            // But handle it just in case
-            if a > b {
-                process::exit(3);
+            let s = *state_counter;
+            *state_counter += 1;
+            let e = *state_counter;
+            *state_counter += 1;
+            for c in (*a..=*b) {
+                transitions.push((s, e, c));
             }
-            let mut nodes = Vec::new();
-            for c in *a..=*b {
-                nodes.push(AST::Char(c));
-            }
-            let ast = nodes.into_iter()
-                .reduce(|x, y| AST::Alt(Box::new(x), Box::new(y)))
-                .unwrap();
-            ast_to_nfa(&ast, lambda, alphabet_set)
+            (s, e)
         }
     }
 }
 
 fn write_nfa_file(filename: &str, nfa: &NFA, lambda: char, alphabet_set: &HashSet<char>) {
+    use std::collections::BTreeMap;
+
     let file = File::create(Path::new(filename)).unwrap_or_else(|_| {
-        eprintln!("Failed to create NFA file: {}", filename);
+        eprintln!("Failed to create {}", filename);
         process::exit(1);
     });
     let mut writer = BufWriter::new(file);
 
-    // First line: number of states and lambda character
+    // Write header
     write!(writer, "{} {}", nfa.states, alphabet_encode_char(lambda)).unwrap();
-    
-    // Add all alphabet characters
-    let mut alphabet: Vec<char> = alphabet_set.iter()
+
+    // Write alphabet
+    let mut alphabet: Vec<char> = alphabet_set
+        .iter()
         .filter(|&&c| c != lambda)
         .cloned()
         .collect();
     alphabet.sort();
-    
+
     for c in &alphabet {
         write!(writer, " {}", alphabet_encode_char(*c)).unwrap();
     }
     writeln!(writer).unwrap();
 
-    // Write all transitions (lambda transitions use the lambda character)
-    for (f, t, s) in &nfa.transitions {
-        writeln!(writer, "- {} {} {}", f, t, alphabet_encode_char(*s)).unwrap();
+    // Group transitions
+    let mut transition_map: BTreeMap<(usize, usize), Vec<char>> = BTreeMap::new();
+
+    // Add lambda transitions
+    for (from, to) in &nfa.lambda_transitions {
+        transition_map
+            .entry((*from, *to))
+            .or_insert_with(Vec::new)
+            .push(lambda);
     }
-    
-    for (f, t) in &nfa.lambda_transitions {
-        writeln!(writer, "- {} {} {}", f, t, alphabet_encode_char(lambda)).unwrap();
+
+    // Add character transitions
+    for (from, to, symbol) in &nfa.transitions {
+        transition_map
+            .entry((*from, *to))
+            .or_insert_with(Vec::new)
+            .push(*symbol);
     }
-    
-    // Write accept state - note: NFAMATCH expects multiple accept states?
-    // The spec shows "+ 1 1" format for multiple accepts
-    writeln!(writer, "+ {}", nfa.accept).unwrap();
+
+    // Write transitions
+    for ((from, to), chars) in transition_map.iter() {
+        write!(writer, "- {} {}", from, to).unwrap();
+        let mut sorted_chars = chars.clone();
+        sorted_chars.sort();
+        for c in sorted_chars {
+            write!(writer, " {}", alphabet_encode_char(c)).unwrap();
+        }
+        writeln!(writer).unwrap();
+    }
+
+    // Write accept states
+    for (state, token_id) in &nfa.accept_states {
+        writeln!(writer, "+ {} {}", state, token_id).unwrap();
+    }
 }
+
 // ***** CHECK MODE (Wally only) ***** //
 #[derive(Clone, Debug)]
 struct CFG {
@@ -734,8 +863,100 @@ fn make_llt(cfg: &CFG) -> Result<HashMap<(String, String), Vec<String>>, ()> {
     Ok(llt)
 }
 
+#[derive(Debug, Clone)]
+struct ParseTreeNode {
+    symbol: String,
+    children: Vec<ParseTreeNode>,
+}
+
+fn ll1_parse_recursive(
+    cfg: &CFG,
+    llt: &HashMap<(String, String), Vec<String>>,
+    input: &[String],
+    pos: &mut usize,
+    symbol: &str,
+) -> Result<ParseTreeNode, ()> {
+    // Terminal (but not $)
+    if cfg.terms.contains(symbol) && symbol != "$" {
+        let current = if *pos < input.len() {
+            &input[*pos]
+        } else {
+            return Err(());
+        };
+        if current == symbol {
+            *pos += 1;
+            return Ok(ParseTreeNode {
+                symbol: symbol.to_string(),
+                children: Vec::new(),
+            });
+        } else {
+            return Err(());
+        }
+    }
+
+    // $ end-of-input marker
+    if symbol == "$" {
+        if *pos >= input.len() {
+            return Ok(ParseTreeNode {
+                symbol: "$".to_string(),
+                children: Vec::new(),
+            });
+        } else {
+            return Err(());
+        }
+    }
+
+    // Nonterminal: look up in LLT
+    let lookahead = if *pos < input.len() {
+        input[*pos].clone()
+    } else {
+        "$".to_string()
+    };
+
+    let prod = match llt.get(&(symbol.to_string(), lookahead)) {
+        Some(p) => p.clone(),
+        None => return Err(()),
+    };
+
+    let mut node = ParseTreeNode {
+        symbol: symbol.to_string(),
+        children: Vec::new(),
+    };
+
+    // Lambda production (stored as vec![""])
+    if is_lambda_prod(&prod) {
+        node.children.push(ParseTreeNode {
+            symbol: "lambda".to_string(),
+            children: Vec::new(),
+        });
+        return Ok(node);
+    }
+
+    // Recurse on each RHS symbol
+    for rhs_sym in &prod {
+        let child = ll1_parse_recursive(cfg, llt, input, pos, rhs_sym)?;
+        node.children.push(child);
+    }
+
+    Ok(node)
+}
+
+fn collect_at_depth(
+    node: &ParseTreeNode,
+    current_depth: usize,
+    target_depth: usize,
+    result: &mut Vec<usize>,
+) {
+    if current_depth == target_depth {
+        result.push(node.children.len());
+        return;
+    }
+    for child in &node.children {
+        collect_at_depth(child, current_depth + 1, target_depth, result);
+    }
+}
+
 fn run_check_mode(cfg_path: &str, input_path: &str, count_depth: usize) {
-    // TODO
     let cfg = match read_cfg(Path::new(cfg_path)) {
         Ok(c) => c,
         Err(_) => process::exit(1),
@@ -747,7 +968,7 @@ fn run_check_mode(cfg_path: &str, input_path: &str, count_depth: usize) {
 
     let llt = match make_llt(&cfg) {
         Ok(table) => table,
-        Err(_) => process::exit(1),
+        Err(_) => process::exit(5),
     };
 
     let input_content = match read_to_string(input_path) {
@@ -760,9 +981,28 @@ fn run_check_mode(cfg_path: &str, input_path: &str, count_depth: usize) {
         .map(|s| s.to_string())
         .collect();
 
-    //TODO: Parse LL(1) table and create tree
+    // Parse using LL(1) table and build concrete syntax tree
+    let mut pos: usize = 0;
+    let tree = match ll1_parse_recursive(&cfg, &llt, &input_tokens, &mut pos, &cfg.start) {
+        Ok(t) => t,
+        Err(_) => process::exit(2), // syntax error
+    };
 
-    //TODO: Collect leaf nodes at specified depth (count_depth)
+    // All input must be consumed
+    if pos != input_tokens.len() {
+        process::exit(2);
+    }
+
+    // COUNTDEPTH: report number of children for each node at the target depth
+    let mut result = Vec::new();
+    collect_at_depth(&tree, 0, count_depth, &mut result);
+
+    if result.is_empty() {
+        println!("OUTPUT :NONE:");
+    } else {
+        let parts: Vec<String> = result.iter().map(|c| c.to_string()).collect();
+        println!("OUTPUT {}", parts.join(" "));
+    }
 }
 
 fn main() {

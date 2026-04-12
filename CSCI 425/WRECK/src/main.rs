@@ -190,44 +190,56 @@ fn parse_base(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> 
     }
 
     let c = chars[*pos];
+    if c == '#' || c == '"' || c == '~' {
+        return Err(3);
+    }
 
     if c == '(' {
         *pos += 1;
         let node = parse_alt(chars, pos, alphabet_set)?;
         if *pos >= chars.len() || chars[*pos] != ')' {
-            return Err(2); //syntax error
+            return Err(2);
         }
         *pos += 1;
         Ok(node)
     } else if c == '\\' {
         *pos += 1;
         if *pos >= chars.len() {
-            return Err(2); //syntax error
+            return Err(2);
         }
 
         let escaped = chars[*pos];
+        *pos += 1;
 
         let actual = match escaped {
             'n' => '\n',
             't' => '\t',
             's' => ' ',
             'r' => '\r',
+            '|' => '|',
+            '(' => '(',
+            ')' => ')',
+            '*' => '*',
+            '+' => '+',
+            '\\' => '\\',
             _ => escaped,
         };
-        *pos += 1;
 
         if !alphabet_set.contains(&actual) {
             return Err(4);
         }
 
         // Check for range: escaped_char '-' next_char
-        if *pos + 1 < chars.len() && chars[*pos] == '-' {
-            let after_dash = chars[*pos + 1];
+        if *pos < chars.len() && chars[*pos] == '-' {
+            *pos += 1;
+            if *pos >= chars.len() {
+                return Err(2);
+            }
+            let after_dash = chars[*pos];
             // Next thing must be an escaped char or alphabet char (not a metachar)
             if after_dash == '\\' {
                 // Range end is an escaped character
                 *pos += 1; // skip '-'
-                *pos += 1; // skip '\'
                 if *pos >= chars.len() {
                     return Err(2);
                 }
@@ -237,6 +249,12 @@ fn parse_base(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> 
                     't' => '\t',
                     's' => ' ',
                     'r' => '\r',
+                    '|' => '|',
+                    '(' => '(',
+                    ')' => ')',
+                    '*' => '*',
+                    '+' => '+',
+                    '\\' => '\\',
                     _ => end_escaped,
                 };
                 *pos += 1;
@@ -251,11 +269,16 @@ fn parse_base(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> 
                 // Range end is a plain alphabet char
                 let end_actual = after_dash;
                 *pos += 1; // skip '-'
-                *pos += 1; // skip end char
                 if actual > end_actual {
                     return Err(3);
                 }
                 return Ok(expand_range_filtered(actual, end_actual, &alphabet_set));
+            } else {
+                if "|*+()".contains(after_dash) {
+                    return Err(2);
+                } else {
+                    return Err(4);
+                }
             }
         }
 
@@ -264,25 +287,24 @@ fn parse_base(chars: &[char], pos: &mut usize, alphabet_set: &HashSet<char>) -> 
         *pos += 1;
         Ok(AST::Dot)
     } else if c == '-' {
-        if *pos + 2 < chars.len() && chars[*pos + 1] == '-' {
-            *pos += 1;
-            return Err(2); //syntax error
-        } else if *pos >= 1 && *pos + 1 < chars.len() && chars[*pos + 1] == '-' {
-            let start = chars[*pos - 1];
-            let end = chars[*pos + 1];
-            if alphabet_set.contains(&start) && alphabet_set.contains(&end) && start <= end {
-                *pos += 2;
-                return Ok(expand_range(start, end));
-            } else {
-                return Err(2); //syntax error
+        if *pos > 0 && *pos + 1 < chars.len() {
+            let prev = chars[*pos - 1];
+            let next = chars[*pos + 1];
+            
+            if alphabet_set.contains(&prev) && alphabet_set.contains(&next) && !"|*+()".contains(next) {
+                return Err(2);
             }
+        }
+        
+        if *pos == 0 || *pos + 1 >= chars.len() {
+            return Err(2);
+        }
+        
+        *pos += 1;
+        if alphabet_set.contains(&'-') {
+            Ok(AST::Char('-'))
         } else {
-            *pos += 1;
-            if alphabet_set.contains(&'-') || (*pos < chars.len()) {
-                Ok(AST::Char('-'))
-            } else {
-                Err(2) //syntax error
-            }
+            Err(4)
         }
     } else if alphabet_set.contains(&c) {
         // if current character in alphabet, filter range

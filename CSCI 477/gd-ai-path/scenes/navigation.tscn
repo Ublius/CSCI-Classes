@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://cilxl46lg2hqx"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_i5n5r"]
+vertices = PackedVector2Array(1141.9766, 639.0625, 9.0078125, 646.9297, 9.9765625, 9.9609375, 1141.0078, 6.03125)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(0, 0, -1, 657, 1152, 649, 1151, -4)])
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" unique_id=1689522900]
+navigation_polygon = SubResource("NavigationPolygon_i5n5r")

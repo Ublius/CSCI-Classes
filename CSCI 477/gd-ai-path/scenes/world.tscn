@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://dseesrtlyme0o"]
+
+[ext_resource type="PackedScene" uid="uid://bh7oaynhurkg3" path="res://player/player.tscn" id="1_nnsk1"]
+[ext_resource type="PackedScene" uid="uid://dsc50agqet2u5" path="res://scenes/wall.tscn" id="2_rwgxs"]
+[ext_resource type="PackedScene" uid="uid://cilxl46lg2hqx" path="res://scenes/navigation.tscn" id="3_4wyf3"]
+[ext_resource type="PackedScene" uid="uid://cbyvd0hxmeoa1" path="res://enemy/enemy.tscn" id="4_k0juu"]
+
+[node name="World" type="Area2D" unique_id=905192647]
+
+[node name="CharacterBody2D" parent="." unique_id=1696816162 instance=ExtResource("1_nnsk1")]
+
+[node name="Wall" parent="." unique_id=227825300 instance=ExtResource("2_rwgxs")]
+position = Vector2(93, 78)
+scale = Vector2(16.439999, 1)
+
+[node name="Wall2" parent="." unique_id=947713963 instance=ExtResource("2_rwgxs")]
+position = Vector2(326, 79.00001)
+rotation = 1.5707964
+scale = Vector2(11.679998, 1)
+
+[node name="NavigationRegion2D" parent="." unique_id=1689522900 instance=ExtResource("3_4wyf3")]
+position = Vector2(3, 1)
+
+[node name="enemy" parent="." unique_id=1983347970 instance=ExtResource("4_k0juu")]
+position = Vector2(425, 193)

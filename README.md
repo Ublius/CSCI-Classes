@@ -11,6 +11,7 @@ Assesments and Labs for all CS@Mines Classes:
  - CSCI 406
  - CSCI 410
  - CSCI 425
+ - CSCI 442
  - CSCI 471
  - CSCI 474
  - CSCI 477

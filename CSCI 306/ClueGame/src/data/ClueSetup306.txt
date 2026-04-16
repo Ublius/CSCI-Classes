@@ -1,0 +1,27 @@
+// Rooms and room cards
+Room, Conservatory, C
+Room, Kitchen, K
+Room, Ballroom, B
+Room, Billiard Room, R
+Room, Library, L
+Room, Study, S
+Room, Dining Room, D
+Room, Lounge, O
+Room, Hall, H
+// other spaces on board
+Space, Unused, X
+Space, Walkway, W
+// Players
+Player, Johnson, RED, 0, 3
+Player, Morgan, PINK, 0, 12
+Player, Stover, YELLOW, 5, 16
+Player, Parker, ORANGE, 11, 17
+Player, Hanna, MAGENTA, 17, 4
+Player, Maxwell, GREEN, 13, 1
+// Weapons
+Weapon, Baseball Bat
+Weapon, Chair
+Weapon, Pen
+Weapon, Hammer
+Weapon, Knife
+Weapon, Pillow

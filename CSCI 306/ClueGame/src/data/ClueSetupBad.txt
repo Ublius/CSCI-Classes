@@ -1,0 +1,13 @@
+// Rooms and room cards
+Room, Living Room, L
+Room, Office, O
+Room, Guest Room, G
+Room, Nursery, N
+Room, Bedroom,
+Room, Cellar, C
+Room, Media Room, M
+Room, Kitchen, K
+Room, Family Room, F
+// Other spaces on board
+Space, Walkway, W
+Space, Unused, X

@@ -1,0 +1,22 @@
+class Main {
+    function void main() {
+        var Game game;
+        var int guess;
+        var boolean done;
+
+        let game = Game.new(7);
+        let done = false;
+
+        do Output.printString("Welcome to Guessing Game!\n");
+
+        while (~done) {
+            do Output.printString("Enter a guess (0-9): ");
+            let guess = Keyboard.readInt("");
+
+            let done = game.checkGuess(guess);
+        }
+
+        do Output.printString("Game Over!\n");
+        return;
+    }
+}

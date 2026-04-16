@@ -1,0 +1,30 @@
+class Game {
+    field int target;
+    field int attempts;
+
+    constructor Game new(int value) {
+        let target = value;
+        let attempts = 0;
+        return this;
+    }
+
+    method boolean checkGuess(int guess) {
+        let attempts = attempts + 1;
+
+        if (guess = target) {
+            do Output.printString("Correct!\n");
+            do Output.printString("Attempts: ");
+            do Output.printInt(attempts);
+            do Output.printString("\n");
+            return true;
+        }
+
+        if (guess < target) {
+            do Output.printString("Too low!\n");
+        } else {
+            do Output.printString("Too high!\n");
+        }
+
+        return false;
+    }
+}

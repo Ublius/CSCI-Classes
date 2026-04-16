@@ -8,6 +8,7 @@ Assesments and Labs for all CS@Mines Classes:
  - CSCI 274
  - CSCI 306
  - CSCI 341
+ - CSCI 400
  - CSCI 406
  - CSCI 410
  - CSCI 425

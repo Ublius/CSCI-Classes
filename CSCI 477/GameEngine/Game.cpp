@@ -9,6 +9,7 @@
 #include "Game.h"
 #include <algorithm>
 #include "Background.h"
+#include "Asteroid.h"
 
 Game::Game()
 :_pWindow(nullptr)
@@ -138,6 +139,8 @@ void Game::_generateOutput() {
 void Game::_loadData() {
     // TODO: Add game specific loading code here.
     Background* bg = new Background(this);
+    
+    Asteroid* ast = new Asteroid(this);
 }
 
 // Cleanup of any actors and textures.

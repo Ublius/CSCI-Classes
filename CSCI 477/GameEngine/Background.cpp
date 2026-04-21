@@ -29,6 +29,9 @@ Background::Background(Game* pGame)
 
     ScrollingSpriteComponent* bg2 = new ScrollingSpriteComponent(this);
     std::vector<SDL_Texture*> starTextures = {
-      // pGame->GetTexture("Assets/Stars");
+      pGame->GetTexture("Assets/Stars.png"),
+      pGame->GetTexture("Assets/Stars.png")
     };
+    bg2->SetTextures(starTextures);
+    bg2->SetScrollSpeed(-200);
 }

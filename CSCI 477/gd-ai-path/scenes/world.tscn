@@ -1,25 +1,106 @@
 [gd_scene format=3 uid="uid://dseesrtlyme0o"]
 
+[ext_resource type="Texture2D" uid="uid://nm8d8gd3nrha" path="res://assets/city_background.jpg" id="1_71j4m"]
 [ext_resource type="PackedScene" uid="uid://bh7oaynhurkg3" path="res://player/player.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://dsc50agqet2u5" path="res://scenes/wall.tscn" id="2_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://cilxl46lg2hqx" path="res://scenes/navigation.tscn" id="3_4wyf3"]
 [ext_resource type="PackedScene" uid="uid://cbyvd0hxmeoa1" path="res://enemy/enemy.tscn" id="4_k0juu"]
+[ext_resource type="Script" uid="uid://byltuw2idp338" path="res://scripts/UI_Manager.gd" id="6_qfnet"]
+[ext_resource type="PackedScene" uid="uid://dxuw285a6b2e" path="res://victim/Victim.tscn" id="7_i7141"]
 
 [node name="World" type="Area2D" unique_id=905192647]
 
-[node name="CharacterBody2D" parent="." unique_id=1696816162 instance=ExtResource("1_nnsk1")]
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1702103353]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 1.0
+offset_right = 1150.0
+offset_bottom = 646.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_71j4m")
+expand_mode = 1
 
-[node name="Wall" parent="." unique_id=227825300 instance=ExtResource("2_rwgxs")]
-position = Vector2(93, 78)
-scale = Vector2(16.439999, 1)
-
-[node name="Wall2" parent="." unique_id=947713963 instance=ExtResource("2_rwgxs")]
-position = Vector2(326, 79.00001)
-rotation = 1.5707964
-scale = Vector2(11.679998, 1)
+[node name="UI" type="CanvasLayer" parent="." unique_id=1528747003]
+script = ExtResource("6_qfnet")
 
 [node name="NavigationRegion2D" parent="." unique_id=1689522900 instance=ExtResource("3_4wyf3")]
+visible = false
 position = Vector2(3, 1)
 
-[node name="enemy" parent="." unique_id=1983347970 instance=ExtResource("4_k0juu")]
+[node name="Border" type="Node2D" parent="." unique_id=540951105]
+
+[node name="Left" parent="Border" unique_id=227825300 instance=ExtResource("2_rwgxs")]
+position = Vector2(-41, 0)
+scale = Vector2(1, 16.16)
+
+[node name="Right" parent="Border" unique_id=839572098 instance=ExtResource("2_rwgxs")]
+position = Vector2(1151, 0)
+scale = Vector2(1, 16.16)
+
+[node name="Top" parent="Border" unique_id=508267602 instance=ExtResource("2_rwgxs")]
+position = Vector2(-41, 0)
+rotation = -1.5707964
+scale = Vector2(1, 29.800001)
+
+[node name="Bottom" parent="Border" unique_id=1104295158 instance=ExtResource("2_rwgxs")]
+position = Vector2(-41, 687)
+rotation = -1.5707964
+scale = Vector2(1, 29.800001)
+
+[node name="Obstacles" type="Node2D" parent="." unique_id=142270029]
+
+[node name="Wall" parent="Obstacles" unique_id=1273028527 instance=ExtResource("2_rwgxs")]
+position = Vector2(600, 79.00001)
+rotation = 0.88410896
+scale = Vector2(4.7674146, 0.3575105)
+
+[node name="Wall4" parent="Obstacles" unique_id=1753692276 instance=ExtResource("2_rwgxs")]
+position = Vector2(813, 177)
+rotation = -0.46931604
+scale = Vector2(4.767414, 0.35751048)
+
+[node name="Wall2" parent="Obstacles" unique_id=947713963 instance=ExtResource("2_rwgxs")]
+position = Vector2(324, 225)
+rotation = 1.5707964
+scale = Vector2(5.139195, 1)
+
+[node name="Wall5" parent="Obstacles" unique_id=1397532764 instance=ExtResource("2_rwgxs")]
+position = Vector2(714, 319.99997)
+rotation = 1.5707964
+scale = Vector2(5.139195, 1)
+
+[node name="Wall7" parent="Obstacles" unique_id=81004063 instance=ExtResource("2_rwgxs")]
+position = Vector2(864.00006, 397)
+rotation = 0.0036245578
+scale = Vector2(5.139195, 1)
+
+[node name="Wall6" parent="Obstacles" unique_id=765831673 instance=ExtResource("2_rwgxs")]
+position = Vector2(629, 582.00006)
+rotation = -3.1415412
+scale = Vector2(10.483945, 1)
+skew = 0.00016212463
+
+[node name="Wall3" parent="Obstacles" unique_id=2708825 instance=ExtResource("2_rwgxs")]
+position = Vector2(295, 143)
+rotation = -0.23036908
+scale = Vector2(5.1391954, 1)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1263488252]
+
+[node name="enemy" parent="Enemies" unique_id=1983347970 instance=ExtResource("4_k0juu")]
 position = Vector2(425, 193)
+
+[node name="enemy2" parent="Enemies" unique_id=812100769 instance=ExtResource("4_k0juu")]
+position = Vector2(749, 68)
+
+[node name="enemy3" parent="Enemies" unique_id=1526836792 instance=ExtResource("4_k0juu")]
+position = Vector2(937, 534)
+
+[node name="Player" parent="." unique_id=1696816162 instance=ExtResource("1_nnsk1")]
+position = Vector2(98, 110)
+
+[node name="Victim" parent="." unique_id=1914418994 instance=ExtResource("7_i7141")]
+position = Vector2(947, 224)

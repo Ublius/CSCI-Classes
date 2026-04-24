@@ -28,6 +28,7 @@ func _physics_process(delta: float) -> void:
 		nav_agent.target_position = player.global_position
 		
 	_move_along_path()
+	_check_player_collision()
 	
 func _move_along_path() -> void:
 	if nav_agent.is_navigation_finished():
@@ -40,3 +41,12 @@ func _move_along_path() -> void:
 	
 	velocity = direction * SPEED
 	move_and_slide()
+	
+func _check_player_collision() -> void:
+	for i in get_slide_collision_count():
+		var collision = get_slide_collision(i)
+		if collision.get_collider() == player:
+			if GameManager.has_method("enemy_reached_player"):
+				GameManager.enemy_reached_player()
+			queue_free()
+			break

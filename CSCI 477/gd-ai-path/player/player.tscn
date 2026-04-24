@@ -1,18 +1,22 @@
 [gd_scene format=3 uid="uid://bh7oaynhurkg3"]
 
 [ext_resource type="Script" uid="uid://byoy0qvymk7gq" path="res://player/player.gd" id="1_oul6g"]
+[ext_resource type="Texture2D" uid="uid://ca3ukjxqubhm4" path="res://assets/rescue_heli.png" id="2_rkbax"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kqu6x"]
-size = Vector2(40, 40)
+size = Vector2(88, 38)
 
-[node name="CharacterBody2D" type="CharacterBody2D" unique_id=1696816162]
+[node name="Player" type="CharacterBody2D" unique_id=1696816162]
 script = ExtResource("1_oul6g")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=2145083247]
-offset_right = 40.0
-offset_bottom = 40.0
-color = Color(1, 0.09019608, 1, 1)
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1129245863]
+offset_left = -71.0
+offset_top = -64.0
+offset_right = 909.0
+offset_bottom = 916.0
+scale = Vector2(0.12945166, 0.13221683)
+texture = ExtResource("2_rkbax")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=623194088]
-position = Vector2(20, 20)
+position = Vector2(-7, 1)
 shape = SubResource("RectangleShape2D_kqu6x")

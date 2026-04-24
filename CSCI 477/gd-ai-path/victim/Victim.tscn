@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dxuw285a6b2e"]
+
+[ext_resource type="Script" uid="uid://brb5ibjo0woxi" path="res://victim/victim.gd" id="1_35tfl"]
+[ext_resource type="Texture2D" uid="uid://bbwad2nctc62o" path="res://assets/Victim.png" id="2_k0t80"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_alpc2"]
+size = Vector2(40, 40)
+
+[node name="Victim" type="Area2D" unique_id=1914418994]
+script = ExtResource("1_35tfl")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=912379340]
+offset_right = 860.0
+offset_bottom = 886.0
+scale = Vector2(0.046022084, 0.045485623)
+texture = ExtResource("2_k0t80")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=497347516]
+position = Vector2(20, 20)
+shape = SubResource("RectangleShape2D_alpc2")

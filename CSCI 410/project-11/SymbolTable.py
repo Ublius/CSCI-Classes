@@ -1,69 +1,50 @@
 class SymbolTable:
-    NONE = 0
-    STATIC = "static"
-    FIELD = "this"
-    ARG = "argument"
-    VAR = "local"
-
     def __init__(self):
-        self.classTable = {}
-        self.subTable = {}
+        self.class_table = {}
+        self.subroutine_table = {}
+        self.index_counter = {'static': 0, 'field': 0, 'arg': 0, 'var': 0}
 
-        self.classCounts = {self.STATIC: 0, self.FIELD: 0}
-        self.subCounts = {self.ARG: 0, self.VAR: 0}
+    def start_subroutine(self):
+        self.subroutine_table.clear()
+        self.index_counter['arg'] = 0
+        self.index_counter['var'] = 0
 
-    def startSubroutine(self):
-        self.subTable.clear()
-        self.subCounts = {self.ARG: 0, self.VAR: 0}
+    def define(self, name, type_name, kind):
+        kind = 'var' if kind == 'local' else kind
 
-    def _scope(self, kind):
-        if kind in (self.STATIC, self.FIELD):
-            return self.classTable, self.classCounts
-        return self.subTable, self.subCounts
+        if kind in ('static', 'field'):
+            idx = self.index_counter[kind]
+            self.class_table[name] = (type_name, kind, idx)
+            self.index_counter[kind] += 1
 
-    def define(self, name, identifierType, identifierKind):
-        table, counts = self._scope(identifierKind)
-        index = counts[identifierKind]
+        elif kind in ('arg', 'var'):
+            idx = self.index_counter[kind]
+            self.subroutine_table[name] = (type_name, kind, idx)
+            self.index_counter[kind] += 1
+        else:
+            raise ValueError("Unknown kind")
 
-        table[name] = {
-            "kind": identifierKind,
-            "type": identifierType,
-            "index": index
-        }
+    def var_count(self, kind):
+        kind = 'var' if kind == 'local' else kind
+        return self.index_counter.get(kind, 0)
 
-        counts[identifierKind] += 1
+    def kind_of(self, name):
+        if name in self.subroutine_table:
+            return self.subroutine_table[name][1]
+        if name in self.class_table:
+            return self.class_table[name][1]
+        return None
 
-    def kindOf(self, name):
-        return self.fieldOf(name, "kind")
+    def type_of(self, name):
+        if name in self.subroutine_table:
+            return self.subroutine_table[name][0]
+        if name in self.class_table:
+            return self.class_table[name][0]
+        return None
 
-    def typeOf(self, name):
-        return self.fieldOf(name, "type")
-
-    def indexOf(self, name):
-        return self.fieldOf(name, "index")
-
-    def fieldOf(self, name, field):
-        if name in self.subTable:
-            return self.subTable[name][field]
-        if name in self.classTable:
-            return self.classTable[name][field]
-        raise KeyError(f"{name} not found in symbol tables")
-
-    def isDefined(self, name):
-        return name in self.subTable or name in self.classTable
-
-    def stringKindOf(self, name):
-        kind_map = {
-            self.STATIC: "static",
-            self.FIELD: "field",
-            self.ARG: "arg",
-            self.VAR: "var"
-        }
-        return kind_map.get(self.kindOf(name), "none")
-    
-    def resolve(self, name):
-        if name in self.subTable:
-            return self.subTable[name]
-        if name in self.classTable:
-            return self.classTable[name]
-        raise KeyError(f"{name} not found in symbol tables")
+    def index_of(self, name):
+        if name in self.subroutine_table:
+            return self.subroutine_table[name][2]
+        if name in self.class_table:
+            return self.class_table[name][2]
+        return None

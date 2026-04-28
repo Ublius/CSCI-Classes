@@ -3,686 +3,440 @@ from VMWriter import VMWriter
 from SymbolTable import SymbolTable
 
 class CompilationEngine:
-    keywordConsts = ["null", "true", "false", "this"] 
-
-    def __init__(self, tokenizer, outputFile, vmFile):
+    def __init__(self, tokenizer: JackTokenizer, vm_writer: VMWriter):
         self.tokenizer = tokenizer
-        self.outputFile = outputFile
-        self.symbolTable = SymbolTable()
-        self.vmWriter = VMWriter(vmFile)
-        self.labelNum = 0
-    
+        self.writer = vm_writer
+        self.symbols = SymbolTable()
+        self.class_name = ""
+        self.if_count = 0
+        self.while_count = 0
+
     def compileClass(self):
-        self.indentLevel = 0
-        NUM_OPENING_STATEMENTS = 3
-        classVarOpenings = ['static', 'field']
-        subOpenings = ['constructor', 'function', 'method']
-
-        if self.tokenizer.currentToken != "class":
-            raise Exception("Keyword 'class' expected")
-        self.writeFormatted("<class>")
-        self.indentLevel += 1
-        self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.printToken()
-            self.className = self.tokenizer.identifier()
-            self.writeClassOrSubInfo("class", False)
-
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.printToken()
-        
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-        
-        self.fieldCount = 0
-        while self.tokenizer.hasMoreTokens() and self.tokenizer.keyWord() in classVarOpenings:
-            if self.tokenizer.keyWord() == "field":
-                self.fieldCount += 1
+        token_type, token_val = self.tokenizer.advance()
+        if token_val != 'class':
+            raise SyntaxError("Expected 'class'")
+        _, self.class_name = self.tokenizer.advance()
+        _, token_val = self.tokenizer.advance()
+        if token_val != '{':
+            raise SyntaxError("Expected '{' after class name")
+        nxt = self.tokenizer.peek()
+        while nxt and nxt[1] in ('static', 'field'):
             self.compileClassVarDec()
-        while(self.tokenizer.hasMoreTokens() and self.tokenizer.tokenType == JackTokenizer.KEYWORD 
-                and self.tokenizer.keyWord() in subOpenings):
+            nxt = self.tokenizer.peek()
+        nxt = self.tokenizer.peek()
+        while nxt and nxt[1] in ('constructor', 'function', 'method'):
             self.compileSubroutine()
-        self.printToken()
-        self.writeFormatted("</class>")
-        self.indentLevel -= 1
-    
+            nxt = self.tokenizer.peek()
+        _, token_val = self.tokenizer.advance()
+        if token_val != '}':
+            raise SyntaxError("Expected '}' at end of class")
+
     def compileClassVarDec(self):
-        self.writeFormatted("<classVarDec>")
-        self.indentLevel += 1
-        self.printToken()
-        if self.tokenizer.tokenType == JackTokenizer.KEYWORD:
-            if self.tokenizer.keyWord() == "static":
-                kind = SymbolTable.STATIC
-            elif self.tokenizer.keyWord() == "field":
-                kind = SymbolTable.FIELD
-            else:
-                raise Exception("Invalid kind of class variable " + self.tokenizer.keyWord())
-        else:
-            raise Exception("Keyword expected")
-        
-        if self.tokenizer.hasMoreTokens():
+        _, kind = self.tokenizer.advance()
+        _, type_name = self.tokenizer.advance()
+        _, var_name = self.tokenizer.advance()
+        self.symbols.define(var_name, type_name, kind)
+        nxt = self.tokenizer.peek()
+        while nxt and nxt[1] == ',':
             self.tokenizer.advance()
-            self.printToken()
-            identifierType = self.tokenizer.currentToken
-            isKeyword = self.tokenizer.tokenType == JackTokenizer.KEYWORD
-
-        if not isKeyword:
-            self.writeClassOrSubInfo("class", True)
-
-        varNames = []
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.printToken()
-            varNames.append(self.tokenizer.currentToken)
-            if self.tokenizer.hasMoreTokens(): 
-                self.tokenizer.advance()
-
-        while self.tokenizer.symbol() != ";" and self.tokenizer.hasMoreTokens():
-            if self.tokenizer.symbol() != ",":
-                raise Exception("Invalid variable list")
-            self.printToken()
-            self.tokenizer.advance()
-            self.printToken()
-            varNames.append(self.tokenizer.currentToken)
-            if kind == SymbolTable.FIELD:
-                self.fieldCount += 1
-            if not self.tokenizer.hasMoreTokens():
-                raise Exception("More tokens expected")
-            self.tokenizer.advance()
-        self.printToken()
-    
-        for name in varNames:
-            self.symbolTable.define(name, identifierType, kind)
-            self.writeVarInfo(name, False)
-
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-        self.indentLevel -= 1
-        self.writeFormatted("</classVarDec>")
+            _, var_name = self.tokenizer.advance()
+            self.symbols.define(var_name, type_name, kind)
+            nxt = self.tokenizer.peek()
+        _, semicolon = self.tokenizer.advance()
+        if semicolon != ';':
+            raise SyntaxError("Expected ';' after class variable declaration")
 
     def compileSubroutine(self):
-        self.writeFormatted("<subroutineDec>")
-        self.symbolTable.startSubroutine()
-        self.indentLevel += 1
-        NUM_OPENING_STATEMENTS = 4
-        
-        self.printToken()
-        self.isConstructor = False
-        self.isMethod = False
-        if self.tokenizer.keyWord() == "constructor":
-            self.isConstructor = True
-        elif self.tokenizer.keyWord() == "method":
-            self.isMethod = True
-            self.symbolTable.define("this", self.className, SymbolTable.ARG)
+        self.symbols.start_subroutine()
+        self.if_count = 0
+        self.while_count = 0
+        _, subroutine_kind = self.tokenizer.advance()
+        _, return_type = self.tokenizer.advance()
+        _, subroutine_name = self.tokenizer.advance()
 
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance() 
-            self.printToken()
+        if subroutine_kind == 'method':
+            self.symbols.define('this', self.class_name, 'arg')
 
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance() 
-            self.printToken()
-            self.subName = self.tokenizer.identifier()
-
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance() 
-            self.printToken()
-
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance() 
-
+        _, token_val = self.tokenizer.advance()
+        if token_val != '(':
+            raise SyntaxError("Expected '(' after subroutine name")
         self.compileParameterList()
-        self.printToken()
+        _, token_val = self.tokenizer.advance()
+        if token_val != ')':
+            raise SyntaxError("Expected ')' after parameter list")
 
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
+        _, token_val = self.tokenizer.advance()
+        if token_val != '{':
+            raise SyntaxError("Expected '{' to begin subroutine body")
 
-        self.numLocalVariables = 0
-        self.compileSubroutineBody()
-        self.indentLevel -= 1
-        self.writeFormatted("</subroutineDec>")
-    
-    def compileSubroutineBody(self):
-        self.writeFormatted("<subroutineBody>")
-        self.indentLevel += 1
-        self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-        
-        while(self.tokenizer.hasMoreTokens() and self.tokenizer.tokenType == JackTokenizer.KEYWORD
-                and self.tokenizer.keyWord() == "var"):
+        nxt = self.tokenizer.peek()
+        while nxt and nxt[1] == 'var':
             self.compileVarDec()
-        
-        self.vmWriter.writeFunction(self.className + "." + self.subName, self.numLocalVariables) 
-        if self.isConstructor:
-            self.vmWriter.writePush("constant", self.fieldCount)
-            self.vmWriter.writeCall("Memory.alloc", 1)
-            self.vmWriter.writePop("pointer", 0)
-        elif self.isMethod:
-            self.vmWriter.writePush(SymbolTable.ARG, 0)
-            self.vmWriter.writePop("pointer", VMWriter.THIS_POINTER)
-            
+            nxt = self.tokenizer.peek()
+
+        n_locals = self.symbols.var_count('var')
+        self.writer.write_function(f"{self.class_name}.{subroutine_name}", n_locals)
+
+        if subroutine_kind == 'constructor':
+            n_fields = self.symbols.var_count('field')
+            self.writer.write_push("constant", n_fields)
+            self.writer.write_call("Memory.alloc", 1)
+            self.writer.write_pop("pointer", 0)
+
+        if subroutine_kind == 'method':
+            self.writer.write_push("argument", 0)
+            self.writer.write_pop("pointer", 0)
+
         self.compileStatements()
-        self.printToken()
 
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-
-        self.indentLevel -= 1
-        self.writeFormatted("</subroutineBody>")
+        _, token_val = self.tokenizer.advance()
+        if token_val != '}':
+            raise SyntaxError("Expected '}' to close subroutine body")
 
     def compileParameterList(self):
-        self.writeFormatted("<parameterList>")
-        self.indentLevel += 1
-
-        if self.tokenizer.currentToken != ")":
-            self.printToken()
-            argType = self.tokenizer.currentToken
-            self.tokenizer.advance()
-            self.printToken()
-            argName = self.tokenizer.currentToken
-            self.symbolTable.define(argName, argType, SymbolTable.ARG)
-            self.writeVarInfo(argName, False)
-            self.tokenizer.advance()
-
-        while self.tokenizer.tokenType != JackTokenizer.SYMBOL or self.tokenizer.symbol() != ")":
-            self.printToken()
-            if self.tokenizer.currentToken != ",":
-                raise Exception("Comma expected")
-            if self.tokenizer.hasMoreTokens():
+        nxt = self.tokenizer.peek()
+        if nxt and nxt[1] != ')':
+            _, type_name = self.tokenizer.advance()
+            _, var_name = self.tokenizer.advance()
+            self.symbols.define(var_name, type_name, 'arg')
+            nxt = self.tokenizer.peek()
+            while nxt and nxt[1] == ',':
                 self.tokenizer.advance()
-                self.printToken()
-                argType = self.tokenizer.currentToken
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance()
-                self.printToken()
-                argName = self.tokenizer.currentToken
-                self.symbolTable.define(argName, argType, SymbolTable.ARG)
-                self.writeVarInfo(argName, False)
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance()
-            
-        self.indentLevel -= 1
-        self.writeFormatted("</parameterList>")
+                _, type_name = self.tokenizer.advance()
+                _, var_name = self.tokenizer.advance()
+                self.symbols.define(var_name, type_name, 'arg')
+                nxt = self.tokenizer.peek()
 
     def compileVarDec(self):
-        self.numLocalVariables += 1
-        self.writeFormatted("<varDec>")
-        self.indentLevel += 1
-        
-        varNames = []
-        self.printToken()
-        if self.tokenizer.currentToken != "var":
-            raise Exception("'var' keyword expected")
-        if self.tokenizer.hasMoreTokens():
+        _, var_token = self.tokenizer.advance()
+        if var_token != 'var':
+            raise SyntaxError("Expected 'var' declaration")
+        _, type_name = self.tokenizer.advance()
+        _, var_name = self.tokenizer.advance()
+        self.symbols.define(var_name, type_name, 'var')
+        nxt = self.tokenizer.peek()
+        while nxt and nxt[1] == ',':
             self.tokenizer.advance()
-            self.printToken()
-            varType = self.tokenizer.currentToken
-            isKeyword = self.tokenizer.tokenType == JackTokenizer.KEYWORD
-
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance() 
-            self.printToken()
-            varNames.append(self.tokenizer.currentToken) 
-        
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-
-        while(self.tokenizer.hasMoreTokens() and 
-                (self.tokenizer.tokenType != JackTokenizer.SYMBOL or self.tokenizer.symbol() != ";")):
-            self.printToken()
-            self.tokenizer.advance()
-            self.printToken()
-            varNames.append(self.tokenizer.currentToken)
-            self.tokenizer.advance()
-            self.numLocalVariables += 1
-        
-        if not isKeyword:
-            self.writeClassOrSubInfo("class", "True")
-
-        for name in varNames:
-            self.symbolTable.define(name, varType, SymbolTable.VAR)
-            self.writeVarInfo(name, False)
-
-        self.printToken()
-        self.tokenizer.advance()
-        self.indentLevel -= 1
-        self.writeFormatted("</varDec>")
+            _, var_name = self.tokenizer.advance()
+            self.symbols.define(var_name, type_name, 'var')
+            nxt = self.tokenizer.peek()
+        _, semicolon = self.tokenizer.advance()
+        if semicolon != ';':
+            raise SyntaxError("Expected ';' after var declaration")
 
     def compileStatements(self):
-        self.writeFormatted("<statements>")
-        self.indentLevel += 1
-        stmtStarts = ['do', 'while', 'let', 'if', 'return']
-        while(self.tokenizer.hasMoreTokens() and self.tokenizer.tokenType == JackTokenizer.KEYWORD and self.tokenizer.keyWord() in stmtStarts):
-            if self.tokenizer.keyWord() == "do":
-                self.compileDo()
-            elif self.tokenizer.keyWord() == "while":
-                self.compileWhile()
-            elif self.tokenizer.keyWord() == "let":
+        nxt = self.tokenizer.peek()
+        while nxt:
+            keyword = nxt[1]
+            if keyword == 'let':
                 self.compileLet()
-            elif self.tokenizer.keyWord() == "if":
+            elif keyword == 'if':
                 self.compileIf()
-            elif self.tokenizer.keyWord() == "return":
+            elif keyword == 'while':
+                self.compileWhile()
+            elif keyword == 'do':
+                self.compileDo()
+            elif keyword == 'return':
                 self.compileReturn()
-        self.indentLevel -= 1
-        self.writeFormatted("</statements>")
+            else:
+                break
+            nxt = self.tokenizer.peek()
 
     def compileDo(self):
-        self.writeFormatted("<doStatement>")
-        self.indentLevel += 1
-        if self.tokenizer.keyWord() != "do":
-            raise Exception("'do' keyword expected")
-        self.printToken()
-
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.compileSubroutineCall()
-            self.vmWriter.writePop("temp", 0)
-
-        self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-        self.indentLevel -= 1
-        self.writeFormatted("</doStatement>")
+        _, do_token = self.tokenizer.advance()
+        if do_token != 'do':
+            raise SyntaxError("Expected 'do'")
+        self.compileSubroutineCall()
+        self.writer.write_pop("temp", 0)
+        _, semicolon = self.tokenizer.advance()
+        if semicolon != ';':
+            raise SyntaxError("Expected ';' after do statement")
 
     def compileLet(self):
-        self.writeFormatted("<letStatement>")
-        self.indentLevel += 1
-        isArray = False
-        if self.tokenizer.keyWord() != "let":
-            raise Exception("Let keyword expected")
-        self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.printToken()
-            varName = self.tokenizer.identifier()
-            self.writeVarInfo(self.tokenizer.identifier(), True)
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.printToken()
-        if self.tokenizer.currentToken == "[":
-            isArray = True
-            self.tokenizer.advance()
+        _, let_token = self.tokenizer.advance()
+        if let_token != 'let':
+            raise SyntaxError("Expected 'let'")
+        _, var_name = self.tokenizer.advance()
 
-            if self.symbolTable.isDefined(varName):
-                varKind = self.symbolTable.kindOf(varName)
-                self.vmWriter.writePush(varKind, self.symbolTable.indexOf(varName))
+        is_array = False
+        nxt = self.tokenizer.peek()
 
-                self.compileExpression()
-                self.printToken()
-                self.vmWriter.writeArithmetic("add")
-                segment = "that"
-                index = 0
-
-            else:
-                raise Exception("Symbol " + varName + " is not defined")
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance()
-                self.printToken()
-        else:
-            varKind = self.symbolTable.kindOf(varName)
-            segment = varKind
-            index = self.symbolTable.indexOf(varName)
-
-        if self.tokenizer.hasMoreTokens():
+        if nxt and nxt[1] == '[':
+            is_array = True
             self.tokenizer.advance()
+            kind = self.symbols.kind_of(var_name)
+            index = self.symbols.index_of(var_name)
+            seg = {"static": "static", "field": "this", "arg": "argument", "var": "local"}[kind]
+            self.writer.write_push(seg, index)
+            self.compileExpression()
+            _, bracket = self.tokenizer.advance()
+            if bracket != ']':
+                raise SyntaxError("Expected ']' in array index")
+            self.writer.write_arithmetic("add")
+
+        _, eq_token = self.tokenizer.advance()
+        if eq_token != '=':
+            raise SyntaxError("Expected '=' in let statement")
 
         self.compileExpression()
-        if isArray:
-            self.vmWriter.writePop("temp", 0)
-            self.vmWriter.writePop("pointer", VMWriter.THAT_POINTER)
-            self.vmWriter.writePush("temp", 0)
 
-        self.vmWriter.writePop(segment, index)
-        self.printToken()
-        
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-        self.indentLevel -= 1
-        self.writeFormatted("</letStatement>")
+        _, semicolon = self.tokenizer.advance()
+        if semicolon != ';':
+            raise SyntaxError("Expected ';' after let statement")
+
+        if is_array:
+            self.writer.write_pop("temp", 0)
+            self.writer.write_pop("pointer", 1)
+            self.writer.write_push("temp", 0)
+            self.writer.write_pop("that", 0)
+        else:
+            kind = self.symbols.kind_of(var_name)
+            index = self.symbols.index_of(var_name)
+            seg = {"static": "static", "field": "this", "arg": "argument", "var": "local"}[kind]
+            self.writer.write_pop(seg, index)
 
     def compileWhile(self):
-        self.writeFormatted("<whileStatement>")
-        self.indentLevel += 1
+        _, while_token = self.tokenizer.advance()
+        if while_token != 'while':
+            raise SyntaxError("Expected 'while'")
 
-        self.labelNum += 1
-        firstLabel = "W" + str(self.labelNum)
-        self.labelNum += 1
-        secondLabel = "W" + str(self.labelNum)
+        label_exp = f"WHILE_EXP{self.while_count}"
+        label_end = f"WHILE_END{self.while_count}"
+        self.while_count += 1
 
-        if not(self.tokenizer.tokenType == JackTokenizer.KEYWORD and self.tokenizer.keyWord() == "while"):
-            raise Exception("'while' keyword was expected")
-        self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.printToken()
-            self.vmWriter.writeLabel(firstLabel)
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.compileExpression()
-            self.vmWriter.writeArithmetic("not")
-            self.vmWriter.writeIf(secondLabel)
-            self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.compileStatements()
-            self.vmWriter.writeGoto(firstLabel)
-            self.printToken()
-            self.vmWriter.writeLabel(secondLabel)
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-        self.indentLevel -= 1
-        self.writeFormatted("</whileStatement>")
+        self.writer.write_label(label_exp)
+
+        _, lp = self.tokenizer.advance()
+        if lp != '(':
+            raise SyntaxError("Expected '(' after 'while'")
+
+        self.compileExpression()
+
+        _, rp = self.tokenizer.advance()
+        if rp != ')':
+            raise SyntaxError("Expected ')' after while condition")
+
+        self.writer.write_arithmetic("not")
+        self.writer.write_if(label_end)
+
+        _, lb = self.tokenizer.advance()
+        if lb != '{':
+            raise SyntaxError("Expected '{' after while condition")
+
+        self.compileStatements()
+
+        _, rb = self.tokenizer.advance()
+        if rb != '}':
+            raise SyntaxError("Expected '}' after while body")
+
+        self.writer.write_goto(label_exp)
+        self.writer.write_label(label_end)
 
     def compileReturn(self):
-        self.writeFormatted("<returnStatement>")
-        self.indentLevel += 1
-        if self.tokenizer.keyWord() != "return":
-            raise Exception("'return' keyword was expected")
-        self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-        if not(self.tokenizer.tokenType == JackTokenizer.SYMBOL and self.tokenizer.symbol() == ";"):
+        _, ret_token = self.tokenizer.advance()
+        if ret_token != 'return':
+            raise SyntaxError("Expected 'return'")
+
+        nxt = self.tokenizer.peek()
+        if nxt and nxt[1] != ';':
             self.compileExpression()
+            _, semicolon = self.tokenizer.advance()
+            if semicolon != ';':
+                raise SyntaxError("Expected ';'")
         else:
-            self.vmWriter.writePush("constant", 0)
-        self.printToken()
-        self.vmWriter.writeReturn()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-        self.indentLevel -= 1
-        self.writeFormatted("</returnStatement>")
+            _, semicolon = self.tokenizer.advance()
+            if semicolon != ';':
+                raise SyntaxError("Expected ';'")
+            self.writer.write_push("constant", 0)
+
+        self.writer.write_return()
 
     def compileIf(self):
-        self.writeFormatted("<ifStatement>")
-        self.indentLevel += 1
-        trueLabel = "IF-TRUE" + str(self.labelNum)
-        falseLabel = "IF-FALSE" + str(self.labelNum)
-        endLabel = "END-IF" + str(self.labelNum)
-        self.labelNum += 1
-        if self.tokenizer.keyWord() != "if":
-            raise Exception("'if' keyword was expected")
-        self.printToken()
-        if self.tokenizer.hasMoreTokens():
+        _, if_token = self.tokenizer.advance()
+        if if_token != 'if':
+            raise SyntaxError("Expected 'if'")
+
+        label_true = f"IF_TRUE{self.if_count}"
+        label_false = f"IF_FALSE{self.if_count}"
+        label_end = f"IF_END{self.if_count}"
+        self.if_count += 1
+
+        _, lp = self.tokenizer.advance()
+        if lp != '(':
+            raise SyntaxError("Expected '(' after 'if'")
+
+        self.compileExpression()
+
+        _, rp = self.tokenizer.advance()
+        if rp != ')':
+            raise SyntaxError("Expected ')'")
+
+        self.writer.write_if(label_true)
+        self.writer.write_goto(label_false)
+
+        self.writer.write_label(label_true)
+
+        _, lb = self.tokenizer.advance()
+        if lb != '{':
+            raise SyntaxError("Expected '{'")
+
+        self.compileStatements()
+
+        _, rb = self.tokenizer.advance()
+        if rb != '}':
+            raise SyntaxError("Expected '}'")
+
+        nxt = self.tokenizer.peek()
+
+        if nxt and nxt[1] == 'else':
+            self.writer.write_goto(label_end)
+
+        self.writer.write_label(label_false)
+
+        if nxt and nxt[1] == 'else':
             self.tokenizer.advance()
-            self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.compileExpression()
-            self.printToken()
-            self.vmWriter.writeIf(trueLabel)
-            self.vmWriter.writeGoto(falseLabel)
-            self.vmWriter.writeLabel(trueLabel)
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
+            _, lb2 = self.tokenizer.advance()
             self.compileStatements()
-            self.printToken()
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-        if self.tokenizer.tokenType == JackTokenizer.KEYWORD and self.tokenizer.keyWord() == "else":
-            self.vmWriter.writeGoto(endLabel)
-            self.vmWriter.writeLabel(falseLabel)
-            self.printToken()
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance()
-                self.printToken()
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance()
-                self.compileStatements()
-            self.printToken()
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance()
-            self.vmWriter.writeLabel(endLabel)
-        else:
-            self.vmWriter.writeLabel(falseLabel)
-        self.indentLevel -= 1
-        self.writeFormatted("</ifStatement>")
+            _, rb2 = self.tokenizer.advance()
+            self.writer.write_label(label_end)
 
     def compileExpression(self):
-        functionSymbols = [ '*', '/']
-        functionNames = ["Math.multiply", "Math.divide"]
-        builtInCommands = ["add", "sub", "and", "or", "lt", "gt", "eq"]
-        builtInSymbols = ['+', '-', '&amp;', '|', '&lt;', '&gt;', '=']
-        self.writeFormatted("<expression>")
-        self.indentLevel += 1
         self.compileTerm()
-        while(self.tokenizer.tokenType == JackTokenizer.SYMBOL and 
-                (self.tokenizer.symbol() in builtInSymbols or self.tokenizer.symbol() in functionSymbols)):
-            self.printToken()
-            operator = self.tokenizer.symbol() 
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance()
-                self.compileTerm()
 
-            if operator in builtInSymbols:
-                self.vmWriter.writeArithmetic(builtInCommands[builtInSymbols.index(operator)])
+        op_map = {
+            '+': 'add',
+            '-': 'sub',
+            '*': 'Math.multiply',
+            '/': 'Math.divide',
+            '&': 'and',
+            '|': 'or',
+            '<': 'lt',
+            '>': 'gt',
+            '=': 'eq'
+        }
+
+        nxt = self.tokenizer.peek()
+        while nxt and nxt[1] in op_map:
+            _, op = self.tokenizer.advance()
+            self.compileTerm()
+            if op == '*':
+                self.writer.write_call("Math.multiply", 2)
+            elif op == '/':
+                self.writer.write_call("Math.divide", 2)
             else:
-                self.vmWriter.writeCall(functionNames[functionSymbols.index(operator)], 2)
-
-            
-        self.indentLevel -= 1
-        self.writeFormatted("</expression>")
+                self.writer.write_arithmetic(op_map[op])
+            nxt = self.tokenizer.peek()
 
     def compileTerm(self):
-        unaryOps = ['-', '~']
-        unaryCommands = ["neg", "not"]
-        self.writeFormatted("<term>")
-        self.indentLevel += 1
-        self.printToken()
-        if self.tokenizer.tokenType == JackTokenizer.IDENTIFIER:
-            name = self.tokenizer.identifier()
+        token = self.tokenizer.peek()
+        if not token:
+            raise SyntaxError("Unexpected end")
+
+        ttype, tval = token
+
+        if ttype == 'integerConstant':
             self.tokenizer.advance()
-            if self.tokenizer.tokenType == JackTokenizer.SYMBOL:
-                if self.tokenizer.symbol() == ".":
-                    if self.symbolTable.isDefined(name):
-                        self.writeVarInfo(name, True)
-                    else:
-                        self.writeClassOrSubInfo("class", True)
+            self.writer.write_push("constant", tval)
 
-                    self.printToken()
-                    self.tokenizer.advance()
-                    self.printToken()
-                    subName = self.tokenizer.identifier()
+        elif ttype == 'stringConstant':
+            self.tokenizer.advance()
+            self.writer.write_push("constant", len(tval))
+            self.writer.write_call("String.new", 1)
+            for ch in tval:
+                self.writer.write_push("constant", ord(ch))
+                self.writer.write_call("String.appendChar", 2)
 
-                    self.tokenizer.advance() 
-                    self.printToken()
+        elif ttype == 'keyword':
+            self.tokenizer.advance()
+            if tval == 'true':
+                self.writer.write_push("constant", 0)
+                self.writer.write_arithmetic("not")
+            elif tval in ('false', 'null'):
+                self.writer.write_push("constant", 0)
+            elif tval == 'this':
+                self.writer.write_push("pointer", 0)
 
-                    if self.symbolTable.isDefined(name):
-                        self.vmWriter.writePush(self.symbolTable.kindOf(name), self.symbolTable.indexOf(name))
-
-                    self.numExpressions = 0
-                    self.tokenizer.advance()
-                    self.compileExpressionList()
-                    self.printToken()
-                    
-                    if self.symbolTable.isDefined(name):
-                        self.vmWriter.writeCall(self.symbolTable.typeOf(name) + "." + subName, self.numExpressions + 1)
-                    else:
-                        self.vmWriter.writeCall(name + "." + subName, self.numExpressions)
-
-                    self.tokenizer.advance()
-                elif self.tokenizer.symbol() == "(":
-                    self.printToken()
-                    self.writeClassOrSubInfo("subroutine", True)
-                    if self.tokenizer.hasMoreTokens():
-                        self.tokenizer.advance()
-
-                        self.vmWriter.writePush("pointer", VMWriter.THIS_POINTER)
-                        self.compileExpressionList()
-                        self.numExpressions += 1
-
-                        self.printToken()
-                        self.vmWriter.writeCall(self.className +  "." + name, self.numExpressions)
-                        if self.tokenizer.hasMoreTokens():
-                            self.tokenizer.advance()
-                elif self.tokenizer.symbol() == "[":
-                    self.writeVarInfo(name, True)
-                    self.printToken()
-
-                    self.vmWriter.writePush(self.symbolTable.kindOf(name), self.symbolTable.indexOf(name))
-                    if self.tokenizer.hasMoreTokens():
-                        self.tokenizer.advance()
-                        self.compileExpression()
-                        self.printToken()
-
-                        self.vmWriter.writeArithmetic("add")
-                        self.vmWriter.writePop("pointer", VMWriter.THAT_POINTER)
-                        self.vmWriter.writePush("that", 0)
-                        if self.tokenizer.hasMoreTokens():
-                            self.tokenizer.advance()
-                else:
-                    self.vmWriter.writePush(self.symbolTable.kindOf(name), self.symbolTable.indexOf(name))
-                    self.writeVarInfo(name, True)
-        elif self.tokenizer.tokenType == JackTokenizer.SYMBOL and self.tokenizer.symbol() == "(":
+        elif ttype == 'symbol' and tval == '(':
             self.tokenizer.advance()
             self.compileExpression()
-            self.printToken()
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance()
-        elif self.tokenizer.tokenType == JackTokenizer.SYMBOL and self.tokenizer.symbol() in unaryOps:
-            op = self.tokenizer.symbol()
+            self.tokenizer.advance()
+
+        elif ttype == 'symbol' and tval in ('-', '~'):
+            op = tval
             self.tokenizer.advance()
             self.compileTerm()
-            self.vmWriter.writeArithmetic(unaryCommands[unaryOps.index(op)])
-        elif self.tokenizer.tokenType == JackTokenizer.INT_CONST:
-            self.vmWriter.writePush("constant", self.tokenizer.intVal())
-            if self.tokenizer.hasMoreTokens():
+            self.writer.write_arithmetic("neg" if op == '-' else "not")
+
+        elif ttype == 'identifier':
+            name = tval
+            self.tokenizer.advance()
+            nxt = self.tokenizer.peek()
+
+            if nxt and nxt[1] == '[':
                 self.tokenizer.advance()
-        elif self.tokenizer.currentToken in CompilationEngine.keywordConsts:
-            if self.tokenizer.keyWord() == "null" or self.tokenizer.keyWord() == "false":
-                self.vmWriter.writePush("constant", 0)
-            elif self.tokenizer.keyWord() == "true":
-                self.vmWriter.writePush("constant", 1)
-                self.vmWriter.writeArithmetic("neg")
-            elif self.tokenizer.keyWord() == "this":
-                self.vmWriter.writePush("pointer", VMWriter.THIS_POINTER) 
+                kind = self.symbols.kind_of(name)
+                index = self.symbols.index_of(name)
+                seg = {"static": "static", "field": "this", "arg": "argument", "var": "local"}[kind]
+                self.writer.write_push(seg, index)
+                self.compileExpression()
+                self.tokenizer.advance()
+                self.writer.write_arithmetic("add")
+                self.writer.write_pop("pointer", 1)
+                self.writer.write_push("that", 0)
+
+            elif nxt and nxt[1] in ('(', '.'):
+                self.compileSubroutineCall(name)
+
             else:
-                raise Exception("Invalid keyword constant " + self.tokenizer.keyWord())
-
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance()
-        elif self.tokenizer.tokenType == JackTokenizer.STRING_CONST:
-            self.vmWriter.writePush("constant", len(self.tokenizer.stringVal()))
-            self.vmWriter.writeCall("String.new", 1)
-            for char in self.tokenizer.stringVal():
-                self.vmWriter.writePush("constant", ord(char))
-                self.vmWriter.writeCall("String.appendChar", 2)
-
-            if self.tokenizer.hasMoreTokens():
-               self.tokenizer.advance() 
-        else:
-            raise Exception("Invalid term provided")
-        self.indentLevel -= 1
-        self.writeFormatted("</term>")
+                kind = self.symbols.kind_of(name)
+                index = self.symbols.index_of(name)
+                seg = {"static": "static", "field": "this", "arg": "argument", "var": "local"}[kind]
+                self.writer.write_push(seg, index)
 
     def compileExpressionList(self):
-        self.writeFormatted("<expressionList>")
-        self.indentLevel += 1
-        self.numExpressions = 0
-        while not(self.tokenizer.tokenType == JackTokenizer.SYMBOL and self.tokenizer.symbol() == ")"):
-           self.compileExpression() 
-           self.numExpressions += 1
-           if self.tokenizer.tokenType == JackTokenizer.SYMBOL and self.tokenizer.symbol() == ",":
-               self.printToken()
-               if self.tokenizer.hasMoreTokens():
-                   self.tokenizer.advance()
-        self.indentLevel -= 1
-        self.writeFormatted("</expressionList>")
-
-    def compileSubroutineCall(self):
-        self.printToken()
-        firstToken = self.tokenizer.currentToken
-        secondToken = ""
-        isClassOrObj = False
-
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-            self.printToken()
-
-        if self.tokenizer.tokenType == JackTokenizer.SYMBOL and self.tokenizer.symbol() == ".":
-            isClassOrObj = True
-
-            if self.tokenizer.hasMoreTokens():
-                self.tokenizer.advance() 
-                self.printToken()
-                secondToken = self.tokenizer.currentToken
-
-            if self.tokenizer.hasMoreTokens():
+        count = 0
+        nxt = self.tokenizer.peek()
+        if nxt and nxt[1] != ')':
+            self.compileExpression()
+            count += 1
+            nxt = self.tokenizer.peek()
+            while nxt and nxt[1] == ',':
                 self.tokenizer.advance()
-                self.printToken()
+                self.compileExpression()
+                count += 1
+                nxt = self.tokenizer.peek()
+        return count
 
-        if self.tokenizer.hasMoreTokens():
+    def compileSubroutineCall(self, name=None):
+        if name is None:
+            _, name = self.tokenizer.advance()
+
+        n_args = 0
+        nxt = self.tokenizer.peek()
+
+        if nxt and nxt[1] == '.':
             self.tokenizer.advance()
+            _, sub_name = self.tokenizer.advance()
 
-            if secondToken != "" and self.symbolTable.isDefined(firstToken):
-                self.vmWriter.writePush(self.symbolTable.kindOf(firstToken), self.symbolTable.indexOf(firstToken))
-            
-            if secondToken == "":
-                self.vmWriter.writePush("pointer", VMWriter.THIS_POINTER)
-
-            self.compileExpressionList()
-
-            self.printToken()
-
-        if self.tokenizer.hasMoreTokens():
-            self.tokenizer.advance()
-
-        if secondToken != "":
-            if self.symbolTable.isDefined(firstToken):
-                callName = self.symbolTable.typeOf(firstToken) + "." + secondToken
-                self.numExpressions += 1
+            kind = self.symbols.kind_of(name)
+            if kind:
+                type_name = self.symbols.type_of(name)
+                index = self.symbols.index_of(name)
+                seg = {"static": "static", "field": "this", "arg": "argument", "var": "local"}[kind]
+                self.writer.write_push(seg, index)
+                n_args = 1
+                call_name = f"{type_name}.{sub_name}"
             else:
-                callName = firstToken + "." + secondToken
-        
+                call_name = f"{name}.{sub_name}"
+
+            self.tokenizer.advance()
+
         else:
-            self.numExpressions += 1
-            callName = self.className + "." + firstToken
+            call_name = f"{self.class_name}.{name}"
+            self.writer.write_push("pointer", 0)
+            n_args = 1
+            self.tokenizer.advance()
 
-        self.vmWriter.writeCall(callName, self.numExpressions) 
-
-        if isClassOrObj and self.symbolTable.isDefined(firstToken):
-            self.writeVarInfo(firstToken, True)
-        elif isClassOrObj:
-            self.writeClassOrSubInfo("class", True)
-        self.writeClassOrSubInfo("subroutine", True)
-
-    def printToken(self):
-        if self.tokenizer.tokenType == JackTokenizer.KEYWORD:
-           self.writeFormatted("<keyword>" + self.tokenizer.keyWord() + "</keyword>")
-        elif self.tokenizer.tokenType == JackTokenizer.SYMBOL:
-            self.writeFormatted("<symbol>" + self.tokenizer.symbol() + "</symbol>")
-        elif self.tokenizer.tokenType == JackTokenizer.IDENTIFIER:
-            self.writeFormatted("<identifier>" + self.tokenizer.identifier() + "</identifier>")
-        elif self.tokenizer.tokenType == JackTokenizer.INT_CONST:
-            self.writeFormatted("<integerConstant>" + self.tokenizer.intVal() + "</integerConstant>")
-        elif self.tokenizer.tokenType == JackTokenizer.STRING_CONST:
-            self.writeFormatted("<stringConstant>" + self.tokenizer.stringVal() + "</stringConstant>")
-
-    def writeFormatted(self, string):
-        self.outputFile.write("  " * self.indentLevel + string + "\n")
-    
-    def writeVarInfo(self, varName, inUse):
-        self.writeFormatted("<IdentifierInfo>")
-        self.indentLevel += 1
-        self.writeFormatted("<type>" + self.symbolTable.typeOf(varName) + "</type>")
-        self.writeFormatted("<kind>" + self.symbolTable.stringKindOf(varName) + "</kind>")
-        self.writeFormatted("<index>" + str(self.symbolTable.indexOf(varName)) + "</index>")
-        self.writeFormatted("<inUse>" + str(inUse) + "</inUse>")
-        self.indentLevel -= 1
-        self.writeFormatted("</IdentifierInfo>")
-
-    def writeClassOrSubInfo(self, kind, inUse):
-       self.writeFormatted("<IdentifierInfo>")
-       self.indentLevel += 1
-       self.writeFormatted("<kind>" + kind + "</kind>")
-       self.writeFormatted("<inUse>" + str(inUse) + "</inUse>")
-       self.indentLevel -= 1
-       self.writeFormatted("</IdentifierInfo>")
+        num_exprs = self.compileExpressionList()
+        self.tokenizer.advance()
+        self.writer.write_call(call_name, n_args + num_exprs)

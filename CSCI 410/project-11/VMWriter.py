@@ -1,33 +1,30 @@
 class VMWriter:
-    THIS_POINTER = 0
-    THAT_POINTER = 1
+    def __init__(self, output_stream):
+        self.out = output_stream
 
-    def __init__(self, outputFile):
-        self.outputFile = outputFile
+    def write_push(self, segment, index):
+        self.out.write(f"push {segment} {index}\n")
 
-    def writePush(self, segment, index):
-        self.outputFile.write("push " + segment + " " + str(index) + "\n")
+    def write_pop(self, segment, index):
+        self.out.write(f"pop {segment} {index}\n")
 
-    def writePop(self, segment, index):
-        self.outputFile.write("pop " + segment + " " + str(index) + "\n")
+    def write_arithmetic(self, command):
+        self.out.write(f"{command}\n")
 
-    def writeArithmetic(self, command):
-        self.outputFile.write(command + "\n")
+    def write_label(self, label):
+        self.out.write(f"label {label}\n")
 
-    def writeLabel(self, label):
-        self.outputFile.write("label " + label + "\n")
+    def write_goto(self, label):
+        self.out.write(f"goto {label}\n")
 
-    def writeGoto(self, label):
-        self.outputFile.write("goto " + label + "\n")
+    def write_if(self, label):
+        self.out.write(f"if-goto {label}\n")
 
-    def writeIf(self, label):
-        self.outputFile.write("if-goto " + label + "\n")
+    def write_call(self, name, n_args):
+        self.out.write(f"call {name} {n_args}\n")
 
-    def writeCall(self, name, nArgs):
-        self.outputFile.write("call " + name + " " + str(nArgs) + "\n")
+    def write_function(self, name, n_locals):
+        self.out.write(f"function {name} {n_locals}\n")
 
-    def writeFunction(self, name, nLocals):
-        self.outputFile.write("\nfunction " + name + " " + str(nLocals) + "\n")
-
-    def writeReturn(self):
-        self.outputFile.write("return\n")
+    def write_return(self):
+        self.out.write("return\n")

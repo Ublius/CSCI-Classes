@@ -1,0 +1,30 @@
+DECLARE in scope=0 name=main  type=int// line=1 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=9
+DECLARE in scope=2 name=x  const=False line=4 type=int col=9
+DECLARE in scope=2 name=j  const=False line=5 type=float col=11
+DECLARE in scope=2 name=k  const=False line=5 type=float col=15
+USED identifier k marked as used.
+DECLARE in scope=2 name=m  const=True line=6 type=string col=12
+DECLARE in scope=2 name=mlen  const=False line=7 type=int col=9
+USED identifier x marked as used.
+USED identifier k (re)marked as used.
+DECLARE in scope=3 name=j  const=False line=9 type=float col=15
+OUTPUT :DOMAIN: 9 19 :float:
+DECLARE in scope=3 name=q  const=False line=10 type=int col=13
+USED identifier j marked as used.
+DECLARE in scope=4 name=oops  const=True line=12 type=string col=20
+DECLARE in scope=4 name=b  const=False line=13 type=bool col=18
+USED identifier m marked as used.
+USED identifier mlen marked as used.
+OUTPUT :WARN: 13 18 :UNUSED:
+REASON b was declared but unused.
+OUTPUT :WARN: 12 20 :UNUSED:
+REASON oops was declared but unused.
+USED identifier x (re)marked as used.
+USED identifier x (re)marked as used.
+OUTPUT :WARN: 10 13 :UNUSED:
+REASON q was declared but unused.
+OUTPUT :WARN: 5 11 :UNUSED:
+REASON j was declared but unused.
+OUTPUT :WARN: 1 5 :UNUSED:
+REASON main was declared but unused.

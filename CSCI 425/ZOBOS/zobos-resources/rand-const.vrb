@@ -1,0 +1,14 @@
+DECLARE in scope=0 name=x  const=True line=1 type=int col=11
+DECLARE in scope=0 name=y  const=True line=2 type=float col=13
+DECLARE in scope=0 name=z  const=False line=3 type=float col=7
+OUTPUT :WARN: 5 6 :CONST:
+REASON const int x is declared const at 1 11
+USED identifier y marked as used.
+OUTPUT :WARN: 6 6 :CONST:
+REASON const float y is declared const at 2 13
+USED identifier z marked as used.
+USED identifier y (re)marked as used.
+OUTPUT :DOMAIN: 9 5 :float:
+USED identifier x marked as used.
+USED identifier z (re)marked as used.
+USED identifier y (re)marked as used.

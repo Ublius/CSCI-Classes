@@ -1,0 +1,27 @@
+DECLARE in scope=0 name=epsilon  const=True line=1 type=float col=13
+DECLARE in scope=0 name=babylon  type=float// line=3 valued=True const=True col=7
+DECLARE in scope=1 name=guess  returns=True used=True type=float line=4 col=9
+DECLARE in scope=2 name=x  const=False line=6 type=float col=11
+USED identifier guess (re)marked as used.
+DECLARE in scope=2 name=done  const=True line=7 type=string col=12
+DECLARE in scope=2 name=gogogo  const=False line=9 type=bool col=10
+OUTPUT :ERROR: 9 17 :CONV: 
+REASON cannot store expression value of type int into identifier of type bool
+DECLARE in scope=3 name=abs  const=False line=11 type=float col=15
+USED identifier x marked as used.
+USED identifier guess (re)marked as used.
+USED identifier guess (re)marked as used.
+USED identifier abs marked as used.
+USED identifier abs (re)marked as used.
+USED identifier abs (re)marked as used.
+USED identifier epsilon marked as used.
+USED identifier guess (re)marked as used.
+USED identifier x (re)marked as used.
+USED identifier guess (re)marked as used.
+USED identifier gogogo marked as used.
+USED identifier gogogo (re)marked as used.
+OUTPUT :ERROR: 21 21 :EXPR:
+REASON binary BOOLS cannot be used on string or bool values
+USED identifier done marked as used.
+OUTPUT :WARN: 3 7 :UNUSED:
+REASON babylon was declared but unused.

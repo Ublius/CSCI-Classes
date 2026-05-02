@@ -1,0 +1,2 @@
+DECLARE in scope=0 name=word  const=True line=1 type=string col=8
+USED identifier word marked as used.

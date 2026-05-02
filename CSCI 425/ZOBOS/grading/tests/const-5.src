@@ -1,0 +1,14 @@
+# eol comment
+string yarn = "many threads";  #eol comment
+int silly /* inline */ ()
+returns r = 1
+{
+    string thread = "# many fibers";
+
+    thread = domain( "lite weight /*not inline*/ process" );
+    yarn   = "browser";
+
+/**/emit thread, 0, 1;
+    emit yarn,   0, 1;
+    r=silly();
+}

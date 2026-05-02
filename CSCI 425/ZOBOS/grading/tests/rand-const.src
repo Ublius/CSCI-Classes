@@ -1,0 +1,10 @@
+const int x = -42;
+const float y = 420.23;
+float z;
+
+rand x, -100, int(100*y);
+rand y;
+rand z;
+
+if( domain( -z*y ) < x ) emit (-z*y);
+

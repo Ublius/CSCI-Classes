@@ -1,0 +1,14 @@
+DECLARE in scope=0 name=b_function  line=1 valued=True type=float// col=7
+DECLARE in scope=0 name=a_function  type=int// line=3 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=4 col=9
+USED identifier r (re)marked as used.
+OUTPUT :WARN: 6 5 :CONST:
+REASON const int// a_function is declared const at 3 5
+OUTPUT :ERROR: 6 16 :CONV: 
+REASON cannot store expression value of type int into identifier of type int//
+DECLARE in scope=2 name=x  const=False line=7 type=float col=11
+USED identifier b_function marked as used.
+OUTPUT :ERROR: 7 15 :EXPR:
+REASON b_function from 1 7 is a function, can't be used as value identifier.
+USED identifier a_function marked as used.
+USED identifier x marked as used.

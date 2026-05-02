@@ -1,0 +1,10 @@
+DECLARE in scope=0 name=lessthan  const=True line=1 type=string col=8
+DECLARE in scope=0 name=gte  const=True line=2 type=string col=8
+DECLARE in scope=0 name=x  const=False line=3 type=float col=7
+DECLARE in scope=0 name=X  const=True line=4 type=int col=11
+USED identifier x marked as used.
+USED identifier X marked as used.
+USED identifier lessthan marked as used.
+USED identifier x (re)marked as used.
+USED identifier X (re)marked as used.
+USED identifier gte marked as used.

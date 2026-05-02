@@ -1,0 +1,4 @@
+DECLARE in scope=1 name=l  const=True line=2 type=string col=12
+USED identifier l marked as used.
+DECLARE in scope=1 name=k  const=True line=5 type=string col=12
+USED identifier k marked as used.

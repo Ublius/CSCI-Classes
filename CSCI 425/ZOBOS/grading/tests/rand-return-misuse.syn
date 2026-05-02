@@ -1,0 +1,6 @@
+float random_0_100() 
+returns r = rand 
+{
+    r = r*100;
+}
+

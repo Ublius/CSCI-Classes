@@ -1,0 +1,12 @@
+DECLARE in scope=0 name=ohio  type=int//int/int line=1 valued=True const=True col=5
+DECLARE in scope=1 name=a  const=True line=1 valued=True type=int col=15
+DECLARE in scope=1 name=b  const=True line=1 valued=True type=int col=22
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=9
+USED identifier a marked as used.
+USED identifier r (re)marked as used.
+DECLARE in scope=3 name=b  const=False line=5 type=int col=13
+USED identifier r (re)marked as used.
+USED identifier b marked as used.
+USED identifier ohio marked as used.
+OUTPUT :WARN: 1 22 :UNUSED:
+REASON b was declared but unused.

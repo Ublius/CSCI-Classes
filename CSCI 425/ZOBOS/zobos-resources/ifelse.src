@@ -1,0 +1,7 @@
+if( 1 < 2 ) {
+    string l = "less";
+    if( 2 < 3 ) emit l, 0, 4;
+} else {
+    string k = "other";
+    emit k, 0, 5;
+}

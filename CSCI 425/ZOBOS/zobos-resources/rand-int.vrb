@@ -1,0 +1,5 @@
+DECLARE in scope=0 name=x  const=False line=1 type=int col=5
+DECLARE in scope=0 name=z  const=False line=1 type=int col=8
+USED identifier x marked as used.
+USED identifier x (re)marked as used.
+USED identifier z marked as used.

@@ -1,0 +1,11 @@
+float random_0_100() 
+returns r = 100
+{
+    float x;
+    rand x;
+    r = r*x;
+}
+
+double x;
+emit ((rand x)*0.5);
+

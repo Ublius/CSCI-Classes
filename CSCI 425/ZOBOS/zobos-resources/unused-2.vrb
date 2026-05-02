@@ -1,0 +1,22 @@
+DECLARE in scope=0 name=a  const=True line=1 type=string col=8
+DECLARE in scope=0 name=b  const=True line=1 type=string col=11
+DECLARE in scope=0 name=c  const=True line=1 type=string col=14
+DECLARE in scope=0 name=d  const=True line=1 type=string col=25
+DECLARE in scope=0 name=x  const=True line=2 type=string col=8
+DECLARE in scope=0 name=y  const=True line=2 type=string col=12
+DECLARE in scope=0 name=z  const=True line=2 type=string col=16
+USED identifier z marked as used.
+USED identifier y marked as used.
+DECLARE in scope=0 name=g  const=True line=2 type=string col=27
+OUTPUT :WARN: 1 8 :UNUSED:
+REASON a was declared but unused.
+OUTPUT :WARN: 1 14 :UNUSED:
+REASON c was declared but unused.
+OUTPUT :WARN: 1 11 :UNUSED:
+REASON b was declared but unused.
+OUTPUT :WARN: 1 25 :UNUSED:
+REASON d was declared but unused.
+OUTPUT :WARN: 2 27 :UNUSED:
+REASON g was declared but unused.
+OUTPUT :WARN: 2 8 :UNUSED:
+REASON x was declared but unused.

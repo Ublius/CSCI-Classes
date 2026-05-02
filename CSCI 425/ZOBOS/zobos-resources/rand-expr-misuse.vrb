@@ -1,0 +1,2 @@
+OUTPUT :SYNTAX: 9 8 :SYNTAX:
+Parsing error in state 6; input: id; expected=assign

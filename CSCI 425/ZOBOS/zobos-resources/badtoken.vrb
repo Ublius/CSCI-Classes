@@ -1,0 +1,2 @@
+OUTPUT :SYNTAX: 1 1 :SYNTAX:
+Parsing error in state 0; input: stringval; expected=bool|const|do|emit|float|id|if|int|rand|string|while

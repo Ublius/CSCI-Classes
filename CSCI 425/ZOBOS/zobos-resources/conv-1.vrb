@@ -1,0 +1,23 @@
+DECLARE in scope=0 name=silly  type=bool// line=1 valued=True const=True col=6
+DECLARE in scope=1 name=r  returns=True used=True type=bool line=2 col=9
+OUTPUT :ERROR: 2 11 :CONV: 
+REASON cannot store expression value of type int into identifier of type bool
+DECLARE in scope=2 name=x  const=False line=4 type=int col=9
+OUTPUT :ERROR: 4 11 :CONV: 
+REASON cannot store expression value of type string into identifier of type int
+DECLARE in scope=2 name=f  const=False line=5 type=float col=11
+DECLARE in scope=2 name=b  const=False line=6 type=bool col=10
+USED identifier f marked as used.
+OUTPUT :ERROR: 7 7 :CONV: 
+REASON cannot store expression value of type float into identifier of type bool
+USED identifier b marked as used.
+USED identifier x marked as used.
+OUTPUT :ERROR: 9 7 :CONV: 
+REASON cannot store expression value of type int into identifier of type bool
+OUTPUT :ERROR: 10 9 :NOIDENT: 
+REASON identifier 's' is unknown
+USED identifier f (re)marked as used.
+OUTPUT :ERROR: 11 7 :CONV: 
+REASON cannot store expression value of type float into identifier of type int
+USED identifier b (re)marked as used.
+USED identifier silly marked as used.

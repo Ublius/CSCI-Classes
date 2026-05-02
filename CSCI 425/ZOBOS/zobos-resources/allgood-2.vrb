@@ -1,0 +1,7 @@
+DECLARE in scope=0 name=f  type=int//int line=1 valued=True const=True col=5
+DECLARE in scope=1 name=c  const=True line=1 valued=True type=int col=11
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=9
+USED identifier c marked as used.
+USED identifier f marked as used.
+USED identifier c (re)marked as used.
+OUTPUT :DOMAIN: 5 16 :int:

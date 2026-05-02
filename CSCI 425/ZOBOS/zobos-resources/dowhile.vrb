@@ -1,0 +1,7 @@
+DECLARE in scope=0 name=i  const=False line=1 type=int col=5
+DECLARE in scope=0 name=dig  const=True line=2 type=string col=8
+USED identifier dig marked as used.
+USED identifier i marked as used.
+USED identifier i (re)marked as used.
+USED identifier i (re)marked as used.
+USED identifier i (re)marked as used.

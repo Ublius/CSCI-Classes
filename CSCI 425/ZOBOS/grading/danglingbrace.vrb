@@ -1,0 +1,2 @@
+OUTPUT :SYNTAX: 11 1 :SYNTAX:
+Parsing error in state 190; input: rbrace; expected=bool|const|do|emit|float|id|if|int|rand|string|while

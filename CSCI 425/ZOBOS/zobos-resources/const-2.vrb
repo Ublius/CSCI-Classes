@@ -1,0 +1,13 @@
+DECLARE in scope=0 name=g  const=True line=1 type=string col=8
+DECLARE in scope=0 name=silly  type=int// line=2 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=3 col=9
+DECLARE in scope=2 name=h  const=True line=5 type=string col=12
+OUTPUT :WARN: 7 9 :CONST:
+REASON const string h is declared const at 5 12
+USED identifier g marked as used.
+OUTPUT :WARN: 9 9 :CONST:
+REASON const string h is declared const at 5 12
+USED identifier h marked as used.
+OUTPUT :WARN: 9 5 :CONST:
+REASON const string g is declared const at 1 8
+USED identifier silly marked as used.

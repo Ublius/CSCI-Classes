@@ -1,0 +1,14 @@
+string x = "deterministic strings";
+string y = "... are implicit in their const-ness";
+string z = "opting out";
+
+bool b, g;
+rand b;
+if( int(b) == 1 ) {
+    emit x, 0, 21;
+} else {
+    emit z, 0, 10;
+}
+
+rand g;
+if( b == g ) emit y, 0, 36;

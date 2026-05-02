@@ -1,0 +1,7 @@
+DECLARE in scope=0 name=foobar  line=2 valued=True type=int// col=5
+OUTPUT :WARN: 3 5 :REIDENT:
+REASON foobar previously declared at 2 5
+OUTPUT :WARN: 4 5 :REIDENT:
+REASON foobar previously declared at 2 5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=6 col=22
+USED identifier foobar marked as used.

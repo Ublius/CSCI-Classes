@@ -1,0 +1,10 @@
+DECLARE in scope=0 name=pacific  type=float//float line=1 valued=True const=True col=7
+DECLARE in scope=1 name=salmon  const=True line=1 valued=True type=float col=22
+OUTPUT :WARN: 2 9 :REIDENT:
+REASON salmon previously declared at 1 22
+OUTPUT :WARN: 2 9 :CONST:
+REASON const float salmon is declared const at 1 22
+USED identifier pacific marked as used.
+USED identifier salmon marked as used.
+OUTPUT :WARN: 4 5 :CONST:
+REASON const float salmon is declared const at 1 22

@@ -1,0 +1,30 @@
+DECLARE in scope=0 name=H  type=int//bool/int/float line=1 valued=True const=True col=5
+DECLARE in scope=1 name=b  const=True line=1 valued=True type=bool col=13
+DECLARE in scope=1 name=i  const=True line=1 valued=True type=int col=20
+DECLARE in scope=1 name=f  const=True line=1 valued=True type=float col=29
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=9
+DECLARE in scope=2 name=noway  const=True line=4 type=string col=12
+USED identifier H marked as used.
+USED identifier i marked as used.
+OUTPUT :ERROR: 5 9 :FNCONV: 
+REASON cannot store expression value of type int into parameter of type bool
+USED identifier i (re)marked as used.
+USED identifier b marked as used.
+OUTPUT :ERROR: 5 9 :FNCONV: 
+REASON cannot store expression value of type bool into parameter of type float
+USED identifier H (re)marked as used.
+USED identifier noway marked as used.
+OUTPUT :ERROR: 6 9 :FNCONV: 
+REASON cannot store expression value of type string into parameter of type bool
+USED identifier i (re)marked as used.
+USED identifier f marked as used.
+USED identifier H (re)marked as used.
+USED identifier f (re)marked as used.
+OUTPUT :ERROR: 7 9 :FNCONV: 
+REASON cannot store expression value of type float into parameter of type bool
+USED identifier f (re)marked as used.
+OUTPUT :ERROR: 7 9 :FNCONV: 
+REASON cannot store expression value of type float into parameter of type int
+USED identifier b (re)marked as used.
+OUTPUT :ERROR: 7 9 :FNCONV: 
+REASON cannot store expression value of type bool into parameter of type float

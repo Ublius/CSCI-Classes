@@ -1,0 +1,11 @@
+DECLARE in scope=0 name=gman  type=int// line=1 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=9
+DECLARE in scope=2 name=x  const=False line=4 type=int col=9
+OUTPUT :ERROR: 4 13 :NOIDENT: 
+REASON identifier 'a' is unknown
+OUTPUT :ERROR: 4 17 :NOIDENT: 
+REASON identifier 'b' is unknown
+DECLARE in scope=2 name=y  const=False line=5 type=int col=9
+USED identifier x marked as used.
+USED identifier y marked as used.
+USED identifier gman marked as used.

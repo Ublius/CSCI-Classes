@@ -1,0 +1,16 @@
+DECLARE in scope=0 name=x  const=False line=1 type=int col=5
+OUTPUT :DOMAIN: 1 9 :int:
+DECLARE in scope=0 name=y  const=False line=2 type=float col=7
+OUTPUT :DOMAIN: 2 11 :float:
+DECLARE in scope=0 name=z  const=False line=3 type=bool col=6
+OUTPUT :DOMAIN: 3 10 :bool:
+DECLARE in scope=0 name=s  const=True line=4 type=string col=8
+OUTPUT :DOMAIN: 4 12 :string:
+OUTPUT :WARN: 2 7 :UNUSED:
+REASON y was declared but unused.
+OUTPUT :WARN: 1 5 :UNUSED:
+REASON x was declared but unused.
+OUTPUT :WARN: 4 8 :UNUSED:
+REASON s was declared but unused.
+OUTPUT :WARN: 3 6 :UNUSED:
+REASON z was declared but unused.

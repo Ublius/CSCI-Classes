@@ -1,0 +1,13 @@
+DECLARE in scope=0 name=x  const=True line=1 type=string col=8
+DECLARE in scope=0 name=y  const=True line=2 type=string col=8
+DECLARE in scope=0 name=z  const=True line=3 type=string col=8
+DECLARE in scope=0 name=b  const=False line=5 type=bool col=6
+DECLARE in scope=0 name=g  const=False line=5 type=bool col=9
+USED identifier b marked as used.
+USED identifier x marked as used.
+USED identifier z marked as used.
+USED identifier b (re)marked as used.
+USED identifier g marked as used.
+OUTPUT :ERROR: 14 7 :EXPR:
+REASON binary BOOLS cannot be used on string or bool values
+USED identifier y marked as used.

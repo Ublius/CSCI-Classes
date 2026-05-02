@@ -1,0 +1,17 @@
+DECLARE in scope=0 name=conv_and_expr_errors  type=int// line=1 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=9
+DECLARE in scope=2 name=a  const=False line=4 type=int col=9
+DECLARE in scope=2 name=c  const=False line=4 type=int col=12
+DECLARE in scope=2 name=x  const=False line=4 type=int col=15
+DECLARE in scope=2 name=b  const=True line=5 type=int col=15
+OUTPUT :ERROR: 6 25 :EXPR:
+REASON binary PLUS and TIMES cannot be used on string or bool values
+USED identifier x marked as used.
+USED identifier c marked as used.
+OUTPUT :WARN: 6 9 :CONST:
+REASON const int b is declared const at 5 15
+USED identifier b marked as used.
+OUTPUT :WARN: 4 9 :UNUSED:
+REASON a was declared but unused.
+OUTPUT :WARN: 1 5 :UNUSED:
+REASON conv_and_expr_errors was declared but unused.

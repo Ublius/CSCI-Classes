@@ -1,0 +1,7 @@
+string lessthan = "less than";
+string gte      = "greater than or equal";
+float x;
+const int X = 50;
+rand x;
+if( 100*x <  X ) emit lessthan, 0, 9;
+if( 100*x >= X ) emit gte, 0, 21;

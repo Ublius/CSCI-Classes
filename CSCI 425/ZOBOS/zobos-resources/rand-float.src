@@ -1,0 +1,7 @@
+float boat( float f)
+returns r = 0
+{
+    rand r;
+    r = f*r;
+}
+emit ((boat(3.14)));

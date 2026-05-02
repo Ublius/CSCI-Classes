@@ -1,0 +1,14 @@
+DECLARE in scope=0 name=K  line=1 valued=True type=int//int col=5
+DECLARE in scope=0 name=L  type=int//int line=3 valued=True const=True col=5
+DECLARE in scope=1 name=g  const=True line=3 valued=True type=int col=12
+DECLARE in scope=1 name=r  returns=True used=True type=int line=4 col=9
+DECLARE in scope=2 name=L  const=False line=6 type=int col=9
+USED identifier g marked as used.
+USED identifier L marked as used.
+USED identifier K marked as used.
+OUTPUT :ERROR: 7 17 :EXPR:
+REASON K from 1 5 is a function, can't be used as value identifier.
+DECLARE in scope=1 name=b  const=True line=10 valued=True type=int col=12
+DECLARE in scope=1 name=r  returns=True used=True type=int line=11 col=9
+USED identifier L marked as used.
+USED identifier b marked as used.

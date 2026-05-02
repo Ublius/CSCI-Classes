@@ -1,0 +1,6 @@
+DECLARE in scope=0 name=boat  type=float//float line=1 valued=True const=True col=7
+DECLARE in scope=1 name=f  const=True line=1 valued=True type=float col=19
+DECLARE in scope=1 name=r  returns=True used=True type=float line=2 col=9
+USED identifier f marked as used.
+USED identifier r (re)marked as used.
+USED identifier boat marked as used.

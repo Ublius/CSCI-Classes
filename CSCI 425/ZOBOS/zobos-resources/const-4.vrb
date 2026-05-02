@@ -1,0 +1,9 @@
+DECLARE in scope=0 name=r  type=float//float line=1 valued=True const=True col=7
+DECLARE in scope=1 name=a  const=True line=1 valued=True type=float col=16
+DECLARE in scope=1 name=x  returns=True used=True type=float line=2 col=9
+USED identifier r marked as used.
+USED identifier a marked as used.
+OUTPUT :WARN: 4 5 :CONST:
+REASON const float a is declared const at 1 16
+OUTPUT :WARN: 7 7 :REIDENT:
+REASON r previously declared at 1 7

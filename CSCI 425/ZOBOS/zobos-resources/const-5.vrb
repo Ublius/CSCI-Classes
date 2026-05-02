@@ -1,0 +1,12 @@
+DECLARE in scope=0 name=yarn  const=True line=2 type=string col=8
+DECLARE in scope=0 name=silly  type=int// line=3 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=4 col=9
+DECLARE in scope=2 name=thread  const=True line=6 type=string col=12
+OUTPUT :DOMAIN: 8 14 :string:
+OUTPUT :WARN: 8 5 :CONST:
+REASON const string thread is declared const at 6 12
+OUTPUT :WARN: 9 5 :CONST:
+REASON const string yarn is declared const at 2 8
+USED identifier thread marked as used.
+USED identifier yarn marked as used.
+USED identifier silly marked as used.

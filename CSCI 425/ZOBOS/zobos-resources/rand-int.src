@@ -1,0 +1,4 @@
+int x, z;
+rand x, 0, 42;
+rand z, -42, x;
+emit (2*x + z);

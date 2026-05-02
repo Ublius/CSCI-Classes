@@ -1,0 +1,11 @@
+/* functions cannot be overloaded with different argument lists */
+int foobar();
+int foobar( int a );
+int foobar( float a, int a );
+
+int foobar() returns r = 0
+{
+    /* avoids UNUSED warning*/
+    r = foobar();
+}
+

@@ -1,0 +1,2 @@
+OUTPUT :SYNTAX: 2 13 :SYNTAX:
+Parsing error in state 140; input: rand; expected=bool|compl|domain|float|floatval|id|int|intval|lparen|minus|not|plus|stringval

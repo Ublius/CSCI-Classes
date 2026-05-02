@@ -1,0 +1,17 @@
+DECLARE in scope=0 name=foo  type=int//int/float line=1 valued=True const=True col=5
+DECLARE in scope=1 name=x  const=True line=1 valued=True type=int col=14
+DECLARE in scope=1 name=y  const=True line=1 valued=True type=float col=23
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=9
+USED identifier x marked as used.
+USED identifier y marked as used.
+USED identifier x (re)marked as used.
+OUTPUT :ERROR: 5 10 :CONV: 
+REASON incorrect argument type (int) for first emit argument (should be string).
+USED identifier y (re)marked as used.
+OUTPUT :ERROR: 6 10 :CONV: 
+REASON incorrect argument type (float) for first emit argument (should be string).
+USED identifier x (re)marked as used.
+DECLARE in scope=2 name=z  const=False line=8 type=int col=9
+USED identifier foo marked as used.
+USED identifier r (re)marked as used.
+USED identifier z marked as used.

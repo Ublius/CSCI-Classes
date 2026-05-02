@@ -1,0 +1,14 @@
+DECLARE in scope=0 name=x  line=1 valued=True type=int// col=5
+DECLARE in scope=0 name=V  type=int// line=2 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=17
+USED identifier x marked as used.
+DECLARE in scope=0 name=silly  type=int//int line=4 valued=True const=True col=5
+DECLARE in scope=1 name=a  const=True line=4 valued=True type=int col=15
+DECLARE in scope=1 name=r  returns=True used=True type=int line=5 col=9
+DECLARE in scope=2 name=x  const=False line=7 type=int col=9
+USED identifier a marked as used.
+USED identifier silly marked as used.
+USED identifier x marked as used.
+OUTPUT :ERROR: 8 17 :CALL:
+REASON identifier x is not a function at 8 17
+USED identifier V marked as used.

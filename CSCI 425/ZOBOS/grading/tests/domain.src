@@ -1,0 +1,4 @@
+int x = domain( 4 + 5 % 1 * 2 );
+float y = domain( 3.14 / 2.178 );
+bool z = domain( 3.14 / 2.178 > 2 );
+string s = domain( "imastring" );

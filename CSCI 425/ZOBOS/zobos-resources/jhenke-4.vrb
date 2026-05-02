@@ -1,0 +1,43 @@
+DECLARE in scope=0 name=intmaker  type=int//int/bool/float line=1 valued=True const=True col=5
+DECLARE in scope=1 name=x  const=True line=1 valued=True type=int col=19
+DECLARE in scope=1 name=y  const=True line=1 valued=True type=bool col=27
+DECLARE in scope=1 name=z  const=True line=1 valued=True type=float col=36
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=9
+USED identifier y marked as used.
+USED identifier z marked as used.
+USED identifier x marked as used.
+DECLARE in scope=0 name=floatmaker  type=float//int/bool/float line=10 valued=True const=True col=7
+DECLARE in scope=1 name=x  const=True line=10 valued=True type=int col=23
+DECLARE in scope=1 name=y  const=True line=10 valued=True type=bool col=31
+DECLARE in scope=1 name=z  const=True line=10 valued=True type=float col=40
+DECLARE in scope=1 name=r  returns=True used=True type=float line=11 col=9
+USED identifier intmaker marked as used.
+USED identifier x marked as used.
+USED identifier y marked as used.
+USED identifier z marked as used.
+OUTPUT :DOMAIN: 11 13 :float:
+DECLARE in scope=0 name=caller  type=int// line=15 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=16 col=9
+DECLARE in scope=2 name=a  const=False line=18 type=int col=9
+DECLARE in scope=2 name=b  const=False line=19 type=bool col=10
+DECLARE in scope=2 name=pi  const=False line=20 type=float col=11
+USED identifier intmaker (re)marked as used.
+USED identifier a marked as used.
+USED identifier pi marked as used.
+OUTPUT :ERROR: 21 9 :FNCONV: 
+REASON cannot store expression value of type float into parameter of type bool
+USED identifier b marked as used.
+OUTPUT :ERROR: 21 9 :FNCONV: 
+REASON cannot store expression value of type bool into parameter of type float
+USED identifier floatmaker marked as used.
+USED identifier a (re)marked as used.
+USED identifier pi (re)marked as used.
+OUTPUT :ERROR: 22 9 :FNCONV: 
+REASON cannot store expression value of type float into parameter of type bool
+USED identifier b (re)marked as used.
+OUTPUT :ERROR: 22 9 :FNCONV: 
+REASON cannot store expression value of type bool into parameter of type float
+OUTPUT :ERROR: 22 7 :FNCONV: 
+REASON cannot store return value of type float into identifier of type int
+OUTPUT :WARN: 15 5 :UNUSED:
+REASON caller was declared but unused.

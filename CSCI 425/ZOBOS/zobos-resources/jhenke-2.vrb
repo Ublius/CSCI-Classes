@@ -1,0 +1,42 @@
+DECLARE in scope=0 name=conv_and_expr_errors  type=int// line=1 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=2 col=9
+DECLARE in scope=2 name=a  const=False line=4 type=int col=9
+DECLARE in scope=2 name=b  const=False line=4 type=int col=12
+DECLARE in scope=2 name=c  const=False line=4 type=int col=15
+DECLARE in scope=2 name=x  const=False line=4 type=int col=18
+OUTPUT :ERROR: 5 25 :EXPR:
+REASON binary PLUS and TIMES cannot be used on string or bool values
+USED identifier x marked as used.
+USED identifier c marked as used.
+USED identifier b marked as used.
+OUTPUT :WARN: 4 9 :UNUSED:
+REASON a was declared but unused.
+DECLARE in scope=0 name=giveint  line=8 valued=True type=int// col=5
+DECLARE in scope=0 name=givefloat  line=9 valued=True type=float// col=7
+DECLARE in scope=0 name=wacko_assign  type=int// line=10 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=11 col=9
+DECLARE in scope=2 name=x  const=False line=13 type=int col=9
+DECLARE in scope=2 name=y  const=False line=14 type=bool col=10
+OUTPUT :ERROR: 15 19 :NOIDENT: 
+REASON identifier 'z' is unknown
+OUTPUT :ERROR: 15 17 :CONV: 
+REASON cannot store expression value of type int into identifier of type int//
+USED identifier giveint marked as used.
+OUTPUT :ERROR: 16 21 :NOIDENT: 
+REASON identifier 'z' is unknown
+OUTPUT :ERROR: 16 19 :CONV: 
+REASON cannot store expression value of type int into identifier of type float//
+USED identifier givefloat marked as used.
+OUTPUT :ERROR: 17 32 :NOIDENT: 
+REASON identifier 'z' is unknown
+OUTPUT :WARN: 17 9 :CONST:
+REASON const int// conv_and_expr_errors is declared const at 1 5
+OUTPUT :ERROR: 17 30 :CONV: 
+REASON cannot store expression value of type int into identifier of type int//
+USED identifier conv_and_expr_errors marked as used.
+OUTPUT :WARN: 14 10 :UNUSED:
+REASON y was declared but unused.
+OUTPUT :WARN: 13 9 :UNUSED:
+REASON x was declared but unused.
+OUTPUT :WARN: 10 5 :UNUSED:
+REASON wacko_assign was declared but unused.

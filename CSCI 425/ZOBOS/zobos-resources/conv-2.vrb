@@ -1,0 +1,9 @@
+DECLARE in scope=0 name=x  const=False line=1 type=int col=5
+DECLARE in scope=0 name=silly  type=float//int line=2 valued=True const=True col=7
+DECLARE in scope=1 name=p  const=True line=2 valued=True type=int col=17
+DECLARE in scope=1 name=r  returns=True used=True type=float line=3 col=9
+USED identifier silly marked as used.
+USED identifier p marked as used.
+USED identifier x marked as used.
+OUTPUT :ERROR: 5 7 :FNCONV: 
+REASON cannot store return value of type float into identifier of type int

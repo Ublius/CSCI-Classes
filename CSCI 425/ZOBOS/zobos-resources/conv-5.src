@@ -1,0 +1,11 @@
+int foo( int x, float y )
+returns r = int(x / y)
+{
+    /* can't use x or y like a string */
+    emit x, 0, 3;
+    emit y, 2, x;
+
+    int z = foo ( 1, 2 );
+    r = r*z;
+}
+

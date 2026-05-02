@@ -1,0 +1,8 @@
+DECLARE in scope=0 name=word  const=True line=1 type=string col=8
+DECLARE in scope=0 name=z  const=False line=2 type=float col=7
+OUTPUT :WARN: 4 6 :CONST:
+REASON const string word is declared const at 1 8
+OUTPUT :ERROR: 4 6 :CONV: 
+REASON cannot target identifier of type 'string' with 'rand id'
+USED identifier z marked as used.
+USED identifier word marked as used.

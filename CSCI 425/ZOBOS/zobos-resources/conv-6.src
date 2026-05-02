@@ -1,0 +1,13 @@
+string msg = "hello";
+int silly( )
+returns r = 0
+{
+    string one = "1";
+    string two = "2";
+    /* can't use one or two like integers */
+    emit msg, one, two;
+    /* can't use a string like a number */
+    emit ( domain(two) );
+    r = silly();
+}
+

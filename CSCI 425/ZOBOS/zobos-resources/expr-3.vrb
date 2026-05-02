@@ -1,0 +1,9 @@
+DECLARE in scope=0 name=miami  line=1 valued=True type=int//bool col=5
+DECLARE in scope=0 name=x  const=True line=2 type=float col=13
+USED identifier miami marked as used.
+OUTPUT :ERROR: 2 21 :EXPR:
+REASON miami from 1 5 is a function, can't be used as value identifier.
+DECLARE in scope=1 name=tampa  const=True line=4 valued=True type=bool col=17
+DECLARE in scope=1 name=r  returns=True used=True type=int line=5 col=9
+USED identifier tampa marked as used.
+USED identifier x marked as used.

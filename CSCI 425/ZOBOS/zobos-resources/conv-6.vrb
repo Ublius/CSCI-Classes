@@ -1,0 +1,17 @@
+DECLARE in scope=0 name=msg  const=True line=1 type=string col=8
+DECLARE in scope=0 name=silly  type=int// line=2 valued=True const=True col=5
+DECLARE in scope=1 name=r  returns=True used=True type=int line=3 col=9
+DECLARE in scope=2 name=one  const=True line=5 type=string col=12
+DECLARE in scope=2 name=two  const=True line=6 type=string col=12
+USED identifier msg marked as used.
+USED identifier one marked as used.
+OUTPUT :ERROR: 8 15 :CONV: 
+REASON incorrect argument type (string) for second emit argument (should be int).
+USED identifier two marked as used.
+OUTPUT :ERROR: 8 20 :CONV: 
+REASON incorrect argument type (string) for third emit argument (should be int).
+USED identifier two (re)marked as used.
+OUTPUT :DOMAIN: 10 12 :string:
+OUTPUT :ERROR: 10 12 :CONV: 
+REASON cannot emit type 'string' using this syntax
+USED identifier silly marked as used.

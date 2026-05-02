@@ -1,0 +1,8 @@
+string word = "random";
+float z;
+
+rand word;
+rand z;
+
+if( z < 0.5 ) emit word, 0, 6;
+

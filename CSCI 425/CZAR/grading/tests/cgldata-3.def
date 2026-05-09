@@ -1,0 +1,53 @@
+0 parent :MODULE
+0-0 parent :DECLLIST
+0-0-0 leaf :type :constx20int type:int line:1 const:T col:7
+0-0-1 parent :DECLID
+0-0-1-0 parent := binary:assign line:1 col:13 domain:int op:binary
+0-0-1-0-0 leaf :id :z line:1 col:11
+0-0-1-0-1 leaf :intval :98765432 line:1 gcount:1 col:15 domain:int
+0-1 parent :DECLLIST
+0-1-0 leaf :type :int type:int line:2 const:F col:1
+0-1-1 parent :DECLID
+0-1-1-0 parent := binary:assign line:2 col:7 domain:int op:binary
+0-1-1-0-0 leaf :id :x78 line:2 col:5
+0-1-1-0-1 leaf :intval :98765432 line:2 gcount:1 col:9 domain:int
+0-2 parent :DECLLIST
+0-2-0 leaf :type :int type:int line:3 const:F col:1
+0-2-1 parent :DECLID
+0-2-1-0 parent := binary:assign line:3 col:7 domain:int op:binary
+0-2-1-0-0 leaf :id :y line:3 col:5
+0-2-1-0-1 leaf :id :x78 line:3 gcount:1 col:9 domain:int
+0-3 parent := binary:assign line:4 col:3 domain:int op:binary
+0-3-0 leaf :id :x78 line:4 col:1
+0-3-1 leaf :intval :111 line:4 gcount:1 col:5 domain:int
+0-4 leaf :sc :; line:4 col:8
+0-5 parent :MODPARTS
+0-5-0 parent := binary:assign line:5 col:3 domain:int op:binary
+0-5-0-0 leaf :id :y line:5 col:1
+0-5-0-1 leaf :intval :98765432 line:5 gcount:1 col:5 domain:int
+0-5-1 leaf :sc :; line:5 col:13
+0-5-2 parent :MODPARTS
+0-5-2-0 parent :EMIT
+0-5-2-0-0 leaf :id :x78 line:6 gcount:1 col:7 domain:int
+0-5-2-1 parent :EMIT
+0-5-2-1-0 leaf :id :y line:7 gcount:1 col:7 domain:int
+0-5-2-2 parent :EMIT
+0-5-2-2-0 leaf :id :z line:8 gcount:1 col:7 domain:int
+
+0-0-1-0 0-0-1-0-0 0-0-1-0-1
+0-0-1 0-0-1-0
+0-0 0-0-0 0-0-1
+0-1-1-0 0-1-1-0-0 0-1-1-0-1
+0-1-1 0-1-1-0
+0-1 0-1-0 0-1-1
+0-2-1-0 0-2-1-0-0 0-2-1-0-1
+0-2-1 0-2-1-0
+0-2 0-2-0 0-2-1
+0-3 0-3-0 0-3-1
+0-5-0 0-5-0-0 0-5-0-1
+0-5-2-0 0-5-2-0-0
+0-5-2-1 0-5-2-1-0
+0-5-2-2 0-5-2-2-0
+0-5-2 0-5-2-0 0-5-2-1 0-5-2-2
+0-5 0-5-0 0-5-1 0-5-2
+0 0-0 0-1 0-2 0-3 0-4 0-5

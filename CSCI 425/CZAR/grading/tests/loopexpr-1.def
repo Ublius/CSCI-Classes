@@ -1,0 +1,36 @@
+0 parent :MODULE
+0-0 parent :DECLLIST
+0-0-0 leaf :type :int type:int line:1 const:F col:1
+0-0-1 parent :DECLID
+0-0-1-0 leaf :id :a line:1 col:5
+0-1 parent :RAND
+0-1-0 leaf :id :a line:2 col:6 domain:int
+0-1-1 parent :- domain:int unary:minus gcount:1 fcount:0 line:2 col:9 op:unary
+0-1-1-0 leaf :intval :10 line:2 gcount:1 col:10 domain:int
+0-1-2 leaf :intval :30 line:2 gcount:1 col:14 domain:int
+0-2 parent :DOWHILE
+0-2-0 parent :STEPS
+0-2-0-0 leaf :scope :open line:3 col:4
+0-2-0-1 parent :EMIT
+0-2-0-1-0 leaf :id :a line:4 gcount:1 col:8 domain:int
+0-2-0-2 parent := binary:assign line:5 col:4 domain:int op:binary
+0-2-0-2-0 leaf :id :a line:5 col:2
+0-2-0-2-1 parent :+ binary:plus domain:int gcount:2 fcount:0 line:5 col:8 op:binary
+0-2-0-2-1-0 leaf :id :a line:5 gcount:1 col:6 domain:int
+0-2-0-2-1-1 leaf :intval :3 line:5 gcount:1 col:10 domain:int
+0-2-0-3 leaf :scope :close line:6 col:1
+0-2-1 parent :< binary:lt domain:bool gcount:1 fcount:0 line:6 col:12 op:binary
+0-2-1-0 leaf :id :a line:6 gcount:1 col:10 domain:int
+0-2-1-1 leaf :intval :10 line:6 gcount:1 col:14 domain:int
+
+0-0-1 0-0-1-0
+0-0 0-0-0 0-0-1
+0-1-1 0-1-1-0
+0-1 0-1-0 0-1-1 0-1-2
+0-2-0-1 0-2-0-1-0
+0-2-0-2-1 0-2-0-2-1-0 0-2-0-2-1-1
+0-2-0-2 0-2-0-2-0 0-2-0-2-1
+0-2-0 0-2-0-0 0-2-0-1 0-2-0-2 0-2-0-3
+0-2-1 0-2-1-0 0-2-1-1
+0-2 0-2-0 0-2-1
+0 0-0 0-1 0-2

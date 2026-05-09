@@ -1,0 +1,132 @@
+0 parent :MODULE
+0-0 parent :DECLLIST
+0-0-0 leaf :type :float type:float line:1 const:F col:1
+0-0-1 parent :DECLID
+0-0-1-0 parent := binary:assign line:1 col:9 domain:float op:binary
+0-0-1-0-0 leaf :id :a line:1 col:7
+0-0-1-0-1 leaf :floatval :1.8 line:1 col:11 domain:float fcount:1
+0-1 parent :DECLLIST
+0-1-0 leaf :type :float type:float line:2 const:F col:1
+0-1-1 parent :DECLID
+0-1-1-0 parent := binary:assign line:2 col:9 domain:float op:binary
+0-1-1-0-0 leaf :id :b line:2 col:7
+0-1-1-0-1 leaf :floatval :2.7 line:2 col:11 domain:float fcount:1
+0-2 parent :DECLLIST
+0-2-0 leaf :type :float type:float line:3 const:F col:1
+0-2-1 parent :DECLID
+0-2-1-0 parent := binary:assign line:3 col:9 domain:float op:binary
+0-2-1-0-0 leaf :id :c line:3 col:7
+0-2-1-0-1 leaf :floatval :3.6 line:3 col:11 domain:float fcount:1
+0-3 parent :DECLLIST
+0-3-0 leaf :type :float type:float line:4 const:F col:1
+0-3-1 parent :DECLID
+0-3-1-0 parent := binary:assign line:4 col:9 domain:float op:binary
+0-3-1-0-0 leaf :id :d line:4 col:7
+0-3-1-0-1 leaf :floatval :4.5 line:4 col:11 domain:float fcount:1
+0-4 parent :DECLLIST
+0-4-0 leaf :type :float type:float line:5 const:F col:1
+0-4-1 parent :DECLID
+0-4-1-0 parent := binary:assign line:5 col:9 domain:float op:binary
+0-4-1-0-0 leaf :id :e line:5 col:7
+0-4-1-0-1 leaf :floatval :5.4 line:5 col:11 domain:float fcount:1
+0-5 parent :DECLLIST
+0-5-0 leaf :type :float type:float line:6 const:F col:1
+0-5-1 parent :DECLID
+0-5-1-0 parent := binary:assign line:6 col:9 domain:float op:binary
+0-5-1-0-0 leaf :id :f line:6 col:7
+0-5-1-0-1 leaf :floatval :6.3 line:6 col:11 domain:float fcount:1
+0-6 parent :DECLLIST
+0-6-0 leaf :type :float type:float line:7 const:F col:1
+0-6-1 parent :DECLID
+0-6-1-0 parent := binary:assign line:7 col:9 domain:float op:binary
+0-6-1-0-0 leaf :id :g line:7 col:7
+0-6-1-0-1 leaf :floatval :7.2 line:7 col:11 domain:float fcount:1
+0-7 parent :DECLLIST
+0-7-0 leaf :type :float type:float line:8 const:F col:1
+0-7-1 parent :DECLID
+0-7-1-0 parent := binary:assign line:8 col:9 domain:float op:binary
+0-7-1-0-0 leaf :id :h line:8 col:7
+0-7-1-0-1 leaf :floatval :8.1 line:8 col:11 domain:float fcount:1
+0-8 parent :DECLLIST
+0-8-0 leaf :type :float type:float line:9 const:F col:1
+0-8-1 parent :DECLID
+0-8-1-0 parent := binary:assign line:9 col:9 domain:float op:binary
+0-8-1-0-0 leaf :id :z line:9 col:7
+0-8-1-0-1 parent :* binary:mult domain:float gcount:0 fcount:5 line:9 col:40 op:binary
+0-8-1-0-1-0 parent :* binary:mult domain:float gcount:0 fcount:4 line:9 col:25 op:binary
+0-8-1-0-1-0-0 parent :* binary:mult domain:float gcount:0 fcount:3 line:9 col:18 op:binary
+0-8-1-0-1-0-0-0 parent :+ binary:plus domain:float gcount:0 fcount:2 line:9 col:15 op:binary
+0-8-1-0-1-0-0-0-0 leaf :id :a line:9 col:14 domain:float fcount:1
+0-8-1-0-1-0-0-0-1 leaf :id :b line:9 col:16 domain:float fcount:1
+0-8-1-0-1-0-0-1 parent :+ binary:plus domain:float gcount:0 fcount:2 line:9 col:21 op:binary
+0-8-1-0-1-0-0-1-0 leaf :id :b line:9 col:20 domain:float fcount:1
+0-8-1-0-1-0-0-1-1 leaf :id :c line:9 col:22 domain:float fcount:1
+0-8-1-0-1-0-1 parent :* binary:mult domain:float gcount:0 fcount:3 line:9 col:32 op:binary
+0-8-1-0-1-0-1-0 parent :+ binary:plus domain:float gcount:0 fcount:2 line:9 col:29 op:binary
+0-8-1-0-1-0-1-0-0 leaf :id :c line:9 col:28 domain:float fcount:1
+0-8-1-0-1-0-1-0-1 leaf :id :d line:9 col:30 domain:float fcount:1
+0-8-1-0-1-0-1-1 parent :+ binary:plus domain:float gcount:0 fcount:2 line:9 col:35 op:binary
+0-8-1-0-1-0-1-1-0 leaf :id :d line:9 col:34 domain:float fcount:1
+0-8-1-0-1-0-1-1-1 leaf :id :e line:9 col:36 domain:float fcount:1
+0-8-1-0-1-1 parent :* binary:mult domain:float gcount:0 fcount:4 line:9 col:55 op:binary
+0-8-1-0-1-1-0 parent :* binary:mult domain:float gcount:0 fcount:3 line:9 col:48 op:binary
+0-8-1-0-1-1-0-0 parent :+ binary:plus domain:float gcount:0 fcount:2 line:9 col:45 op:binary
+0-8-1-0-1-1-0-0-0 leaf :id :d line:9 col:44 domain:float fcount:1
+0-8-1-0-1-1-0-0-1 leaf :id :e line:9 col:46 domain:float fcount:1
+0-8-1-0-1-1-0-1 parent :+ binary:plus domain:float gcount:0 fcount:2 line:9 col:51 op:binary
+0-8-1-0-1-1-0-1-0 leaf :id :e line:9 col:50 domain:float fcount:1
+0-8-1-0-1-1-0-1-1 leaf :id :f line:9 col:52 domain:float fcount:1
+0-8-1-0-1-1-1 parent :* binary:mult domain:float gcount:0 fcount:3 line:9 col:62 op:binary
+0-8-1-0-1-1-1-0 parent :+ binary:plus domain:float gcount:0 fcount:2 line:9 col:59 op:binary
+0-8-1-0-1-1-1-0-0 leaf :id :f line:9 col:58 domain:float fcount:1
+0-8-1-0-1-1-1-0-1 leaf :id :g line:9 col:60 domain:float fcount:1
+0-8-1-0-1-1-1-1 parent :+ binary:plus domain:float gcount:0 fcount:2 line:9 col:65 op:binary
+0-8-1-0-1-1-1-1-0 leaf :id :g line:9 col:64 domain:float fcount:1
+0-8-1-0-1-1-1-1-1 leaf :id :h line:9 col:66 domain:float fcount:1
+0-9 parent :EMIT
+0-9-0 leaf :id :z line:10 col:7 domain:float fcount:1
+
+0-0-1-0 0-0-1-0-0 0-0-1-0-1
+0-0-1 0-0-1-0
+0-0 0-0-0 0-0-1
+0-1-1-0 0-1-1-0-0 0-1-1-0-1
+0-1-1 0-1-1-0
+0-1 0-1-0 0-1-1
+0-2-1-0 0-2-1-0-0 0-2-1-0-1
+0-2-1 0-2-1-0
+0-2 0-2-0 0-2-1
+0-3-1-0 0-3-1-0-0 0-3-1-0-1
+0-3-1 0-3-1-0
+0-3 0-3-0 0-3-1
+0-4-1-0 0-4-1-0-0 0-4-1-0-1
+0-4-1 0-4-1-0
+0-4 0-4-0 0-4-1
+0-5-1-0 0-5-1-0-0 0-5-1-0-1
+0-5-1 0-5-1-0
+0-5 0-5-0 0-5-1
+0-6-1-0 0-6-1-0-0 0-6-1-0-1
+0-6-1 0-6-1-0
+0-6 0-6-0 0-6-1
+0-7-1-0 0-7-1-0-0 0-7-1-0-1
+0-7-1 0-7-1-0
+0-7 0-7-0 0-7-1
+0-8-1-0-1-0-0-0 0-8-1-0-1-0-0-0-0 0-8-1-0-1-0-0-0-1
+0-8-1-0-1-0-0-1 0-8-1-0-1-0-0-1-0 0-8-1-0-1-0-0-1-1
+0-8-1-0-1-0-0 0-8-1-0-1-0-0-0 0-8-1-0-1-0-0-1
+0-8-1-0-1-0-1-0 0-8-1-0-1-0-1-0-0 0-8-1-0-1-0-1-0-1
+0-8-1-0-1-0-1-1 0-8-1-0-1-0-1-1-0 0-8-1-0-1-0-1-1-1
+0-8-1-0-1-0-1 0-8-1-0-1-0-1-0 0-8-1-0-1-0-1-1
+0-8-1-0-1-0 0-8-1-0-1-0-0 0-8-1-0-1-0-1
+0-8-1-0-1-1-0-0 0-8-1-0-1-1-0-0-0 0-8-1-0-1-1-0-0-1
+0-8-1-0-1-1-0-1 0-8-1-0-1-1-0-1-0 0-8-1-0-1-1-0-1-1
+0-8-1-0-1-1-0 0-8-1-0-1-1-0-0 0-8-1-0-1-1-0-1
+0-8-1-0-1-1-1-0 0-8-1-0-1-1-1-0-0 0-8-1-0-1-1-1-0-1
+0-8-1-0-1-1-1-1 0-8-1-0-1-1-1-1-0 0-8-1-0-1-1-1-1-1
+0-8-1-0-1-1-1 0-8-1-0-1-1-1-0 0-8-1-0-1-1-1-1
+0-8-1-0-1-1 0-8-1-0-1-1-0 0-8-1-0-1-1-1
+0-8-1-0-1 0-8-1-0-1-0 0-8-1-0-1-1
+0-8-1-0 0-8-1-0-0 0-8-1-0-1
+0-8-1 0-8-1-0
+0-8 0-8-0 0-8-1
+0-9 0-9-0
+0 0-0 0-1 0-2 0-3 0-4 0-5 0-6 0-7 0-8 0-9

@@ -1,0 +1,134 @@
+0 parent :MODULE
+0-0 parent :DECLLIST
+0-0-0 leaf :type :int type:int line:1 const:F col:1
+0-0-1 parent :DECLID
+0-0-1-0 parent := binary:assign line:1 col:7 domain:int op:binary
+0-0-1-0-0 leaf :id :a line:1 col:5
+0-0-1-0-1 leaf :intval :1 line:1 gcount:1 col:9 domain:int
+0-1 parent :DECLLIST
+0-1-0 leaf :type :int type:int line:2 const:F col:1
+0-1-1 parent :DECLID
+0-1-1-0 parent := binary:assign line:2 col:7 domain:int op:binary
+0-1-1-0-0 leaf :id :b line:2 col:5
+0-1-1-0-1 leaf :intval :2 line:2 gcount:1 col:9 domain:int
+0-2 parent :DECLLIST
+0-2-0 leaf :type :int type:int line:3 const:F col:1
+0-2-1 parent :DECLID
+0-2-1-0 leaf :id :c line:3 col:5
+0-3 parent :RAND
+0-3-0 leaf :id :c line:4 col:6 domain:int
+0-3-1 leaf :intval :4 line:4 gcount:1 col:9 domain:int
+0-3-2 leaf :intval :20 line:4 gcount:1 col:12 domain:int
+0-4 parent :DECLLIST
+0-4-0 leaf :type :int type:int line:5 const:F col:1
+0-4-1 parent :DECLID
+0-4-1-0 parent := binary:assign line:5 col:7 domain:int op:binary
+0-4-1-0-0 leaf :id :d line:5 col:5
+0-4-1-0-1 leaf :intval :4 line:5 gcount:1 col:9 domain:int
+0-5 parent :DECLLIST
+0-5-0 leaf :type :int type:int line:6 const:F col:1
+0-5-1 parent :DECLID
+0-5-1-0 parent := binary:assign line:6 col:7 domain:int op:binary
+0-5-1-0-0 leaf :id :e line:6 col:5
+0-5-1-0-1 leaf :intval :5 line:6 gcount:1 col:9 domain:int
+0-6 parent :DECLLIST
+0-6-0 leaf :type :int type:int line:7 const:F col:1
+0-6-1 parent :DECLID
+0-6-1-0 parent := binary:assign line:7 col:7 domain:int op:binary
+0-6-1-0-0 leaf :id :f line:7 col:5
+0-6-1-0-1 leaf :intval :6 line:7 gcount:1 col:9 domain:int
+0-7 parent :DECLLIST
+0-7-0 leaf :type :int type:int line:8 const:F col:1
+0-7-1 parent :DECLID
+0-7-1-0 parent := binary:assign line:8 col:7 domain:int op:binary
+0-7-1-0-0 leaf :id :g line:8 col:5
+0-7-1-0-1 leaf :intval :7 line:8 gcount:1 col:9 domain:int
+0-8 parent :DECLLIST
+0-8-0 leaf :type :int type:int line:9 const:F col:1
+0-8-1 parent :DECLID
+0-8-1-0 parent := binary:assign line:9 col:7 domain:int op:binary
+0-8-1-0-0 leaf :id :h line:9 col:5
+0-8-1-0-1 leaf :intval :8 line:9 gcount:1 col:9 domain:int
+0-9 parent :DECLLIST
+0-9-0 leaf :type :int type:int line:10 const:F col:1
+0-9-1 parent :DECLID
+0-9-1-0 parent := binary:assign line:10 col:7 domain:int op:binary
+0-9-1-0-0 leaf :id :z line:10 col:5
+0-9-1-0-1 parent :* binary:mult domain:int gcount:5 fcount:0 line:10 col:38 op:binary
+0-9-1-0-1-0 parent :* binary:mult domain:int gcount:4 fcount:0 line:10 col:23 op:binary
+0-9-1-0-1-0-0 parent :* binary:mult domain:int gcount:3 fcount:0 line:10 col:16 op:binary
+0-9-1-0-1-0-0-0 parent :+ binary:plus domain:int gcount:2 fcount:0 line:10 col:13 op:binary
+0-9-1-0-1-0-0-0-0 leaf :id :a line:10 gcount:1 col:12 domain:int
+0-9-1-0-1-0-0-0-1 leaf :id :b line:10 gcount:1 col:14 domain:int
+0-9-1-0-1-0-0-1 parent :+ binary:plus domain:int gcount:2 fcount:0 line:10 col:19 op:binary
+0-9-1-0-1-0-0-1-0 leaf :id :b line:10 gcount:1 col:18 domain:int
+0-9-1-0-1-0-0-1-1 leaf :id :c line:10 gcount:1 col:20 domain:int
+0-9-1-0-1-0-1 parent :* binary:mult domain:int gcount:3 fcount:0 line:10 col:30 op:binary
+0-9-1-0-1-0-1-0 parent :+ binary:plus domain:int gcount:2 fcount:0 line:10 col:27 op:binary
+0-9-1-0-1-0-1-0-0 leaf :id :c line:10 gcount:1 col:26 domain:int
+0-9-1-0-1-0-1-0-1 leaf :id :d line:10 gcount:1 col:28 domain:int
+0-9-1-0-1-0-1-1 parent :+ binary:plus domain:int gcount:2 fcount:0 line:10 col:33 op:binary
+0-9-1-0-1-0-1-1-0 leaf :id :d line:10 gcount:1 col:32 domain:int
+0-9-1-0-1-0-1-1-1 leaf :id :e line:10 gcount:1 col:34 domain:int
+0-9-1-0-1-1 parent :* binary:mult domain:int gcount:4 fcount:0 line:10 col:53 op:binary
+0-9-1-0-1-1-0 parent :* binary:mult domain:int gcount:3 fcount:0 line:10 col:46 op:binary
+0-9-1-0-1-1-0-0 parent :+ binary:plus domain:int gcount:2 fcount:0 line:10 col:43 op:binary
+0-9-1-0-1-1-0-0-0 leaf :id :d line:10 gcount:1 col:42 domain:int
+0-9-1-0-1-1-0-0-1 leaf :id :e line:10 gcount:1 col:44 domain:int
+0-9-1-0-1-1-0-1 parent :+ binary:plus domain:int gcount:2 fcount:0 line:10 col:49 op:binary
+0-9-1-0-1-1-0-1-0 leaf :id :e line:10 gcount:1 col:48 domain:int
+0-9-1-0-1-1-0-1-1 leaf :id :f line:10 gcount:1 col:50 domain:int
+0-9-1-0-1-1-1 parent :* binary:mult domain:int gcount:3 fcount:0 line:10 col:60 op:binary
+0-9-1-0-1-1-1-0 parent :+ binary:plus domain:int gcount:2 fcount:0 line:10 col:57 op:binary
+0-9-1-0-1-1-1-0-0 leaf :id :f line:10 gcount:1 col:56 domain:int
+0-9-1-0-1-1-1-0-1 leaf :id :g line:10 gcount:1 col:58 domain:int
+0-9-1-0-1-1-1-1 parent :+ binary:plus domain:int gcount:2 fcount:0 line:10 col:63 op:binary
+0-9-1-0-1-1-1-1-0 leaf :id :g line:10 gcount:1 col:62 domain:int
+0-9-1-0-1-1-1-1-1 leaf :id :h line:10 gcount:1 col:64 domain:int
+0-10 parent :EMIT
+0-10-0 leaf :id :z line:11 gcount:1 col:7 domain:int
+
+0-0-1-0 0-0-1-0-0 0-0-1-0-1
+0-0-1 0-0-1-0
+0-0 0-0-0 0-0-1
+0-1-1-0 0-1-1-0-0 0-1-1-0-1
+0-1-1 0-1-1-0
+0-1 0-1-0 0-1-1
+0-2-1 0-2-1-0
+0-2 0-2-0 0-2-1
+0-3 0-3-0 0-3-1 0-3-2
+0-4-1-0 0-4-1-0-0 0-4-1-0-1
+0-4-1 0-4-1-0
+0-4 0-4-0 0-4-1
+0-5-1-0 0-5-1-0-0 0-5-1-0-1
+0-5-1 0-5-1-0
+0-5 0-5-0 0-5-1
+0-6-1-0 0-6-1-0-0 0-6-1-0-1
+0-6-1 0-6-1-0
+0-6 0-6-0 0-6-1
+0-7-1-0 0-7-1-0-0 0-7-1-0-1
+0-7-1 0-7-1-0
+0-7 0-7-0 0-7-1
+0-8-1-0 0-8-1-0-0 0-8-1-0-1
+0-8-1 0-8-1-0
+0-8 0-8-0 0-8-1
+0-9-1-0-1-0-0-0 0-9-1-0-1-0-0-0-0 0-9-1-0-1-0-0-0-1
+0-9-1-0-1-0-0-1 0-9-1-0-1-0-0-1-0 0-9-1-0-1-0-0-1-1
+0-9-1-0-1-0-0 0-9-1-0-1-0-0-0 0-9-1-0-1-0-0-1
+0-9-1-0-1-0-1-0 0-9-1-0-1-0-1-0-0 0-9-1-0-1-0-1-0-1
+0-9-1-0-1-0-1-1 0-9-1-0-1-0-1-1-0 0-9-1-0-1-0-1-1-1
+0-9-1-0-1-0-1 0-9-1-0-1-0-1-0 0-9-1-0-1-0-1-1
+0-9-1-0-1-0 0-9-1-0-1-0-0 0-9-1-0-1-0-1
+0-9-1-0-1-1-0-0 0-9-1-0-1-1-0-0-0 0-9-1-0-1-1-0-0-1
+0-9-1-0-1-1-0-1 0-9-1-0-1-1-0-1-0 0-9-1-0-1-1-0-1-1
+0-9-1-0-1-1-0 0-9-1-0-1-1-0-0 0-9-1-0-1-1-0-1
+0-9-1-0-1-1-1-0 0-9-1-0-1-1-1-0-0 0-9-1-0-1-1-1-0-1
+0-9-1-0-1-1-1-1 0-9-1-0-1-1-1-1-0 0-9-1-0-1-1-1-1-1
+0-9-1-0-1-1-1 0-9-1-0-1-1-1-0 0-9-1-0-1-1-1-1
+0-9-1-0-1-1 0-9-1-0-1-1-0 0-9-1-0-1-1-1
+0-9-1-0-1 0-9-1-0-1-0 0-9-1-0-1-1
+0-9-1-0 0-9-1-0-0 0-9-1-0-1
+0-9-1 0-9-1-0
+0-9 0-9-0 0-9-1
+0-10 0-10-0
+0 0-0 0-1 0-2 0-3 0-4 0-5 0-6 0-7 0-8 0-9 0-10

@@ -1,0 +1,27 @@
+0 parent :MODULE
+0-0 parent :DECLLIST
+0-0-0 leaf :type :int type:int line:1 const:F col:1
+0-0-1 parent :DECLID
+0-0-1-0 leaf :id :a line:1 col:5
+0-1 parent :RAND
+0-1-0 leaf :id :a line:2 col:6 domain:int
+0-1-1 parent :- domain:int unary:minus gcount:1 fcount:0 line:2 col:9 op:unary
+0-1-1-0 leaf :intval :10 line:2 gcount:1 col:10 domain:int
+0-1-2 leaf :intval :30 line:2 gcount:1 col:14 domain:int
+0-2 parent :IF
+0-2-0 parent :< binary:lt domain:bool gcount:1 fcount:0 line:3 col:8 op:binary
+0-2-0-0 leaf :id :a line:3 gcount:1 col:6 domain:int
+0-2-0-1 leaf :intval :10 line:3 gcount:1 col:10 domain:int
+0-2-1 parent :STEPS
+0-2-1-0 parent :EMIT
+0-2-1-0-0 leaf :id :a line:3 gcount:1 col:21 domain:int
+
+0-0-1 0-0-1-0
+0-0 0-0-0 0-0-1
+0-1-1 0-1-1-0
+0-1 0-1-0 0-1-1 0-1-2
+0-2-0 0-2-0-0 0-2-0-1
+0-2-1-0 0-2-1-0-0
+0-2-1 0-2-1-0
+0-2 0-2-0 0-2-1
+0 0-0 0-1 0-2

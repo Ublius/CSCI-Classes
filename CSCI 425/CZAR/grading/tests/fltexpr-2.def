@@ -1,0 +1,45 @@
+0 parent :MODULE
+0-0 parent :DECLLIST
+0-0-0 leaf :type :float type:float line:1 const:F col:1
+0-0-1 parent :DECLID
+0-0-1-0 parent := binary:assign line:1 col:9 domain:float op:binary
+0-0-1-0-0 leaf :id :x78 line:1 col:7
+0-0-1-0-1 leaf :floatval :1.0 line:1 col:11 domain:float fcount:1
+0-1 parent :DECLLIST
+0-1-0 leaf :type :float type:float line:2 const:F col:1
+0-1-1 parent :DECLID
+0-1-1-0 parent := binary:assign line:2 col:9 domain:float op:binary
+0-1-1-0-0 leaf :id :y line:2 col:7
+0-1-1-0-1 parent :+ binary:plus domain:float gcount:0 fcount:2 line:2 col:13 op:binary
+0-1-1-0-1-0 leaf :id :x78 line:2 col:11 domain:float fcount:1
+0-1-1-0-1-1 leaf :floatval :1.2 line:2 col:15 domain:float fcount:1
+0-2 parent :DECLLIST
+0-2-0 leaf :type :float type:float line:3 const:F col:1
+0-2-1 parent :DECLID
+0-2-1-0 parent := binary:assign line:3 col:9 domain:float op:binary
+0-2-1-0-0 leaf :id :z line:3 col:7
+0-2-1-0-1 parent :+ binary:plus domain:float gcount:0 fcount:2 line:3 col:29 op:binary
+0-2-1-0-1-0 parent :+ binary:plus domain:float gcount:0 fcount:2 line:3 col:25 op:binary
+0-2-1-0-1-0-0 parent :+ binary:plus domain:float gcount:0 fcount:2 line:3 col:17 op:binary
+0-2-1-0-1-0-0-0 leaf :floatval :2.37 line:3 col:12 domain:float fcount:1
+0-2-1-0-1-0-0-1 leaf :floatval :3.0 line:3 col:19 domain:float fcount:1
+0-2-1-0-1-0-1 leaf :id :x78 line:3 col:27 domain:float fcount:1
+0-2-1-0-1-1 leaf :floatval :1.0 line:3 col:31 domain:float fcount:1
+0-3 parent :EMIT
+0-3-0 leaf :id :z line:4 col:7 domain:float fcount:1
+
+0-0-1-0 0-0-1-0-0 0-0-1-0-1
+0-0-1 0-0-1-0
+0-0 0-0-0 0-0-1
+0-1-1-0-1 0-1-1-0-1-0 0-1-1-0-1-1
+0-1-1-0 0-1-1-0-0 0-1-1-0-1
+0-1-1 0-1-1-0
+0-1 0-1-0 0-1-1
+0-2-1-0-1-0-0 0-2-1-0-1-0-0-0 0-2-1-0-1-0-0-1
+0-2-1-0-1-0 0-2-1-0-1-0-0 0-2-1-0-1-0-1
+0-2-1-0-1 0-2-1-0-1-0 0-2-1-0-1-1
+0-2-1-0 0-2-1-0-0 0-2-1-0-1
+0-2-1 0-2-1-0
+0-2 0-2-0 0-2-1
+0-3 0-3-0
+0 0-0 0-1 0-2 0-3

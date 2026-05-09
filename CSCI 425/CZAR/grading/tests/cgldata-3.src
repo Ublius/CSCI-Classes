@@ -1,0 +1,8 @@
+const int z = 98765432;
+int x = 98765432;        
+int y = x;
+x = 111;
+y = 98765432;
+emit (x);
+emit (y);
+emit (z);

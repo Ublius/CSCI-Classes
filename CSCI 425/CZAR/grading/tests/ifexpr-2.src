@@ -1,0 +1,11 @@
+int a;
+int q;
+rand a, 1, 10;
+rand q, 5, 14;
+if ( a > q ) {
+    emit (a);
+} else {
+    emit (q);
+}
+
+   

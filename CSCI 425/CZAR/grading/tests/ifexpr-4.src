@@ -1,0 +1,10 @@
+int a, q;
+rand a, 3, 10;
+rand q, 0, 13;
+if ( q > a ) {
+    emit (a);
+} else {
+    emit (q);
+}
+emit (a+q);
+   

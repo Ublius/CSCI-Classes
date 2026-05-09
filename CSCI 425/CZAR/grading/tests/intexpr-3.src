@@ -1,0 +1,11 @@
+int a = 1;
+int b = 2;
+int c;
+rand c, 4, 20;
+int d = 4;
+int e = 5;
+int f = 6;
+int g = 7;
+int h = 8;
+int z = (((a+b)*(b+c))*((c+d)*(d+e)))*(((d+e)*(e+f))*((f+g)*(g+h)));
+emit (z);

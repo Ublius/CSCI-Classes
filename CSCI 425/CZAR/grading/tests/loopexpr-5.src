@@ -1,0 +1,13 @@
+int a;
+int q;
+rand a, 1, 110;
+rand q, 90, 425;
+while ( a <= q ) {
+    emit (a);
+    a = a / 10 + 10;
+    while ( a < q ) {
+        emit (q);
+        q = q - a;
+    }
+}
+emit (q);

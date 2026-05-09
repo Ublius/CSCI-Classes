@@ -1,0 +1,18 @@
+int a;
+int q;
+rand a, 1, 100;
+rand q, 1, 100;
+int x, y, z;
+if ( a > q ) {
+    x = 6;
+    y = q + 7;
+    z = 8;
+    if ( z > y ) emit (x);
+} else {
+    x = 4;
+    y = 5;
+    z = a + 9;
+    if ( z < 0 ) emit (y);
+    emit(a);
+}
+emit(z);

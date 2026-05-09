@@ -1,0 +1,6 @@
+int a;
+rand a, -10, 30;
+do {
+ emit (a);
+ a = a + 3;
+} while( a < 10 );

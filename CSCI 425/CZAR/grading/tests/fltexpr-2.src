@@ -1,0 +1,4 @@
+float x = 1.0;
+float y = x + 1.2;
+float z = (2.37 + 3.0 ) + x + 1.0;
+emit (z);

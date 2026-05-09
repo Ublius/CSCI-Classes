@@ -1,0 +1,27 @@
+0 parent :MODULE
+0-0 parent :DECLLIST
+0-0-0 leaf :type :float type:float line:1 const:F col:1
+0-0-1 parent :DECLID
+0-0-1-0 leaf :id :f line:1 col:7
+0-1 parent :RAND
+0-1-0 leaf :id :f line:2 col:6 domain:float
+0-2 parent :EMIT
+0-2-0 parent :+ binary:plus domain:float gcount:0 fcount:3 line:3 col:14 op:binary
+0-2-0-0 parent :* binary:mult domain:float gcount:0 fcount:2 line:3 col:8 op:binary
+0-2-0-0-0 leaf :id :f line:3 col:7 domain:float fcount:1
+0-2-0-0-1 leaf :floatval :3.11 line:3 col:9 domain:float fcount:1
+0-2-0-1 parent :* binary:mult domain:float gcount:0 fcount:2 line:3 col:25 op:binary
+0-2-0-1-0 parent :- binary:minus domain:float gcount:0 fcount:2 line:3 col:22 op:binary
+0-2-0-1-0-0 leaf :floatval :100.0 line:3 col:17 domain:float fcount:1
+0-2-0-1-0-1 leaf :id :f line:3 col:23 domain:float fcount:1
+0-2-0-1-1 leaf :floatval :0.3 line:3 col:26 domain:float fcount:1
+
+0-0-1 0-0-1-0
+0-0 0-0-0 0-0-1
+0-1 0-1-0
+0-2-0-0 0-2-0-0-0 0-2-0-0-1
+0-2-0-1-0 0-2-0-1-0-0 0-2-0-1-0-1
+0-2-0-1 0-2-0-1-0 0-2-0-1-1
+0-2-0 0-2-0-0 0-2-0-1
+0-2 0-2-0
+0 0-0 0-1 0-2

@@ -1,0 +1,10 @@
+float a = 1.8;
+float b = 2.7;
+float c = 3.6;
+float d = 4.5;
+float e = 5.4;
+float f = 6.3;
+float g = 7.2;
+float h = 8.1;
+float z = (((a+b)*(b+c))*((c+d)*(d+e)))*(((d+e)*(e+f))*((f+g)*(g+h)));
+emit (z);

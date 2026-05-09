@@ -1,0 +1,25 @@
+int a;
+int q;
+rand a, 1, 100;
+rand q, 1, 100;
+int x=6, y=q+7, z=a/q;
+emit(a);
+emit(q);
+while ( z >= 0 ) {
+    while( x < y ) {
+        emit (y);
+        x = x + y;
+    }
+    z = z - 1;
+}
+z = q/a;
+while ( z >= 0 ) {
+    while( y < x ) {
+        emit (x);
+        y = y + x;
+    }
+    z = z - 1;
+}
+emit(x);
+emit(y);
+emit(z);
